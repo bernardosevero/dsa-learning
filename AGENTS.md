@@ -57,7 +57,7 @@ These are settled decisions. Code that contradicts one is a bug.
 | Toolchain | pnpm, Node 24 LTS | Strict `node_modules`: a missing dependency fails immediately |
 | Routing | React Router v7, library mode | Familiar and small; six routes don't need typed routing |
 | State | One React context over pure reducer functions (`src/ui/appDataReducers.ts`) | Reducers are testable without React. Reach for Zustand only when re-renders measurably hurt |
-| Styling | Tailwind v4 + shadcn/ui, themed through CSS variables | Accessible dialogs, radios and toggles; the Claude Design output lands as theme tokens (`docs/design/`) |
+| Styling | Tailwind v4 + shadcn/ui, themed through CSS variables | Accessible dialogs, radios and toggles; the design lives as theme tokens in `src/index.css` |
 | Validation | zod, wherever data crosses a boundary (import file, localStorage, later Supabase rows) | One schema gives the runtime check and the type |
 | Storage | localStorage behind the `Store` interface | The log is small; the interface lets Supabase replace it |
 | Tests | Vitest + Testing Library; Playwright for the main loop (Today → Solve → Log → Today) | |
