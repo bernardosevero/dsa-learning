@@ -68,13 +68,37 @@ The scripts are in `package.json`.
 Later phases:
 - **Public release:** PostHog analytics (`posthog-js`, US cloud) for everyone, with an opt-out toggle in Settings and a `/privacy` page. EU consent comes before marketing in Europe.
 - **Login:** Supabase Auth (Google + GitHub) and a Supabase `entries` table. Every Supabase table has Row Level Security (`user_id = auth.uid()`), because the client key is public. Anything involving payment is decided server-side.
+- **Public pages (second release, with login):** landing, how it works, FAQ. The way they're prerendered is decided then.
 
-## Standards
+## Working on UI
 
-- **Types:** model states as discriminated unions and let the compiler check exhaustiveness. Use `unknown` plus a zod parse for untrusted data.
-- **Tests:** every domain function has unit tests named after the behaviour they pin down (for example "Easy then Easy on the due review → mastered"). UI tests use Testing Library on jsdom and assert what the user sees.
-- **UI text:** every user-visible string lives in `src/ui/strings.ts` (English for now, ready for translation). User-written text (insights, notes) renders as plain React text.
-- **Components:** build screens from shadcn/ui components, and color them with the theme tokens (`bg-primary`, `text-muted-foreground`), so a design change is a token change.
-- **Layout:** compact, max width about 640px, because the app sits beside a NeetCode tab. Readable on a phone.
-- **Comments:** explain *why*, in one line, where the code can't say it itself.
+Before changing anything in `src/ui/`, load the `working-on-ui` skill. It holds the React, component, layout, accessibility and SEO rules.
+
+## Code style
+
+Lint and Prettier (100 columns) enforce what they can. These are the rules they can't check.
+
+- **Names read like prose.** Use descriptive names everywhere. Single letters are only for `i` in index loops and `a`/`b` in comparators. Use an abbreviation only when a new reader understands it without context (`id`, `url`, `props`, `config`, `min`/`max`). Booleans start with `is`/`has`/`should`/`can`, functions start with a verb, and numbers with meaning are named constants (`INTERVAL_DAYS.easy`, not `30`).
+- **Explicit over clever.**
+  - A comparator chains at most 3 comparisons.
+  - `reduce` only builds a simple single value (a sum, count, max, or a record keyed by id), with a callback of about 3 lines; anything more is a `for...of` loop.
+  - Use `Boolean(value)`, not `!!value`.
+  - Helpers are named functions at module level, not one-line arrows defined inside another function.
+  - Every `as` cast (except `as const`) has a same-line comment saying why it's safe.
+- **Small functions:** about 30 lines, at most 2 levels of nesting, early returns, one job each.
+- **Inputs stay untouched:** parameters are `readonly`, and you copy before reordering (`toSorted`, `toReversed`). A local `let` and a loop inside a function are fine.
+- **Expected failures are values:** return `{ ok: true, value } | { ok: false, error }`. Throw only for bugs.
+- **Types:** model states as discriminated unions and let the compiler check exhaustiveness. Parse untrusted data with zod.
+- **Files:**
+  - Named exports only, one component per file, no barrel `index.ts` files.
+  - Components are `PascalCase.tsx`; everything else is `camelCase.ts`.
+  - Imports use `@/` across folders and relative paths inside one.
+- **Docs and comments:** exported `domain` and `storage` functions get a one- or two-line JSDoc stating what they return and any product rule. Other comments explain *why*, in one line. `TODO`s name an issue: `// TODO(#14): ...`.
+- **Tests:**
+  - Names are sentences that pin down a behaviour ("marks a problem mastered after Easy on the due review").
+  - Separate arrange / act / assert with blank lines.
+  - Build data with builders like `anAttempt({ rating: "easy" })`.
+  - The naming rules apply in tests too.
+  - Use `@ts-expect-error` (with a description) to test invalid input.
+- **Dependencies:** add only the ones the issue names. For anything else, explain in the PR why the platform or an existing dependency isn't enough, and wait for the owner's approval.
 - **Commits:** gitmoji plus conventional type and scope, e.g. `✨ feat(domain): add deriveState`, `✅ test(domain): ...`, `🐛 fix(ui): ...`, `📝 docs(readme): ...`.
