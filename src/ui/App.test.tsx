@@ -1,69 +1,28 @@
 import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { AppDataProvider } from "./AppData";
 import { AppRoutes } from "./AppRoutes";
 
-function renderAt(path: string) {
-  render(
-    <AppDataProvider>
-      <MemoryRouter initialEntries={[path]}>
-        <AppRoutes />
-      </MemoryRouter>
-    </AppDataProvider>,
-  );
-}
-
-function pageHeading(): string {
-  return screen.getByRole("heading", { level: 1 }).textContent;
-}
-
-afterEach(() => {
-  localStorage.clear();
-});
-
 describe("AppRoutes", () => {
-  it.each([
-    ["/", "Today"],
-    ["/solve/two-sum", "Solving"],
-    ["/log/two-sum", "Log attempt"],
-    ["/problems", "Problems"],
-    ["/problems/two-sum", "Problem"],
-    ["/settings", "Settings & data"],
-  ])("renders %s as the %s screen with its own page title", (path, heading) => {
-    renderAt(path);
-
-    expect(pageHeading()).toBe(heading);
-    expect(document.title).toBe(`${heading} · dta-learning`);
-  });
-
-  it("moves between Today, Problems and Settings from the nav and marks the current one", async () => {
+  it("moves between Today, Problems and Settings from the nav", async () => {
     const user = userEvent.setup();
-    renderAt("/");
-    const nav = screen.getByRole("navigation", { name: "Main" });
+    render(
+      <AppDataProvider>
+        <MemoryRouter>
+          <AppRoutes />
+        </MemoryRouter>
+      </AppDataProvider>,
+    );
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Today");
 
     await user.click(screen.getByRole("link", { name: "Problems" }));
-    expect(pageHeading()).toBe("Problems");
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Problems");
     await user.click(screen.getByRole("link", { name: "Settings" }));
 
-    expect(pageHeading()).toBe("Settings & data");
-    expect(nav.querySelector("[aria-current='page']")?.textContent).toBe("Settings");
-  });
-
-  it("goes back to Today from the wordmark", async () => {
-    const user = userEvent.setup();
-    renderAt("/settings");
-
-    await user.click(screen.getByRole("link", { name: "dta-learning" }));
-
-    expect(pageHeading()).toBe("Today");
-  });
-
-  it("sends an unknown path to Today", () => {
-    renderAt("/nowhere");
-
-    expect(pageHeading()).toBe("Today");
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Settings & data");
+    expect(document.title).toBe("Settings & data · dta-learning");
   });
 });

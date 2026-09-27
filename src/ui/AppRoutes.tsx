@@ -1,10 +1,10 @@
-import { Navigate, Route, Routes } from "react-router";
+import { Route, Routes } from "react-router";
 
 import { AppLayout } from "./AppLayout";
 import { PlaceholderPage } from "./PlaceholderPage";
 import { t } from "./strings";
 
-/** The six screens, inside the shared layout. Unknown paths go to Today. */
+/** The six screens, inside the shared layout. */
 export function AppRoutes() {
   return (
     <Routes>
@@ -18,7 +18,6 @@ export function AppRoutes() {
           element={<PlaceholderPage title={t.pages.problemDetail} />}
         />
         <Route path="settings" element={<PlaceholderPage title={t.pages.settings} />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
   );
