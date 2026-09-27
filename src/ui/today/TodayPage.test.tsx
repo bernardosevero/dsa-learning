@@ -58,6 +58,11 @@ const TWO_DUE_REVIEWS = [
   anAttempt({ problemId: "valid-anagram", rating: "medium" }),
 ];
 
+// Eight due reviews: the focus plus seven rows, two more than a backlog shows at first.
+const EIGHT_DUE_REVIEWS = PROBLEMS.slice(0, 8).map((problem) =>
+  anAttempt({ problemId: problem.id, rating: "hard" }),
+);
+
 // Matches a paragraph by its whole text, even when parts of it sit in their own spans.
 function paragraphWithText(text: string) {
   return function matches(_content: string, element: Element | null): boolean {
@@ -145,15 +150,18 @@ describe("TodayPage", () => {
     expect(screen.queryByRole("region", { name: /New/ })).toBeNull();
   });
 
-  it("shows a big backlog as the focus plus five rows until the rest is asked for", async () => {
-    const user = userEvent.setup();
-    const eightDue = PROBLEMS.slice(0, 8).map((problem) =>
-      anAttempt({ problemId: problem.id, rating: "hard" }),
-    );
-    renderToday(aSaveFile({ entries: eightDue }));
+  it("shows a big backlog as the focus plus five rows, with a no-penalty note", () => {
+    renderToday(aSaveFile({ entries: EIGHT_DUE_REVIEWS }));
+
     const dueReviews = within(screen.getByRole("region", { name: /Due reviews/ }));
     expect(dueReviews.getByText(/Overdue reviews carry no penalty/)).toBeDefined();
     expect(dueReviews.getAllByRole("listitem")).toHaveLength(5);
+  });
+
+  it("shows the rest of a big backlog when asked", async () => {
+    const user = userEvent.setup();
+    renderToday(aSaveFile({ entries: EIGHT_DUE_REVIEWS }));
+    const dueReviews = within(screen.getByRole("region", { name: /Due reviews/ }));
 
     await user.click(dueReviews.getByRole("button", { name: "Show the other 2 due reviews" }));
 
