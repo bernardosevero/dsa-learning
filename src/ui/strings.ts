@@ -19,5 +19,4 @@ export const en = {
   documentTitle: (page: string) => `${page} · dta-learning`,
 } as const;
 
-// eslint-disable-next-line id-length -- the short alias #11 asks for, since every screen reads it on most lines
 export const t = en;

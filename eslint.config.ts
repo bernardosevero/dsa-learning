@@ -14,7 +14,7 @@ const BOOLEAN_PREFIXES = ["is", "has", "should", "can", "IS_", "HAS_", "SHOULD_"
 const codeStyleRules: Linter.RulesRecord = {
   "@typescript-eslint/no-explicit-any": "error",
   "no-nested-ternary": "error",
-  "id-length": ["error", { min: 2, exceptions: ["i", "a", "b", "T"], properties: "never" }],
+  "id-length": ["error", { min: 2, exceptions: ["i", "a", "b", "t", "T"], properties: "never" }],
   "@typescript-eslint/ban-ts-comment": [
     "error",
     {
@@ -37,7 +37,12 @@ const codeStyleRules: Linter.RulesRecord = {
       format: ["PascalCase", "UPPER_CASE"],
       prefix: BOOLEAN_PREFIXES,
     },
-    { selector: "variable", modifiers: ["const", "global"], format: ["UPPER_CASE", "camelCase"] },
+    // PascalCase is for values rendered as JSX: components and React contexts.
+    {
+      selector: "variable",
+      modifiers: ["const", "global"],
+      format: ["UPPER_CASE", "camelCase", "PascalCase"],
+    },
     // Destructured names come from someone else's object (props, library results).
     { selector: ["variable", "parameter"], modifiers: ["destructured"], format: null },
     {

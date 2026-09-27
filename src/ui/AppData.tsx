@@ -39,7 +39,6 @@ export interface AppDataValue extends AppDataActions {
   todayDate: LocalDate;
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention -- rendered as a JSX element, which needs PascalCase
 const AppDataContext = createContext<AppDataValue | undefined>(undefined);
 
 const PROBLEM_IDS = PROBLEMS.map((problem) => problem.id);
