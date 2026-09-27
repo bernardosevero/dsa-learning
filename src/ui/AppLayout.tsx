@@ -1,18 +1,19 @@
+import { CalendarIcon, ListIcon, SlidersHorizontalIcon } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router";
 
 import { t } from "./strings";
 
 const NAV_LINKS = [
-  { to: "/", label: t.nav.today },
-  { to: "/problems", label: t.nav.problems },
-  { to: "/settings", label: t.nav.settings },
+  { to: "/", label: t.nav.today, Icon: CalendarIcon },
+  { to: "/problems", label: t.nav.problems, Icon: ListIcon },
+  { to: "/settings", label: t.nav.settings, Icon: SlidersHorizontalIcon },
 ] as const;
 
 // Below `sm` the same nav becomes a bottom bar, so there is only ever one nav landmark.
 const NAV_CLASSES =
   "fixed inset-x-0 bottom-0 z-10 border-t bg-card sm:static sm:border-none sm:bg-transparent";
 const NAV_LINK_CLASSES =
-  "flex min-h-11 flex-1 items-center justify-center border-b-2 border-transparent text-sm text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[current=page]:border-primary aria-[current=page]:font-semibold aria-[current=page]:text-foreground sm:flex-none";
+  "flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 border-transparent py-1.5 text-xs text-muted-foreground sm:flex-row sm:border-b-2 sm:py-0 sm:text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[current=page]:font-semibold aria-[current=page]:text-foreground sm:flex-none sm:aria-[current=page]:border-primary";
 
 /** The frame every main screen sits in: wordmark, nav and the current route below them. */
 export function AppLayout() {
@@ -30,6 +31,7 @@ export function AppLayout() {
             {NAV_LINKS.map((link) => (
               <li key={link.to} className="flex flex-1">
                 <NavLink to={link.to} end className={NAV_LINK_CLASSES}>
+                  <link.Icon aria-hidden className="size-5 sm:hidden" />
                   {link.label}
                 </NavLink>
               </li>
