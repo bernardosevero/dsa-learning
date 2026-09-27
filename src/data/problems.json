@@ -2,7 +2,7 @@
   {
     "id": "contains-duplicate",
     "title": "Contains Duplicate",
-    "summary": "",
+    "summary": "Return true if any value appears at least twice in the array.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/duplicate-integer",
@@ -14,7 +14,7 @@
   {
     "id": "valid-anagram",
     "title": "Valid Anagram",
-    "summary": "",
+    "summary": "Decide whether two strings contain exactly the same letters with the same counts.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/is-anagram",
@@ -26,7 +26,7 @@
   {
     "id": "two-sum",
     "title": "Two Sum",
-    "summary": "",
+    "summary": "Given an array and a target, return the indices of the two numbers that add up to the target.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/two-integer-sum",
@@ -38,7 +38,7 @@
   {
     "id": "group-anagrams",
     "title": "Group Anagrams",
-    "summary": "",
+    "summary": "Gather a list of words into groups whose members are rearrangements of the same letters.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/anagram-groups",
@@ -50,7 +50,7 @@
   {
     "id": "top-k-frequent-elements",
     "title": "Top K Frequent Elements",
-    "summary": "",
+    "summary": "Return the k values that occur most often in an integer array.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/top-k-elements-in-list",
@@ -62,7 +62,7 @@
   {
     "id": "product-of-array-except-self",
     "title": "Product of Array Except Self",
-    "summary": "",
+    "summary": "For each position of an array, return the product of all the other elements.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/products-of-array-discluding-self",
@@ -74,7 +74,7 @@
   {
     "id": "valid-sudoku",
     "title": "Valid Sudoku",
-    "summary": "",
+    "summary": "Check whether a partly filled 9x9 Sudoku board breaks no row, column or 3x3 box rule.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/valid-sudoku",
@@ -85,7 +85,7 @@
   {
     "id": "encode-and-decode-strings",
     "title": "Encode and Decode Strings",
-    "summary": "",
+    "summary": "Turn a list of strings into one string and back again, so any list survives the round trip.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/string-encode-and-decode",
@@ -97,7 +97,7 @@
   {
     "id": "longest-consecutive-sequence",
     "title": "Longest Consecutive Sequence",
-    "summary": "",
+    "summary": "Return the length of the longest run of consecutive integers that all appear in an unsorted array.",
     "pattern": "Arrays & Hashing",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/longest-consecutive-sequence",
@@ -109,7 +109,7 @@
   {
     "id": "valid-palindrome",
     "title": "Valid Palindrome",
-    "summary": "",
+    "summary": "Decide whether a string reads the same both ways once you keep only letters and digits, ignoring case.",
     "pattern": "Two Pointers",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/is-palindrome",
@@ -121,7 +121,7 @@
   {
     "id": "two-sum-ii-input-array-is-sorted",
     "title": "Two Sum II Input Array Is Sorted",
-    "summary": "",
+    "summary": "Given a sorted array and a target, return the 1-based positions of the two numbers that sum to it.",
     "pattern": "Two Pointers",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/two-integer-sum-ii",
@@ -132,7 +132,7 @@
   {
     "id": "3sum",
     "title": "3Sum",
-    "summary": "",
+    "summary": "List every distinct triple of values in an array whose sum is zero.",
     "pattern": "Two Pointers",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/three-integer-sum",
@@ -144,7 +144,7 @@
   {
     "id": "container-with-most-water",
     "title": "Container With Most Water",
-    "summary": "",
+    "summary": "Given a row of vertical line heights, return the most water two of the lines can hold between them.",
     "pattern": "Two Pointers",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/max-water-container",
@@ -156,7 +156,7 @@
   {
     "id": "trapping-rain-water",
     "title": "Trapping Rain Water",
-    "summary": "",
+    "summary": "Given the bar heights of an elevation map, return how much rainwater stays trapped between the bars.",
     "pattern": "Two Pointers",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/trapping-rain-water",
@@ -167,7 +167,7 @@
   {
     "id": "best-time-to-buy-and-sell-stock",
     "title": "Best Time to Buy And Sell Stock",
-    "summary": "",
+    "summary": "Given daily stock prices, return the largest profit from one buy followed later by one sell.",
     "pattern": "Sliding Window",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/buy-and-sell-crypto",
@@ -179,7 +179,7 @@
   {
     "id": "longest-substring-without-repeating-characters",
     "title": "Longest Substring Without Repeating Characters",
-    "summary": "",
+    "summary": "Return the length of the longest substring in which no character repeats.",
     "pattern": "Sliding Window",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/longest-substring-without-duplicates",
@@ -191,7 +191,7 @@
   {
     "id": "longest-repeating-character-replacement",
     "title": "Longest Repeating Character Replacement",
-    "summary": "",
+    "summary": "Return the length of the longest one-letter substring you can get by changing at most k characters.",
     "pattern": "Sliding Window",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/longest-repeating-substring-with-replacement",
@@ -203,7 +203,7 @@
   {
     "id": "permutation-in-string",
     "title": "Permutation In String",
-    "summary": "",
+    "summary": "Decide whether some rearrangement of the first string appears as a contiguous part of the second.",
     "pattern": "Sliding Window",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/permutation-string",
@@ -214,7 +214,7 @@
   {
     "id": "minimum-window-substring",
     "title": "Minimum Window Substring",
-    "summary": "",
+    "summary": "Return the shortest substring of s that contains every character of t, repeats included.",
     "pattern": "Sliding Window",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/minimum-window-with-characters",
@@ -226,7 +226,7 @@
   {
     "id": "sliding-window-maximum",
     "title": "Sliding Window Maximum",
-    "summary": "",
+    "summary": "For every run of k neighbouring elements across the array, report the largest value in it.",
     "pattern": "Sliding Window",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/sliding-window-maximum",
@@ -237,7 +237,7 @@
   {
     "id": "valid-parentheses",
     "title": "Valid Parentheses",
-    "summary": "",
+    "summary": "Decide whether a string of brackets is properly opened, closed and nested.",
     "pattern": "Stack",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/validate-parentheses",
@@ -249,7 +249,7 @@
   {
     "id": "min-stack",
     "title": "Min Stack",
-    "summary": "",
+    "summary": "Design a stack that can also report its current smallest value at any moment.",
     "pattern": "Stack",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/minimum-stack",
@@ -260,7 +260,7 @@
   {
     "id": "evaluate-reverse-polish-notation",
     "title": "Evaluate Reverse Polish Notation",
-    "summary": "",
+    "summary": "Compute the integer value of an arithmetic expression written in postfix notation.",
     "pattern": "Stack",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/evaluate-reverse-polish-notation",
@@ -271,7 +271,7 @@
   {
     "id": "generate-parentheses",
     "title": "Generate Parentheses",
-    "summary": "",
+    "summary": "List every well-formed string made of n pairs of parentheses.",
     "pattern": "Stack",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/generate-parentheses",
@@ -282,7 +282,7 @@
   {
     "id": "daily-temperatures",
     "title": "Daily Temperatures",
-    "summary": "",
+    "summary": "For each day, return how many days you must wait for a warmer temperature, or 0 if none comes.",
     "pattern": "Stack",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/daily-temperatures",
@@ -293,7 +293,7 @@
   {
     "id": "car-fleet",
     "title": "Car Fleet",
-    "summary": "",
+    "summary": "Cars head to a target at different speeds and can't pass each other; count the groups that arrive.",
     "pattern": "Stack",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/car-fleet",
@@ -304,7 +304,7 @@
   {
     "id": "largest-rectangle-in-histogram",
     "title": "Largest Rectangle In Histogram",
-    "summary": "",
+    "summary": "Given histogram bar heights, return the area of the largest rectangle that fits inside it.",
     "pattern": "Stack",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/largest-rectangle-in-histogram",
@@ -315,7 +315,7 @@
   {
     "id": "binary-search",
     "title": "Binary Search",
-    "summary": "",
+    "summary": "Return the index of a target in a sorted array, or -1 if it isn't there.",
     "pattern": "Binary Search",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/binary-search",
@@ -326,7 +326,7 @@
   {
     "id": "search-a-2d-matrix",
     "title": "Search a 2D Matrix",
-    "summary": "",
+    "summary": "Decide whether a target is in a matrix whose values read in sorted order, row after row.",
     "pattern": "Binary Search",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/search-2d-matrix",
@@ -337,7 +337,7 @@
   {
     "id": "koko-eating-bananas",
     "title": "Koko Eating Bananas",
-    "summary": "",
+    "summary": "Return the slowest eating speed that lets Koko finish every pile of bananas within h hours.",
     "pattern": "Binary Search",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/eating-bananas",
@@ -348,7 +348,7 @@
   {
     "id": "find-minimum-in-rotated-sorted-array",
     "title": "Find Minimum In Rotated Sorted Array",
-    "summary": "",
+    "summary": "Return the smallest value in a sorted array of distinct values that has been rotated.",
     "pattern": "Binary Search",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/find-minimum-in-rotated-sorted-array",
@@ -360,7 +360,7 @@
   {
     "id": "search-in-rotated-sorted-array",
     "title": "Search In Rotated Sorted Array",
-    "summary": "",
+    "summary": "Return the index of a target in a rotated sorted array of distinct values, or -1 if absent.",
     "pattern": "Binary Search",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/find-target-in-rotated-sorted-array",
@@ -372,7 +372,7 @@
   {
     "id": "time-based-key-value-store",
     "title": "Time Based Key Value Store",
-    "summary": "",
+    "summary": "Design a store of timestamped values per key that returns a key's latest value at or before a time.",
     "pattern": "Binary Search",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/time-based-key-value-store",
@@ -383,7 +383,7 @@
   {
     "id": "median-of-two-sorted-arrays",
     "title": "Median of Two Sorted Arrays",
-    "summary": "",
+    "summary": "Return the median of all the values in two sorted arrays taken together.",
     "pattern": "Binary Search",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/median-of-two-sorted-arrays",
@@ -394,7 +394,7 @@
   {
     "id": "reverse-linked-list",
     "title": "Reverse Linked List",
-    "summary": "",
+    "summary": "Reverse a singly linked list and return its new head.",
     "pattern": "Linked List",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/reverse-a-linked-list",
@@ -406,7 +406,7 @@
   {
     "id": "merge-two-sorted-lists",
     "title": "Merge Two Sorted Lists",
-    "summary": "",
+    "summary": "Combine two sorted linked lists into one sorted linked list and return its head.",
     "pattern": "Linked List",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/merge-two-sorted-linked-lists",
@@ -418,7 +418,7 @@
   {
     "id": "reorder-list",
     "title": "Reorder List",
-    "summary": "",
+    "summary": "Rearrange a linked list in place to go first, last, second, second-to-last, and so on.",
     "pattern": "Linked List",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/reorder-linked-list",
@@ -430,7 +430,7 @@
   {
     "id": "remove-nth-node-from-end-of-list",
     "title": "Remove Nth Node From End of List",
-    "summary": "",
+    "summary": "Delete the nth node counting from the end of a linked list and return its head.",
     "pattern": "Linked List",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/remove-node-from-end-of-linked-list",
@@ -442,7 +442,7 @@
   {
     "id": "copy-list-with-random-pointer",
     "title": "Copy List With Random Pointer",
-    "summary": "",
+    "summary": "Make a deep copy of a linked list whose nodes also point to an arbitrary node or to null.",
     "pattern": "Linked List",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/copy-linked-list-with-random-pointer",
@@ -453,7 +453,7 @@
   {
     "id": "add-two-numbers",
     "title": "Add Two Numbers",
-    "summary": "",
+    "summary": "Two numbers are linked lists of digits, least significant first; return their sum in the same form.",
     "pattern": "Linked List",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/add-two-numbers",
@@ -464,7 +464,7 @@
   {
     "id": "linked-list-cycle",
     "title": "Linked List Cycle",
-    "summary": "",
+    "summary": "Decide whether a linked list loops back on itself instead of ending.",
     "pattern": "Linked List",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/linked-list-cycle-detection",
@@ -476,7 +476,7 @@
   {
     "id": "find-the-duplicate-number",
     "title": "Find The Duplicate Number",
-    "summary": "",
+    "summary": "An array holds n + 1 integers, each from 1 to n, with one value repeated; return that value.",
     "pattern": "Linked List",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/find-duplicate-integer",
@@ -487,7 +487,7 @@
   {
     "id": "lru-cache",
     "title": "LRU Cache",
-    "summary": "",
+    "summary": "Design a fixed-capacity key-value cache that evicts the least recently used entry when full.",
     "pattern": "Linked List",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/lru-cache",
@@ -498,7 +498,7 @@
   {
     "id": "merge-k-sorted-lists",
     "title": "Merge K Sorted Lists",
-    "summary": "",
+    "summary": "Combine k sorted linked lists into one sorted linked list.",
     "pattern": "Linked List",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/merge-k-sorted-linked-lists",
@@ -510,7 +510,7 @@
   {
     "id": "reverse-nodes-in-k-group",
     "title": "Reverse Nodes In K Group",
-    "summary": "",
+    "summary": "Reverse a linked list's nodes in consecutive blocks of k, leaving a shorter final block as it is.",
     "pattern": "Linked List",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/reverse-nodes-in-k-group",
@@ -521,7 +521,7 @@
   {
     "id": "invert-binary-tree",
     "title": "Invert Binary Tree",
-    "summary": "",
+    "summary": "Mirror a binary tree so every node's left and right children swap, and return its root.",
     "pattern": "Trees",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/invert-a-binary-tree",
@@ -533,7 +533,7 @@
   {
     "id": "maximum-depth-of-binary-tree",
     "title": "Maximum Depth of Binary Tree",
-    "summary": "",
+    "summary": "Return the number of nodes on the longest path from a binary tree's root down to a leaf.",
     "pattern": "Trees",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/depth-of-binary-tree",
@@ -545,7 +545,7 @@
   {
     "id": "diameter-of-binary-tree",
     "title": "Diameter of Binary Tree",
-    "summary": "",
+    "summary": "Return the number of edges on the longest path between any two nodes of a binary tree.",
     "pattern": "Trees",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/binary-tree-diameter",
@@ -556,7 +556,7 @@
   {
     "id": "balanced-binary-tree",
     "title": "Balanced Binary Tree",
-    "summary": "",
+    "summary": "Decide whether, at every node of a binary tree, the two subtree heights differ by at most one.",
     "pattern": "Trees",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/balanced-binary-tree",
@@ -567,7 +567,7 @@
   {
     "id": "same-tree",
     "title": "Same Tree",
-    "summary": "",
+    "summary": "Decide whether two binary trees have the same shape and the same value at every node.",
     "pattern": "Trees",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/same-binary-tree",
@@ -579,7 +579,7 @@
   {
     "id": "subtree-of-another-tree",
     "title": "Subtree of Another Tree",
-    "summary": "",
+    "summary": "Decide whether one binary tree appears, node for node, as a complete subtree inside another.",
     "pattern": "Trees",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/subtree-of-a-binary-tree",
@@ -591,7 +591,7 @@
   {
     "id": "lowest-common-ancestor-of-a-binary-search-tree",
     "title": "Lowest Common Ancestor of a Binary Search Tree",
-    "summary": "",
+    "summary": "In a binary search tree, return the deepest node that has both given nodes as descendants.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/lowest-common-ancestor-in-binary-search-tree",
@@ -603,7 +603,7 @@
   {
     "id": "binary-tree-level-order-traversal",
     "title": "Binary Tree Level Order Traversal",
-    "summary": "",
+    "summary": "Return a binary tree's values grouped by depth, each level listed left to right.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/level-order-traversal-of-binary-tree",
@@ -615,7 +615,7 @@
   {
     "id": "binary-tree-right-side-view",
     "title": "Binary Tree Right Side View",
-    "summary": "",
+    "summary": "Return the values you would see looking at a binary tree from its right side, top to bottom.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/binary-tree-right-side-view",
@@ -626,7 +626,7 @@
   {
     "id": "count-good-nodes-in-binary-tree",
     "title": "Count Good Nodes In Binary Tree",
-    "summary": "",
+    "summary": "Count the nodes in a binary tree whose value is at least every value on the path from the root.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/count-good-nodes-in-binary-tree",
@@ -637,7 +637,7 @@
   {
     "id": "validate-binary-search-tree",
     "title": "Validate Binary Search Tree",
-    "summary": "",
+    "summary": "Decide whether a binary tree follows the binary search tree ordering at every node.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/valid-binary-search-tree",
@@ -649,7 +649,7 @@
   {
     "id": "kth-smallest-element-in-a-bst",
     "title": "Kth Smallest Element In a Bst",
-    "summary": "",
+    "summary": "Return the kth smallest value stored in a BST.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/kth-smallest-integer-in-bst",
@@ -661,7 +661,7 @@
   {
     "id": "construct-binary-tree-from-preorder-and-inorder-traversal",
     "title": "Construct Binary Tree From Preorder And Inorder Traversal",
-    "summary": "",
+    "summary": "Rebuild a binary tree from its preorder and inorder traversal sequences.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/binary-tree-from-preorder-and-inorder-traversal",
@@ -673,7 +673,7 @@
   {
     "id": "binary-tree-maximum-path-sum",
     "title": "Binary Tree Maximum Path Sum",
-    "summary": "",
+    "summary": "Return the largest sum of node values along any path in a binary tree, not necessarily through the root.",
     "pattern": "Trees",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/binary-tree-maximum-path-sum",
@@ -685,7 +685,7 @@
   {
     "id": "serialize-and-deserialize-binary-tree",
     "title": "Serialize And Deserialize Binary Tree",
-    "summary": "",
+    "summary": "Design a way to turn a binary tree into a string and rebuild the identical tree from that string.",
     "pattern": "Trees",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/serialize-and-deserialize-binary-tree",
@@ -697,7 +697,7 @@
   {
     "id": "implement-trie-prefix-tree",
     "title": "Implement Trie Prefix Tree",
-    "summary": "",
+    "summary": "Build a trie that adds words and answers whether a word, or any word with a given prefix, was added.",
     "pattern": "Tries",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/implement-prefix-tree",
@@ -709,7 +709,7 @@
   {
     "id": "design-add-and-search-words-data-structure",
     "title": "Design Add And Search Words Data Structure",
-    "summary": "",
+    "summary": "Design a word store whose lookups may use '.' as a wildcard for any single letter.",
     "pattern": "Tries",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/design-word-search-data-structure",
@@ -721,7 +721,7 @@
   {
     "id": "word-search-ii",
     "title": "Word Search II",
-    "summary": "",
+    "summary": "Return the words from a list that can be traced through adjacent cells of a letter grid without reuse.",
     "pattern": "Tries",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/search-for-word-ii",
@@ -733,7 +733,7 @@
   {
     "id": "kth-largest-element-in-a-stream",
     "title": "Kth Largest Element In a Stream",
-    "summary": "",
+    "summary": "Design a class that takes a stream of numbers and reports the kth largest after each new value.",
     "pattern": "Heap / Priority Queue",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/kth-largest-integer-in-a-stream",
@@ -744,7 +744,7 @@
   {
     "id": "last-stone-weight",
     "title": "Last Stone Weight",
-    "summary": "",
+    "summary": "Repeatedly smash the two heaviest stones, keeping their difference; return the last weight left, or 0.",
     "pattern": "Heap / Priority Queue",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/last-stone-weight",
@@ -755,7 +755,7 @@
   {
     "id": "k-closest-points-to-origin",
     "title": "K Closest Points to Origin",
-    "summary": "",
+    "summary": "Return the k points in a list that lie closest to the origin.",
     "pattern": "Heap / Priority Queue",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/k-closest-points-to-origin",
@@ -766,7 +766,7 @@
   {
     "id": "kth-largest-element-in-an-array",
     "title": "Kth Largest Element In An Array",
-    "summary": "",
+    "summary": "Return the kth largest value in an unsorted array.",
     "pattern": "Heap / Priority Queue",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/kth-largest-element-in-an-array",
@@ -777,7 +777,7 @@
   {
     "id": "task-scheduler",
     "title": "Task Scheduler",
-    "summary": "",
+    "summary": "Given tasks and a cooldown between equal tasks, return the fewest time units needed to run them all.",
     "pattern": "Heap / Priority Queue",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/task-scheduling",
@@ -788,7 +788,7 @@
   {
     "id": "design-twitter",
     "title": "Design Twitter",
-    "summary": "",
+    "summary": "Design a mini social network where users post, follow, unfollow and read the 10 latest posts in their feed.",
     "pattern": "Heap / Priority Queue",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/design-twitter-feed",
@@ -799,7 +799,7 @@
   {
     "id": "find-median-from-data-stream",
     "title": "Find Median From Data Stream",
-    "summary": "",
+    "summary": "Design a class that takes numbers one at a time and can return the median of all numbers so far.",
     "pattern": "Heap / Priority Queue",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/find-median-in-a-data-stream",
@@ -811,7 +811,7 @@
   {
     "id": "subsets",
     "title": "Subsets",
-    "summary": "",
+    "summary": "Return every subset of an array of distinct integers.",
     "pattern": "Backtracking",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/subsets",
@@ -822,7 +822,7 @@
   {
     "id": "combination-sum",
     "title": "Combination Sum",
-    "summary": "",
+    "summary": "List every combination of the given distinct numbers, each usable any number of times, that sums to a target.",
     "pattern": "Backtracking",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/combination-target-sum",
@@ -834,7 +834,7 @@
   {
     "id": "permutations",
     "title": "Permutations",
-    "summary": "",
+    "summary": "Return every ordering of an array of distinct integers.",
     "pattern": "Backtracking",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/permutations",
@@ -845,7 +845,7 @@
   {
     "id": "subsets-ii",
     "title": "Subsets II",
-    "summary": "",
+    "summary": "Return every distinct subset of an integer array that may contain duplicates.",
     "pattern": "Backtracking",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/subsets-ii",
@@ -856,7 +856,7 @@
   {
     "id": "combination-sum-ii",
     "title": "Combination Sum II",
-    "summary": "",
+    "summary": "List every distinct combination of the given numbers, each used at most once, that sums to a target.",
     "pattern": "Backtracking",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/combination-target-sum-ii",
@@ -867,7 +867,7 @@
   {
     "id": "word-search",
     "title": "Word Search",
-    "summary": "",
+    "summary": "Decide whether a word can be traced through adjacent cells of a letter grid without reusing a cell.",
     "pattern": "Backtracking",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/search-for-word",
@@ -879,7 +879,7 @@
   {
     "id": "palindrome-partitioning",
     "title": "Palindrome Partitioning",
-    "summary": "",
+    "summary": "Return every way to split a string into pieces that are all palindromes.",
     "pattern": "Backtracking",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/palindrome-partitioning",
@@ -890,7 +890,7 @@
   {
     "id": "letter-combinations-of-a-phone-number",
     "title": "Letter Combinations of a Phone Number",
-    "summary": "",
+    "summary": "Return every letter string a phone keypad could spell from a given string of digits 2 to 9.",
     "pattern": "Backtracking",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/combinations-of-a-phone-number",
@@ -901,7 +901,7 @@
   {
     "id": "n-queens",
     "title": "N Queens",
-    "summary": "",
+    "summary": "Return every way to place n queens on an n x n board so that no two attack each other.",
     "pattern": "Backtracking",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/n-queens",
@@ -912,7 +912,7 @@
   {
     "id": "number-of-islands",
     "title": "Number of Islands",
-    "summary": "",
+    "summary": "Count the islands in a grid of land and water, where land cells join horizontally or vertically.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/count-number-of-islands",
@@ -924,7 +924,7 @@
   {
     "id": "clone-graph",
     "title": "Clone Graph",
-    "summary": "",
+    "summary": "Make a deep copy of a connected undirected graph, given one of its nodes.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/clone-graph",
@@ -936,7 +936,7 @@
   {
     "id": "max-area-of-island",
     "title": "Max Area of Island",
-    "summary": "",
+    "summary": "Return the size of the largest island of connected land cells in a binary grid, or 0 if there's none.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/max-area-of-island",
@@ -947,7 +947,7 @@
   {
     "id": "pacific-atlantic-water-flow",
     "title": "Pacific Atlantic Water Flow",
-    "summary": "",
+    "summary": "On a height grid between two oceans, list the cells from which water can flow downhill to both oceans.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/pacific-atlantic-water-flow",
@@ -959,7 +959,7 @@
   {
     "id": "surrounded-regions",
     "title": "Surrounded Regions",
-    "summary": "",
+    "summary": "In a grid of X and O, turn every region of O cells that doesn't touch the border into X.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/surrounded-regions",
@@ -970,7 +970,7 @@
   {
     "id": "rotting-oranges",
     "title": "Rotting Oranges",
-    "summary": "",
+    "summary": "Rot spreads each minute to adjacent fresh oranges; return the minutes until none are fresh, or -1.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/rotting-fruit",
@@ -981,7 +981,7 @@
   {
     "id": "walls-and-gates",
     "title": "Walls And Gates",
-    "summary": "",
+    "summary": "Fill each empty room in a grid with its distance to the nearest gate, leaving unreachable rooms as they are.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/islands-and-treasure",
@@ -992,7 +992,7 @@
   {
     "id": "course-schedule",
     "title": "Course Schedule",
-    "summary": "",
+    "summary": "Given a number of courses and prerequisite pairs, decide whether every course can be finished.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/course-schedule",
@@ -1004,7 +1004,7 @@
   {
     "id": "course-schedule-ii",
     "title": "Course Schedule II",
-    "summary": "",
+    "summary": "Given courses and prerequisite pairs, return an order that finishes them all, or an empty list if none.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/course-schedule-ii",
@@ -1015,7 +1015,7 @@
   {
     "id": "redundant-connection",
     "title": "Redundant Connection",
-    "summary": "",
+    "summary": "A tree got one extra edge; return the edge, latest in the input, whose removal leaves a tree again.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/redundant-connection",
@@ -1026,7 +1026,7 @@
   {
     "id": "number-of-connected-components-in-an-undirected-graph",
     "title": "Number of Connected Components In An Undirected Graph",
-    "summary": "",
+    "summary": "Given n nodes and a list of undirected edges, count how many separate pieces the graph has.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/count-connected-components",
@@ -1038,7 +1038,7 @@
   {
     "id": "graph-valid-tree",
     "title": "Graph Valid Tree",
-    "summary": "",
+    "summary": "Decide whether n nodes and a list of undirected edges form a single tree.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/valid-tree",
@@ -1050,7 +1050,7 @@
   {
     "id": "word-ladder",
     "title": "Word Ladder",
-    "summary": "",
+    "summary": "Count the words in the shortest chain from one word to another, changing one letter at a time via a word list.",
     "pattern": "Graphs",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/word-ladder",
@@ -1061,7 +1061,7 @@
   {
     "id": "reconstruct-itinerary",
     "title": "Reconstruct Itinerary",
-    "summary": "",
+    "summary": "Use every flight ticket once to build a trip from JFK, returning the alphabetically smallest route.",
     "pattern": "Advanced Graphs",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/reconstruct-flight-path",
@@ -1072,7 +1072,7 @@
   {
     "id": "min-cost-to-connect-all-points",
     "title": "Min Cost to Connect All Points",
-    "summary": "",
+    "summary": "Return the least total Manhattan distance needed to link all the given points together.",
     "pattern": "Advanced Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/min-cost-to-connect-points",
@@ -1083,7 +1083,7 @@
   {
     "id": "network-delay-time",
     "title": "Network Delay Time",
-    "summary": "",
+    "summary": "A signal starts at one node of a weighted directed network; return when all nodes get it, or -1.",
     "pattern": "Advanced Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/network-delay-time",
@@ -1094,7 +1094,7 @@
   {
     "id": "swim-in-rising-water",
     "title": "Swim In Rising Water",
-    "summary": "",
+    "summary": "In a grid of heights under water rising by 1 each moment, return the earliest time to swim corner to corner.",
     "pattern": "Advanced Graphs",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/swim-in-rising-water",
@@ -1105,7 +1105,7 @@
   {
     "id": "alien-dictionary",
     "title": "Alien Dictionary",
-    "summary": "",
+    "summary": "Given words sorted in an unknown alphabet, return a letter order that fits them, or \"\" if none does.",
     "pattern": "Advanced Graphs",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/foreign-dictionary",
@@ -1117,7 +1117,7 @@
   {
     "id": "cheapest-flights-within-k-stops",
     "title": "Cheapest Flights Within K Stops",
-    "summary": "",
+    "summary": "Return the cheapest price from a source city to a destination with at most k stops, or -1 if impossible.",
     "pattern": "Advanced Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/cheapest-flight-path",
@@ -1128,7 +1128,7 @@
   {
     "id": "climbing-stairs",
     "title": "Climbing Stairs",
-    "summary": "",
+    "summary": "Count the distinct ways to climb n steps taking 1 or 2 steps at a time.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/climbing-stairs",
@@ -1140,7 +1140,7 @@
   {
     "id": "min-cost-climbing-stairs",
     "title": "Min Cost Climbing Stairs",
-    "summary": "",
+    "summary": "Given a cost per step, return the least total cost to reach the top, climbing 1 or 2 steps at a time.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/min-cost-climbing-stairs",
@@ -1151,7 +1151,7 @@
   {
     "id": "house-robber",
     "title": "House Robber",
-    "summary": "",
+    "summary": "Return the most money you can take from a row of houses without taking from two adjacent houses.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/house-robber",
@@ -1163,7 +1163,7 @@
   {
     "id": "house-robber-ii",
     "title": "House Robber II",
-    "summary": "",
+    "summary": "Return the most money you can take from houses in a circle without taking from two neighbouring houses.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/house-robber-ii",
@@ -1175,7 +1175,7 @@
   {
     "id": "longest-palindromic-substring",
     "title": "Longest Palindromic Substring",
-    "summary": "",
+    "summary": "Return the longest substring of a string that reads the same forwards and backwards.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/longest-palindromic-substring",
@@ -1187,7 +1187,7 @@
   {
     "id": "palindromic-substrings",
     "title": "Palindromic Substrings",
-    "summary": "",
+    "summary": "Count the substrings of a string that are palindromes, counting each position separately.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/palindromic-substrings",
@@ -1199,7 +1199,7 @@
   {
     "id": "decode-ways",
     "title": "Decode Ways",
-    "summary": "",
+    "summary": "Count the ways a string of digits can be read as letters, where 1 maps to A up to 26 mapping to Z.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/decode-ways",
@@ -1211,7 +1211,7 @@
   {
     "id": "coin-change",
     "title": "Coin Change",
-    "summary": "",
+    "summary": "Return the fewest coins of the given values that add up to an amount, or -1 if it can't be made.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/coin-change",
@@ -1223,7 +1223,7 @@
   {
     "id": "maximum-product-subarray",
     "title": "Maximum Product Subarray",
-    "summary": "",
+    "summary": "Return the largest product of any contiguous non-empty subarray of an integer array.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/maximum-product-subarray",
@@ -1235,7 +1235,7 @@
   {
     "id": "word-break",
     "title": "Word Break",
-    "summary": "",
+    "summary": "Decide whether a string can be split into a sequence of dictionary words, reusing words freely.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/word-break",
@@ -1247,7 +1247,7 @@
   {
     "id": "longest-increasing-subsequence",
     "title": "Longest Increasing Subsequence",
-    "summary": "",
+    "summary": "Return the length of the longest strictly increasing subsequence of an integer array.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/longest-increasing-subsequence",
@@ -1259,7 +1259,7 @@
   {
     "id": "partition-equal-subset-sum",
     "title": "Partition Equal Subset Sum",
-    "summary": "",
+    "summary": "Decide whether an array can be split into two groups whose sums are equal.",
     "pattern": "1-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/partition-equal-subset-sum",
@@ -1270,7 +1270,7 @@
   {
     "id": "unique-paths",
     "title": "Unique Paths",
-    "summary": "",
+    "summary": "Count the paths from the top-left to the bottom-right of an m x n grid moving only right or down.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/count-paths",
@@ -1282,7 +1282,7 @@
   {
     "id": "longest-common-subsequence",
     "title": "Longest Common Subsequence",
-    "summary": "",
+    "summary": "Return the length of the longest subsequence shared by two strings.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/longest-common-subsequence",
@@ -1294,7 +1294,7 @@
   {
     "id": "best-time-to-buy-and-sell-stock-with-cooldown",
     "title": "Best Time to Buy And Sell Stock With Cooldown",
-    "summary": "",
+    "summary": "Given daily prices, return the most profit from any number of trades if you rest a day after each sale.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/buy-and-sell-crypto-with-cooldown",
@@ -1305,7 +1305,7 @@
   {
     "id": "coin-change-ii",
     "title": "Coin Change II",
-    "summary": "",
+    "summary": "Count the combinations of coins of the given values, each usable any number of times, that make an amount.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/coin-change-ii",
@@ -1316,7 +1316,7 @@
   {
     "id": "target-sum",
     "title": "Target Sum",
-    "summary": "",
+    "summary": "Count the ways to put a plus or minus sign before each number so that the total equals a target.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/target-sum",
@@ -1327,7 +1327,7 @@
   {
     "id": "interleaving-string",
     "title": "Interleaving String",
-    "summary": "",
+    "summary": "Decide whether a third string can be formed by merging two strings while keeping each one's letter order.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/interleaving-string",
@@ -1338,7 +1338,7 @@
   {
     "id": "longest-increasing-path-in-a-matrix",
     "title": "Longest Increasing Path In a Matrix",
-    "summary": "",
+    "summary": "Return the length of the longest strictly increasing path through adjacent cells of an integer matrix.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/longest-increasing-path-in-matrix",
@@ -1349,7 +1349,7 @@
   {
     "id": "distinct-subsequences",
     "title": "Distinct Subsequences",
-    "summary": "",
+    "summary": "Count the ways string t can be formed by deleting characters from string s.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/count-subsequences",
@@ -1360,7 +1360,7 @@
   {
     "id": "edit-distance",
     "title": "Edit Distance",
-    "summary": "",
+    "summary": "Return the fewest single-character inserts, deletes or replacements that turn one word into another.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/edit-distance",
@@ -1371,7 +1371,7 @@
   {
     "id": "burst-balloons",
     "title": "Burst Balloons",
-    "summary": "",
+    "summary": "Burst every balloon, each earning the product of it and its current neighbours; return the most coins.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/burst-balloons",
@@ -1382,7 +1382,7 @@
   {
     "id": "regular-expression-matching",
     "title": "Regular Expression Matching",
-    "summary": "",
+    "summary": "Decide whether a whole string matches a pattern where '.' is any character and 'x*' is zero or more x's.",
     "pattern": "2-D Dynamic Programming",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/regular-expression-matching",
@@ -1393,7 +1393,7 @@
   {
     "id": "maximum-subarray",
     "title": "Maximum Subarray",
-    "summary": "",
+    "summary": "Return the largest sum of any contiguous non-empty subarray of an integer array.",
     "pattern": "Greedy",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/maximum-subarray",
@@ -1405,7 +1405,7 @@
   {
     "id": "jump-game",
     "title": "Jump Game",
-    "summary": "",
+    "summary": "Each value is the longest jump allowed from that index; decide whether the last index can be reached.",
     "pattern": "Greedy",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/jump-game",
@@ -1417,7 +1417,7 @@
   {
     "id": "jump-game-ii",
     "title": "Jump Game II",
-    "summary": "",
+    "summary": "Each value is the longest jump allowed from that index; return the fewest jumps to reach the last index.",
     "pattern": "Greedy",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/jump-game-ii",
@@ -1428,7 +1428,7 @@
   {
     "id": "gas-station",
     "title": "Gas Station",
-    "summary": "",
+    "summary": "On a circular route with gas and travel costs per station, return the start that completes a loop, or -1.",
     "pattern": "Greedy",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/gas-station",
@@ -1439,7 +1439,7 @@
   {
     "id": "hand-of-straights",
     "title": "Hand of Straights",
-    "summary": "",
+    "summary": "Decide whether a hand of cards splits into groups of a given size, each a run of consecutive values.",
     "pattern": "Greedy",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/hand-of-straights",
@@ -1450,7 +1450,7 @@
   {
     "id": "merge-triplets-to-form-target-triplet",
     "title": "Merge Triplets to Form Target Triplet",
-    "summary": "",
+    "summary": "Decide whether combining some triplets by element-wise maximum can produce exactly the target triplet.",
     "pattern": "Greedy",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/merge-triplets-to-form-target",
@@ -1461,7 +1461,7 @@
   {
     "id": "partition-labels",
     "title": "Partition Labels",
-    "summary": "",
+    "summary": "Split a string into as many parts as possible so each letter is in only one part; return the part sizes.",
     "pattern": "Greedy",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/partition-labels",
@@ -1472,7 +1472,7 @@
   {
     "id": "valid-parenthesis-string",
     "title": "Valid Parenthesis String",
-    "summary": "",
+    "summary": "Decide whether a string of '(', ')' and '*' can be balanced when each '*' may be '(', ')' or nothing.",
     "pattern": "Greedy",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/valid-parenthesis-string",
@@ -1483,7 +1483,7 @@
   {
     "id": "insert-interval",
     "title": "Insert Interval",
-    "summary": "",
+    "summary": "Add an interval to a sorted list of non-overlapping intervals, merging where needed; return the list.",
     "pattern": "Intervals",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/insert-new-interval",
@@ -1495,7 +1495,7 @@
   {
     "id": "merge-intervals",
     "title": "Merge Intervals",
-    "summary": "",
+    "summary": "Combine all overlapping intervals in a list and return the resulting non-overlapping ones.",
     "pattern": "Intervals",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/merge-intervals",
@@ -1507,7 +1507,7 @@
   {
     "id": "non-overlapping-intervals",
     "title": "Non Overlapping Intervals",
-    "summary": "",
+    "summary": "Return the fewest intervals to remove so the remaining ones don't overlap.",
     "pattern": "Intervals",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/non-overlapping-intervals",
@@ -1519,7 +1519,7 @@
   {
     "id": "meeting-rooms",
     "title": "Meeting Rooms",
-    "summary": "",
+    "summary": "Given meeting time intervals, decide whether one person could attend all of them.",
     "pattern": "Intervals",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/meeting-schedule",
@@ -1531,7 +1531,7 @@
   {
     "id": "meeting-rooms-ii",
     "title": "Meeting Rooms II",
-    "summary": "",
+    "summary": "Given meeting time intervals, return the fewest rooms needed to hold them all.",
     "pattern": "Intervals",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/meeting-schedule-ii",
@@ -1543,7 +1543,7 @@
   {
     "id": "minimum-interval-to-include-each-query",
     "title": "Minimum Interval to Include Each Query",
-    "summary": "",
+    "summary": "For each query, return the size of the smallest interval that contains it, or -1 if none does.",
     "pattern": "Intervals",
     "difficulty": "Hard",
     "neetcodeUrl": "https://neetcode.io/problems/minimum-interval-including-query",
@@ -1554,7 +1554,7 @@
   {
     "id": "rotate-image",
     "title": "Rotate Image",
-    "summary": "",
+    "summary": "Turn a square matrix 90 degrees clockwise, changing it in place.",
     "pattern": "Math & Geometry",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/rotate-matrix",
@@ -1566,7 +1566,7 @@
   {
     "id": "spiral-matrix",
     "title": "Spiral Matrix",
-    "summary": "",
+    "summary": "Return a matrix's values in spiral order, starting at the top-left and going clockwise.",
     "pattern": "Math & Geometry",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/spiral-matrix",
@@ -1578,7 +1578,7 @@
   {
     "id": "set-matrix-zeroes",
     "title": "Set Matrix Zeroes",
-    "summary": "",
+    "summary": "Wherever a matrix has a 0, set that cell's entire row and column to 0, in place.",
     "pattern": "Math & Geometry",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/set-zeroes-in-matrix",
@@ -1590,7 +1590,7 @@
   {
     "id": "happy-number",
     "title": "Happy Number",
-    "summary": "",
+    "summary": "Decide whether repeatedly replacing a number by the sum of its digits' squares eventually reaches 1.",
     "pattern": "Math & Geometry",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/non-cyclical-number",
@@ -1601,7 +1601,7 @@
   {
     "id": "plus-one",
     "title": "Plus One",
-    "summary": "",
+    "summary": "A large integer is given as an array of digits; return the digits of that integer plus one.",
     "pattern": "Math & Geometry",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/plus-one",
@@ -1612,7 +1612,7 @@
   {
     "id": "powx-n",
     "title": "Pow(x, n)",
-    "summary": "",
+    "summary": "Compute x raised to an integer power n, where n may be negative.",
     "pattern": "Math & Geometry",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/pow-x-n",
@@ -1623,7 +1623,7 @@
   {
     "id": "multiply-strings",
     "title": "Multiply Strings",
-    "summary": "",
+    "summary": "Multiply two non-negative integers given as strings and return the product as a string.",
     "pattern": "Math & Geometry",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/multiply-strings",
@@ -1634,7 +1634,7 @@
   {
     "id": "detect-squares",
     "title": "Detect Squares",
-    "summary": "",
+    "summary": "Design a class that stores points and counts the axis-aligned squares a query point forms with them.",
     "pattern": "Math & Geometry",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/count-squares",
@@ -1645,7 +1645,7 @@
   {
     "id": "single-number",
     "title": "Single Number",
-    "summary": "",
+    "summary": "Every value in an array appears twice except one; return that one.",
     "pattern": "Bit Manipulation",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/single-number",
@@ -1656,7 +1656,7 @@
   {
     "id": "number-of-1-bits",
     "title": "Number of 1 Bits",
-    "summary": "",
+    "summary": "Return how many 1 bits are in the binary form of an unsigned integer.",
     "pattern": "Bit Manipulation",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/number-of-one-bits",
@@ -1668,7 +1668,7 @@
   {
     "id": "counting-bits",
     "title": "Counting Bits",
-    "summary": "",
+    "summary": "For every integer from 0 to n, return how many 1 bits its binary form has.",
     "pattern": "Bit Manipulation",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/counting-bits",
@@ -1680,7 +1680,7 @@
   {
     "id": "reverse-bits",
     "title": "Reverse Bits",
-    "summary": "",
+    "summary": "Reverse the order of the 32 bits of an unsigned integer and return the result.",
     "pattern": "Bit Manipulation",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/reverse-bits",
@@ -1692,7 +1692,7 @@
   {
     "id": "missing-number",
     "title": "Missing Number",
-    "summary": "",
+    "summary": "An array holds n distinct numbers from 0 to n; return the one that is missing.",
     "pattern": "Bit Manipulation",
     "difficulty": "Easy",
     "neetcodeUrl": "https://neetcode.io/problems/missing-number",
@@ -1704,7 +1704,7 @@
   {
     "id": "sum-of-two-integers",
     "title": "Sum of Two Integers",
-    "summary": "",
+    "summary": "Return the sum of two integers without using the + or - operators.",
     "pattern": "Bit Manipulation",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/sum-of-two-integers",
@@ -1716,7 +1716,7 @@
   {
     "id": "reverse-integer",
     "title": "Reverse Integer",
-    "summary": "",
+    "summary": "Reverse the digits of a signed 32-bit integer, returning 0 if the result leaves the 32-bit range.",
     "pattern": "Bit Manipulation",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/reverse-integer",

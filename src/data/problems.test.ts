@@ -8,6 +8,42 @@ const PROBLEM_COUNT = 150;
 const PATTERN_COUNT = 18;
 const NEETCODE_URL_PATTERN = /^https:\/\/neetcode\.io\/problems\/[a-z0-9-]+$/;
 const LEETCODE_URL_PATTERN = /^https:\/\/leetcode\.com\/problems\/[a-z0-9-]+\/$/;
+const MAX_SUMMARY_LENGTH = 120;
+// Words that would give away the solution technique on a review, where the pattern is hidden.
+const BANNED_TECHNIQUE_WORDS = [
+  "hash",
+  "hashmap",
+  "hash map",
+  "hashset",
+  "hash set",
+  "two pointers",
+  "sliding window",
+  "binary search",
+  "heap",
+  "priority queue",
+  "queue",
+  "stack",
+  "trie",
+  "dfs",
+  "bfs",
+  "depth-first",
+  "breadth-first",
+  "dynamic programming",
+  "memoization",
+  "greedy",
+  "backtracking",
+  "recursion",
+  "union-find",
+  "union find",
+  "disjoint set",
+  "bit manipulation",
+  "bitmask",
+  "xor",
+  "prefix sum",
+  "topological",
+  "dijkstra",
+  "monotonic",
+] as const;
 
 function compareByOrder(a: Problem, b: Problem): number {
   return a.order - b.order;
@@ -30,6 +66,17 @@ function patternRuns(problems: readonly Problem[]): string[] {
     }
   }
   return runs;
+}
+
+function containsWord(text: string, word: string): boolean {
+  return new RegExp(`\\b${word}\\b`, "i").test(text);
+}
+
+/** Returns the banned words in the problem's summary that its title doesn't contain. */
+function bannedWordsIn(problem: Pick<Problem, "title" | "summary">): string[] {
+  return BANNED_TECHNIQUE_WORDS.filter(
+    (word) => containsWord(problem.summary, word) && !containsWord(problem.title, word),
+  );
 }
 
 function neetcodeUrlOf(id: string): string | undefined {
@@ -77,6 +124,37 @@ describe("PROBLEMS", () => {
     for (const url of leetcodeUrls) {
       expect(url).toMatch(LEETCODE_URL_PATTERN);
     }
+  });
+
+  it.each(PROBLEMS.map((problem) => [problem.id, problem] as const))(
+    "gives %s a one-line summary of at most 120 characters ending with a period",
+    (_id, problem) => {
+      const { summary } = problem;
+
+      expect(summary.trim()).not.toBe("");
+      expect(summary.length).toBeLessThanOrEqual(MAX_SUMMARY_LENGTH);
+      expect(summary.endsWith(".")).toBe(true);
+    },
+  );
+
+  it.each(PROBLEMS.map((problem) => [problem.id, problem] as const))(
+    "keeps the summary of %s free of technique words its title doesn't use",
+    (_id, problem) => {
+      const bannedWords = bannedWordsIn(problem);
+
+      expect(bannedWords).toEqual([]);
+    },
+  );
+
+  it("flags a technique word in a summary unless the title contains it", () => {
+    const summaryNamingStack = { title: "Some Problem", summary: "Push it on a Stack." };
+    const titleNamingStack = { title: "Min Stack", summary: "Push it on a Stack." };
+
+    const bannedInSummary = bannedWordsIn(summaryNamingStack);
+    const bannedWithTitle = bannedWordsIn(titleNamingStack);
+
+    expect(bannedInSummary).toEqual(["stack"]);
+    expect(bannedWithTitle).toEqual([]);
   });
 
   it.each([
