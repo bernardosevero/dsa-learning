@@ -2,7 +2,7 @@
 
 A spaced-repetition trainer for coding interviews. It tells you which problem to practice next (a review you're about to forget, or a new one from the NeetCode 150) and schedules each re-solve from how hard it felt.
 
-**Status:** planning, no code yet. Planning docs (Notion): [MVP plan](https://app.notion.com/p/3e674cb445b8812cbbd2d4de94bffd7a) · [Research](https://app.notion.com/p/3e674cb445b881078373c4e3c90c9bdb)
+**Status:** the app is scaffolded; the MVP is being built. Planning docs (Notion): [MVP plan](https://app.notion.com/p/3e674cb445b8812cbbd2d4de94bffd7a) · [Research](https://app.notion.com/p/3e674cb445b881078373c4e3c90c9bdb)
 
 ## How it works
 
@@ -22,6 +22,29 @@ Proposed: Easy twice in a row (the second time after the 30-day gap) marks a pro
 ## Stack (planned)
 
 Vite + React + TypeScript, tested with Vitest. Local-first: data stays in the browser with JSON export/import, and the MVP has no backend. Problem data comes from NeetCode's [MIT-licensed problem list](https://github.com/neetcode-gh/leetcode/blob/main/.problemSiteData.json).
+
+## Running locally
+
+You need Node 24 (see `.nvmrc`) and pnpm 10. With Corepack, `corepack enable` installs the pnpm version pinned in `package.json`.
+
+```sh
+pnpm install
+pnpm dev
+```
+
+The app runs at http://localhost:5173.
+
+| Command | What it does |
+|---|---|
+| `pnpm dev` | Starts the dev server with hot reload |
+| `pnpm test` | Runs the tests once (`pnpm test:watch` re-runs them on every change) |
+| `pnpm lint` | Runs ESLint, including the rule that keeps `src/domain` pure |
+| `pnpm typecheck` | Type-checks the project with TypeScript |
+| `pnpm format` | Formats the code with Prettier |
+| `pnpm build` | Type-checks and builds the static site into `dist/` |
+| `pnpm preview` | Serves the built `dist/` locally |
+
+CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` on every pull request, so run the same four before opening one.
 
 ## Research basis
 
