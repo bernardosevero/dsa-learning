@@ -34,23 +34,23 @@ jobs:
       issues: write
       id-token: write
     steps:
-      # A comment event runs on the default branch, so check out the PR's head explicitly.
+      # A comment event runs on the default branch, so check out the PR explicitly. The merge ref
+      # carries main's copy of this workflow, which the action requires; a PR branch created before
+      # a workflow change would otherwise be skipped.
       - uses: actions/checkout@v5
         with:
-          ref: refs/pull/${{ github.event.pull_request.number || github.event.issue.number }}/head
+          ref: refs/pull/${{ github.event.pull_request.number || github.event.issue.number }}/merge
           fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          # TEMPORARY: shows Claude's error while the first review fails instantly (#38). Remove once fixed.
-          show_full_output: true
-          prompt: |
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}          prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
 
-            The PR's head is already checked out in the current working directory.
+            The PR, merged into main, is already checked out in the current working directory.
             Find the linked issue from "Closes #N" in the PR description and read it with `gh issue view`.
+            Review by reading the code only. Don't run tests, lint or builds; CI runs them.
 
             Review this PR against AGENTS.md. Check the log invariants, the product rules
             (especially the spoiler rule), domain purity, tests for every behaviour the linked
