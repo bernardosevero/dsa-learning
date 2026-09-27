@@ -102,4 +102,4 @@ Lint and Prettier (100 columns) enforce what they can. These are the rules they 
   - The naming rules apply in tests too.
   - Use `@ts-expect-error` (with a description) to test invalid input.
 - **Dependencies:** add only the ones the issue names. For anything else, explain in the PR why the platform or an existing dependency isn't enough, and wait for the owner's approval.
-- **Commits:** gitmoji plus conventional type and scope, e.g. `✨ feat(domain): add deriveState`, `✅ test(domain): ...`, `🐛 fix(ui): ...`, `📝 docs(readme): ...`.
+- **Commits:** gitmoji plus conventional type and scope, e.g. `✨ feat(domain): add deriveState`, `✅ test(domain): ...`, `🐛 fix(ui): ...`, `📝 docs(readme): ...`. Every commit ends with the trailer `Co-authored-by: Bernardo Severo <bernardoseverosilveira@gmail.com>`.
