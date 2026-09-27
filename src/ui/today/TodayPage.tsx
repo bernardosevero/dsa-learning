@@ -8,8 +8,8 @@ import { t } from "@/ui/strings";
 
 import { CaughtUp } from "./CaughtUp";
 import { Counters } from "./Counters";
-import { DueReviews } from "./DueReviews";
-import { NextNewProblem } from "./NextNewProblem";
+import { FirstRun } from "./FirstRun";
+import { TodayList } from "./TodayList";
 
 // Today's list and counters, recomputed from the log whenever it or the day changes.
 function useTodayView() {
@@ -36,6 +36,7 @@ function useTodayView() {
 export function TodayPage() {
   const { problems, file, todayDate } = useAppData();
   const { view, counts } = useTodayView();
+  const isFirstRun = counts.newLeft === problems.length;
 
   return (
     <>
@@ -45,17 +46,16 @@ export function TodayPage() {
         <span className="font-mono text-sm text-muted-foreground">{formatDate(todayDate)}</span>
       </div>
       <div className="flex flex-col gap-7">
-        <Counters counts={counts} />
-        {view.kind === "caught-up" && <CaughtUp nextDue={view.nextDue} />}
-        {view.kind === "list" && (
-          <DueReviews
-            reviews={view.reviews}
-            estimateMinutes={view.estimateMinutes}
-            shouldShowPattern={file.settings.showPatternOnReviews}
-          />
-        )}
-        {view.kind === "list" && view.nextNew !== null && view.newTopic !== null && (
-          <NextNewProblem problem={view.nextNew} topic={view.newTopic} />
+        {isFirstRun && view.kind === "list" && view.nextNew !== null ? (
+          <FirstRun firstProblem={view.nextNew} />
+        ) : (
+          <>
+            <Counters counts={counts} />
+            {view.kind === "caught-up" && <CaughtUp nextDue={view.nextDue} todayDate={todayDate} />}
+            {view.kind === "list" && (
+              <TodayList view={view} shouldShowPattern={file.settings.showPatternOnReviews} />
+            )}
+          </>
         )}
         <Link
           to="/problems"

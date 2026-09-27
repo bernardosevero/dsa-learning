@@ -124,22 +124,16 @@ describe("TodayPage", () => {
     ).toBeDefined();
   });
 
-  it("says all caught up with the next review date when nothing is due or new", () => {
-    const scheduled = anAttempt({ problemId: "two-sum", date: "2026-10-08" });
+  it("keeps the due section with a nothing-due note and makes the new problem the focus", () => {
+    const scheduled = anAttempt({ problemId: "contains-duplicate", date: "2026-10-08" });
 
-    renderToday(aSaveFile({ entries: [...allMasteredExcept("two-sum"), scheduled] }));
+    renderToday(aSaveFile({ entries: [scheduled] }));
 
-    expect(screen.getByText(/All caught up · next review/).textContent).toBe(
-      "All caught up · next review Thu, Oct 15",
-    );
-    expect(screen.queryByRole("region", { name: /Due reviews/ })).toBeNull();
-  });
-
-  it("hides the due reviews section when nothing is due", () => {
-    renderToday(aSaveFile());
-
-    expect(screen.queryByRole("region", { name: /Due reviews/ })).toBeNull();
-    expect(screen.getByRole("region", { name: /New/ })).toBeDefined();
+    const dueReviews = within(screen.getByRole("region", { name: /Due reviews/ }));
+    expect(dueReviews.getByText(/No reviews due today/)).toBeDefined();
+    const newSection = within(screen.getByRole("region", { name: /New/ }));
+    expect(newSection.getByText("★ Up next")).toBeDefined();
+    expect(newSection.getByText("Valid Anagram", { selector: "p" })).toBeDefined();
   });
 
   it("hides the new section when no new problem is left", () => {
@@ -151,10 +145,48 @@ describe("TodayPage", () => {
     expect(screen.queryByRole("region", { name: /New/ })).toBeNull();
   });
 
+  it("shows a big backlog as the focus plus five rows until the rest is asked for", async () => {
+    const user = userEvent.setup();
+    const eightDue = PROBLEMS.slice(0, 8).map((problem) =>
+      anAttempt({ problemId: problem.id, rating: "hard" }),
+    );
+    renderToday(aSaveFile({ entries: eightDue }));
+    const dueReviews = within(screen.getByRole("region", { name: /Due reviews/ }));
+    expect(dueReviews.getByText(/Overdue reviews carry no penalty/)).toBeDefined();
+    expect(dueReviews.getAllByRole("listitem")).toHaveLength(5);
+
+    await user.click(dueReviews.getByRole("button", { name: "Show the other 2 due reviews" }));
+
+    expect(dueReviews.getAllByRole("listitem")).toHaveLength(7);
+    expect(dueReviews.queryByRole("button", { name: /Show the other/ })).toBeNull();
+  });
+
+  it("introduces the app and offers the first problem on the first run", () => {
+    renderToday(aSaveFile());
+
+    expect(screen.getByRole("heading", { name: /Re-solve problems right before/ })).toBeDefined();
+    expect(screen.getByText("★ Your first problem")).toBeDefined();
+    expect(screen.getByRole("link", { name: "Start Contains Duplicate" })).toBeDefined();
+    expect(screen.queryByText("New left")).toBeNull();
+    expect(screen.queryByRole("region", { name: /Due reviews/ })).toBeNull();
+  });
+
+  it("says all caught up with the next review date when nothing is due or new", () => {
+    const scheduled = anAttempt({ problemId: "two-sum", date: "2026-10-08" });
+
+    renderToday(aSaveFile({ entries: [...allMasteredExcept("two-sum"), scheduled] }));
+
+    expect(screen.getByRole("heading", { name: "All caught up" })).toBeDefined();
+    expect(screen.getByText("Next review")).toBeDefined();
+    expect(screen.getByText(/Thu, Oct 15/).textContent).toBe("Thu, Oct 15 · in 5 days");
+    expect(screen.queryByRole("region", { name: /Due reviews/ })).toBeNull();
+  });
+
   it("says everything mastered when nothing is scheduled any more", () => {
     renderToday(aSaveFile({ entries: allMasteredExcept("") }));
 
-    expect(screen.getByText("Everything mastered")).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Everything mastered" })).toBeDefined();
+    expect(screen.getByRole("link", { name: "Open Problems" })).toBeDefined();
   });
 
   it("goes to the solve route of the problem when Start is pressed", async () => {

@@ -1,34 +1,20 @@
-import type { ReactNode } from "react";
+import { ClockIcon } from "lucide-react";
 
 import type { DueReview } from "@/domain/today";
+import { NoteBox } from "@/ui/components/NoteBox";
 import { SectionLabel } from "@/ui/components/SectionLabel";
 import { formatEstimate } from "@/ui/format";
 import { t } from "@/ui/strings";
 
-import { DimmedReviewRow } from "./DimmedReviewRow";
-import { FocusReviewCard } from "./FocusReviewCard";
+import { describeReview } from "./describeReview";
+import { DimmedReviewList, VISIBLE_BACKLOG_ROWS } from "./DimmedReviewList";
+import { FocusCard } from "./FocusCard";
+import { NothingDue } from "./NothingDue";
 
 const HEADING_ID = "due-reviews-heading";
 
-// The pattern stays hidden on reviews unless the user opted in: recognizing it is the exercise.
-// Only the overdue part is a count, so only it is set in mono.
-function describeReview(review: DueReview, shouldShowPattern: boolean): ReactNode {
-  const overdue =
-    review.daysOverdue === 0 ? t.today.dueToday : t.today.daysOverdue(review.daysOverdue);
-  const details = shouldShowPattern
-    ? [review.problem.pattern, review.problem.difficulty]
-    : [review.problem.difficulty];
-  return (
-    <>
-      {details.join(t.separator)}
-      {t.separator}
-      <span className="font-mono">{overdue}</span>
-    </>
-  );
-}
-
 export interface DueReviewsProps {
-  /** Sorted by risk; the section renders nothing when it is empty. */
+  /** Sorted by risk; may be empty. */
   reviews: readonly DueReview[];
   estimateMinutes: number;
   shouldShowPattern: boolean;
@@ -37,35 +23,30 @@ export interface DueReviewsProps {
 /** Today's due reviews: the first as the focus card, the rest as dimmed rows. */
 export function DueReviews({ reviews, estimateMinutes, shouldShowPattern }: DueReviewsProps) {
   const [focus, ...others] = reviews;
-  if (focus === undefined) {
-    return null;
-  }
+  const estimate = focus !== undefined && (
+    <span className="font-mono text-sm text-muted-foreground">
+      {formatEstimate(estimateMinutes)}
+    </span>
+  );
   return (
-    <section aria-labelledby={HEADING_ID}>
-      <SectionLabel
-        id={HEADING_ID}
-        aside={
-          <span className="font-mono text-sm text-muted-foreground">
-            {formatEstimate(estimateMinutes)}
-          </span>
-        }
-      >
+    <section aria-labelledby={HEADING_ID} className="flex flex-col gap-3">
+      <SectionLabel id={HEADING_ID} aside={estimate}>
         {t.today.dueReviews}
         {t.separator}
         <span className="font-mono">{reviews.length}</span>
       </SectionLabel>
-      <FocusReviewCard problem={focus.problem} meta={describeReview(focus, shouldShowPattern)} />
-      {others.length > 0 && (
-        <ul>
-          {others.map((review) => (
-            <DimmedReviewRow
-              key={review.problem.id}
-              problem={review.problem}
-              meta={describeReview(review, shouldShowPattern)}
-            />
-          ))}
-        </ul>
+      {focus === undefined && <NothingDue />}
+      {others.length > VISIBLE_BACKLOG_ROWS && (
+        <NoteBox Icon={ClockIcon}>{t.today.backlogNote}</NoteBox>
       )}
+      {focus !== undefined && (
+        <FocusCard
+          label={t.today.focus}
+          problem={focus.problem}
+          meta={describeReview(focus, shouldShowPattern)}
+        />
+      )}
+      <DimmedReviewList reviews={others} shouldShowPattern={shouldShowPattern} />
     </section>
   );
 }
