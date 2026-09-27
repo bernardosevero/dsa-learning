@@ -50,6 +50,7 @@ jobs:
 
             The PR, merged into main, is already checked out in the current working directory.
             Find the linked issue from "Closes #N" in the PR description and read it with `gh issue view`.
+            Review by reading the code only. Don't run tests, lint or builds; CI runs them.
 
             Review this PR against AGENTS.md. Check the log invariants, the product rules
             (especially the spoiler rule), domain purity, tests for every behaviour the linked
