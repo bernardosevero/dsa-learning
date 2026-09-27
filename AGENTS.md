@@ -11,15 +11,11 @@ Work comes from GitHub issues, ordered on the [project board](https://github.com
 3. Build it. In `src/domain/`, work test-first: write the issue's required tests, watch them go red, then make them green. Elsewhere, deliver the tests with the code. If the change affects how to set up, run, test or build the app (prerequisites, `package.json` scripts, environment variables, setup steps), update "Running locally" in the README in the same PR.
 4. Run `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build`. All four pass.
 5. Open a PR titled like the commit convention below, with `Closes #<number>`, and tick each acceptance criterion in the description. `main` only changes through PRs.
-6. Leave the merge to the reviewer or the owner (see below); don't merge your own PR. Whoever merges deletes the branch in the same step: `gh pr merge <number> --merge --delete-branch`. The remote holds only `main` and branches with an open PR.
+6. Leave the merge to the owner; don't merge your own PR. Whoever merges deletes the branch in the same step: `gh pr merge <number> --merge --delete-branch`. The remote holds only `main` and branches with an open PR.
 
 The issue is the spec: it carries the exact types, signatures and tests. When the issue and this file disagree, or the issue leaves a product decision open, stop and ask in the PR rather than choosing. The decisions are the owner's. Issues labelled `needs-grilling` get a design session with the owner before any code.
 
-Every PR except `docs` gets an automatic Claude review when it's opened or marked ready (the owner can comment `@claude review` for another). The reviewer merges the PR when both hold:
-- a script gate passes: CI is green, the PR only changes `src/`, `e2e/` or `scripts/`, and the linked issue isn't labelled `human` or `needs-grilling`
-- the review found no problems
-
-Otherwise it assigns the owner, adds the `needs-owner` label and says why. `docs` PRs always go to the owner.
+Every PR except `docs` gets an automatic Claude review when it's opened or marked ready (the owner can comment `@claude review` for another). The reviewer never merges: it posts its findings, assigns the owner and adds the `needs-owner` label. The owner merges every PR.
 
 ## Architecture
 
