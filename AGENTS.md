@@ -89,7 +89,7 @@ Lint and Prettier (100 columns) enforce what they can. These are the rules they 
 - **Small functions:** about 30 lines, at most 2 levels of nesting, early returns, one job each.
 - **Inputs stay untouched:** parameters are `readonly`, and you copy before reordering (`toSorted`, `toReversed`). A local `let` and a loop inside a function are fine.
 - **Expected failures are values:** return `{ ok: true, value } | { ok: false, error }`. Throw only for bugs.
-- **Types:** model states as discriminated unions and let the compiler check exhaustiveness. Parse untrusted data with zod.
+- **Types:** model states as discriminated unions and let the compiler check exhaustiveness. Their names are plain string literals (`state.status === "mastered"`), because the union type already catches typos and narrows; don't wrap them in constants or enums. Parse untrusted data with zod.
 - **Files:**
   - Named exports only, one component per file, no barrel `index.ts` files.
   - Components are `PascalCase.tsx`; everything else is `camelCase.ts`.
