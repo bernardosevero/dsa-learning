@@ -53,6 +53,8 @@ The problem list in `src/data/problems.json` is committed, so the app needs no n
 | `pnpm tsx scripts/snapshot-nc-links.ts` | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
 | `pnpm tsx scripts/build-problems.ts` | Rebuilds `src/data/problems.json` from neetcode-gh/leetcode and the slug snapshot, keeping existing summaries |
 
+To see the success metrics (on-time reviews, re-solve speed, rating progress, load and habit), export your data from the app and run `pnpm tsx scripts/metrics.ts <export.json>`. It prints a small table.
+
 ## Research basis
 
 | Principle | How the app uses it | Sources |

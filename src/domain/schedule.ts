@@ -28,7 +28,8 @@ function compareByTimestamp(first: Entry, second: Entry): number {
   return first.id.localeCompare(second.id);
 }
 
-function sortByTimestamp(entries: readonly Entry[]): Entry[] {
+/** Returns a copy of the entries in replay order: timestamp, then id. */
+export function sortByTimestamp(entries: readonly Entry[]): Entry[] {
   return entries.toSorted(compareByTimestamp);
 }
 
