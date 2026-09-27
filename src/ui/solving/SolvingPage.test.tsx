@@ -73,6 +73,16 @@ describe("SolvingPage", () => {
     expect(screen.getByText(/They reveal the pattern/)).toBeDefined();
   });
 
+  it("shows the pattern on a review when the user opted in", () => {
+    const settings = { ...EMPTY_SAVE_FILE.settings, showPatternOnReviews: true };
+
+    renderSolving("contains-duplicate", aSaveFile({ entries: [anAttempt()], settings }));
+
+    expect(screen.getByText("Review")).toBeDefined();
+    expect(screen.queryByText("Review · pattern hidden")).toBeNull();
+    expect(screen.getByText("Arrays & Hashing · Easy · last solved Oct 1")).toBeDefined();
+  });
+
   it("shows the pattern on a new problem", () => {
     renderSolving("two-sum");
 
