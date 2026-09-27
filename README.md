@@ -46,6 +46,13 @@ The app runs at http://localhost:5173.
 
 CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` on every pull request, so run the same four before opening one.
 
+The problem list in `src/data/problems.json` is committed, so the app needs no network. To regenerate it (this needs network access):
+
+| Command | What it does |
+|---|---|
+| `pnpm tsx scripts/snapshot-nc-links.ts` | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
+| `pnpm tsx scripts/build-problems.ts` | Rebuilds `src/data/problems.json` from neetcode-gh/leetcode and the slug snapshot, keeping existing summaries |
+
 ## Research basis
 
 | Principle | How the app uses it | Sources |
