@@ -17,6 +17,7 @@ These rules apply on top of AGENTS.md. Before opening the PR, go through every s
 
 ## Components and layout
 
+- **Match the approved design.** Read `design.md` (next to this file) and look at the screen pictures it links before building a screen. It says how each screen and shared piece looks.
 - Build screens from shadcn/ui components (`src/ui/components/ui/`). Color them only with theme tokens (`bg-primary`, `text-muted-foreground`, `--rating-hard`...), never raw colors, so a design change is a token change.
 - Compact layout, max width about 640px, because the app sits next to a NeetCode tab. Check it at 375px (phone) too.
 - Every user-visible string comes from `src/ui/strings.ts`. User-written text (insights, notes) renders as plain React text.
