@@ -8,7 +8,7 @@ Work comes from GitHub issues, ordered on the [project board](https://github.com
 
 1. Take the lowest-`Order` open issue labelled `agent-ready` whose "Depends on" issues are closed. Issues labelled `human` belong to the owner.
 2. Branch from `main` as `issue-<number>-<short-slug>`.
-3. Build it. In `src/domain/`, work test-first: write the issue's required tests, watch them go red, then make them green. Elsewhere, deliver the tests with the code.
+3. Build it. In `src/domain/`, work test-first: write the issue's required tests, watch them go red, then make them green. Elsewhere, deliver the tests with the code. If the change affects how to set up, run, test or build the app (prerequisites, `package.json` scripts, environment variables, setup steps), update "Running locally" in the README in the same PR.
 4. Run `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build`. All four pass.
 5. Open a PR titled like the commit convention below, with `Closes #<number>`, and tick each acceptance criterion in the description. `main` only changes through PRs.
 
