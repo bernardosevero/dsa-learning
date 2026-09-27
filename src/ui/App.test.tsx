@@ -27,7 +27,6 @@ afterEach(() => {
 describe("AppRoutes", () => {
   it.each([
     ["/", "Today"],
-    ["/solve/two-sum", "Solving"],
     ["/log/two-sum", "Log attempt"],
     ["/problems", "Problems"],
     ["/problems/two-sum", "Problem"],
@@ -37,6 +36,13 @@ describe("AppRoutes", () => {
 
     expect(pageHeading()).toBe(heading);
     expect(document.title).toBe(`${heading} · dta-learning`);
+  });
+
+  it("renders /solve/two-sum as the Solving screen for that problem", () => {
+    renderAt("/solve/two-sum");
+
+    expect(pageHeading()).toBe("Two Sum");
+    expect(document.title).toBe("Solving Two Sum · dta-learning");
   });
 
   it("moves between Today, Problems and Settings from the nav and marks the current one", async () => {

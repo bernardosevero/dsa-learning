@@ -52,6 +52,32 @@ export const en = {
     },
   },
   ratings: { hard: "Hard", medium: "Medium", easy: "Easy" },
+  solving: {
+    backToToday: "‹ Today",
+    reviewBadge: "Review · pattern hidden",
+    reviewBadgePatternShown: "Review",
+    newBadge: "New problem",
+    lastSolved: (date: string) => `last solved ${date}`,
+    openOnNeetCode: "Open on NeetCode",
+    leetCode: "LeetCode",
+    timeBoxOf: (duration: string) => `of ${duration}`,
+    timeBoxCaption: {
+      Easy: "Time box for an Easy problem. It's guidance, not a deadline.",
+      Medium: "Time box for a Medium problem. It's guidance, not a deadline.",
+      Hard: "Time box for a Hard problem. It's guidance, not a deadline.",
+    },
+    overTimeBox: (minutes: number) =>
+      `${minutes} min past the time box. Keep going, or log it as it is.`,
+    reviewTip: "Don't use NeetCode's list or prev/next arrows. They reveal the pattern.",
+    done: "I'm done",
+    lookedAtSolution: "I looked at the solution",
+    cancel: "Cancel",
+    replaceTimer: (title: string) => `Replace the running timer for ${title}?`,
+    replace: "Replace it",
+    keepOther: (title: string) => `Keep it and go back to ${title}`,
+    notFound: "This problem isn't in the list.",
+  },
+  opensInNewTab: "(opens in a new tab)",
   documentTitle: (page: string) => `${page} · dta-learning`,
 } as const;
 
