@@ -3,48 +3,81 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* shadcn/ui neutral theme. The design session (#27) replaces these values. */
+/* "Training log" theme from the design session (#27): warm paper, ink, one green for the next action. */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --background: #f6f4ee;
+  --foreground: #1d1c19;
+  --card: #fffefa;
+  --card-foreground: #1d1c19;
+  --popover: #fffefa;
+  --popover-foreground: #1d1c19;
+  --primary: #2d5b4b;
+  --primary-foreground: #f8f6f0;
+  --secondary: #eeebe3;
+  --secondary-foreground: #1d1c19;
+  --muted: #eeebe3;
+  --muted-foreground: #625e55;
+  --accent: #e4ede8;
+  --accent-foreground: #2d5b4b;
+  --destructive: #a33a23;
+  --border: #e0dbcf;
+  --input: #e0dbcf;
+  --ring: #2d5b4b;
+
+  /* How an attempt felt. Always paired with its word and dot glyph, never color alone. */
+  --rating-hard: #ae4128;
+  --rating-hard-muted: #f5e2db;
+  --rating-medium: #855a0f;
+  --rating-medium-muted: #f3e8d1;
+  --rating-easy: #2a6190;
+  --rating-easy-muted: #dde8f2;
+
+  /* Due is the next action, not an alarm, so it shares the primary green. */
+  --status-due: #2d5b4b;
+  --status-due-muted: #e4ede8;
+  --status-mastered: #5f4786;
+  --status-mastered-muted: #eae4f2;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: #141513;
+  --foreground: #ece9e1;
+  --card: #1c1e1b;
+  --card-foreground: #ece9e1;
+  --popover: #1c1e1b;
+  --popover-foreground: #ece9e1;
+  --primary: #86bfa8;
+  --primary-foreground: #10201a;
+  --secondary: #262824;
+  --secondary-foreground: #ece9e1;
+  --muted: #262824;
+  --muted-foreground: #a7a298;
+  --accent: #22302a;
+  --accent-foreground: #86bfa8;
+  --destructive: #e88b72;
+  --border: #2f322d;
+  --input: #3a3d37;
+  --ring: #86bfa8;
+
+  --rating-hard: #ee9479;
+  --rating-hard-muted: #3a241e;
+  --rating-medium: #e0b25e;
+  --rating-medium-muted: #352b18;
+  --rating-easy: #86b8e0;
+  --rating-easy-muted: #1b2a36;
+
+  --status-due: #86bfa8;
+  --status-due-muted: #22302a;
+  --status-mastered: #bca3e0;
+  --status-mastered-muted: #2a2336;
+}
+
+/* Loaded in index.html from Google Fonts. Newsreader is for titles; mono is for times, dates and counts. */
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 @theme inline {
@@ -70,6 +103,16 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-rating-hard: var(--rating-hard);
+  --color-rating-hard-muted: var(--rating-hard-muted);
+  --color-rating-medium: var(--rating-medium);
+  --color-rating-medium-muted: var(--rating-medium-muted);
+  --color-rating-easy: var(--rating-easy);
+  --color-rating-easy-muted: var(--rating-easy-muted);
+  --color-status-due: var(--status-due);
+  --color-status-due-muted: var(--status-due-muted);
+  --color-status-mastered: var(--status-mastered);
+  --color-status-mastered-muted: var(--status-mastered-muted);
 }
 
 @layer base {
