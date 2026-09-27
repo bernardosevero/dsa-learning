@@ -1,7 +1,8 @@
 name: Claude review
 
 # Runs on the owner's Claude subscription (OAuth token), never on a per-token API key.
-# Only reviews when it's worth it: feat/refactor PRs once (not on every push), or on request.
+# Reviews every PR except docs, once: when it's opened or marked ready (not on every push), or
+# when the owner comments "@claude review". It never merges: it hands every PR to the owner.
 on:
   pull_request:
     types: [opened, ready_for_review]
@@ -14,12 +15,8 @@ jobs:
       (
         github.event_name == 'pull_request' &&
         !github.event.pull_request.draft &&
-        (
-          contains(github.event.pull_request.title, 'feat(') ||
-          contains(github.event.pull_request.title, 'feat:') ||
-          contains(github.event.pull_request.title, 'refactor(') ||
-          contains(github.event.pull_request.title, 'refactor:')
-        )
+        !contains(github.event.pull_request.title, 'docs(') &&
+        !contains(github.event.pull_request.title, 'docs:')
       ) || (
         github.event_name == 'issue_comment' &&
         github.event.issue.pull_request &&
@@ -33,13 +30,15 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
     steps:
       # A comment event runs on the default branch, so check out the PR explicitly. The merge ref
       # carries main's copy of this workflow, which the action requires; a PR branch created before
       # a workflow change would otherwise be skipped.
       - uses: actions/checkout@v5
         with:
-          ref: refs/pull/${{ github.event.pull_request.number || github.event.issue.number }}/merge
+          ref: refs/pull/${{ env.PR_NUMBER }}/merge
           fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
@@ -47,21 +46,25 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             REPO: ${{ github.repository }}
-            PR NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+            PR NUMBER: ${{ env.PR_NUMBER }}
+            OWNER: ${{ github.repository_owner }}
 
             The PR, merged into main, is already checked out in the current working directory.
             Find the linked issue from "Closes #N" in the PR description and read it with `gh issue view`.
             Review by reading the code only. Don't run tests, lint or builds; CI runs them.
 
-            Review this PR against AGENTS.md. Check the log invariants, the product rules
-            (especially the spoiler rule), domain purity, tests for every behaviour the linked
-            issue requires, and the linked issue's acceptance criteria. Report only concrete
-            problems, each with file:line and a suggested fix. If there are none, say so in one line.
+            1. Review this PR against AGENTS.md: the log invariants, the product rules (especially
+               the spoiler rule), domain purity, the code style, tests for every behaviour the linked
+               issue requires, and the linked issue's acceptance criteria. Only concrete problems
+               count, each with file:line and a suggested fix.
+            2. Post one top-level comment with `gh pr comment`. Start it with "@OWNER ready for your
+               review" (using the OWNER above), then your findings, or "No problems found.". Use
+               `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) for
+               problems tied to a specific line.
+            3. Hand the PR to the owner: `gh pr edit <PR NUMBER> --add-assignee <OWNER> --add-label needs-owner`.
 
-            Post the review with `gh pr comment` (one top-level comment), and use
-            `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) for
-            problems tied to a specific line. Only post GitHub comments; don't reply in messages.
+            Never merge. Only post GitHub comments; don't reply in messages.
           claude_args: |
             --model claude-sonnet-5
-            --max-turns 15
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*)"
+            --max-turns 20
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(gh pr edit:*)"
