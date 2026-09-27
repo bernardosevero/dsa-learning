@@ -58,6 +58,13 @@ const TWO_DUE_REVIEWS = [
   anAttempt({ problemId: "valid-anagram", rating: "medium" }),
 ];
 
+// Matches a paragraph by its whole text, even when parts of it sit in their own spans.
+function paragraphWithText(text: string) {
+  return function matches(_content: string, element: Element | null): boolean {
+    return element?.tagName === "P" && element.textContent === text;
+  };
+}
+
 function SolveProbe() {
   const { problemId } = useParams();
   return <p>Solving {problemId}</p>;
@@ -94,7 +101,7 @@ describe("TodayPage", () => {
     expect(dueReviews.getByText("Contains Duplicate", { selector: "p" })).toBeDefined();
     expect(dueReviews.getByText("Valid Anagram", { selector: "p" })).toBeDefined();
     expect(dueReviews.getAllByText(/★/)).toHaveLength(1);
-    expect(dueReviews.getByText("Easy · 7 days overdue")).toBeDefined();
+    expect(dueReviews.getByText(paragraphWithText("Easy · 7 days overdue"))).toBeDefined();
     expect(dueReviews.queryByText(/Arrays & Hashing/)).toBeNull();
   });
 
@@ -112,7 +119,9 @@ describe("TodayPage", () => {
     renderToday(aSaveFile({ entries: TWO_DUE_REVIEWS, settings }));
 
     const dueReviews = within(screen.getByRole("region", { name: /Due reviews/ }));
-    expect(dueReviews.getByText("Arrays & Hashing · Easy · 7 days overdue")).toBeDefined();
+    expect(
+      dueReviews.getByText(paragraphWithText("Arrays & Hashing · Easy · 7 days overdue")),
+    ).toBeDefined();
   });
 
   it("says all caught up with the next review date when nothing is due or new", () => {
@@ -124,6 +133,22 @@ describe("TodayPage", () => {
       "All caught up · next review Thu, Oct 15",
     );
     expect(screen.queryByRole("region", { name: /Due reviews/ })).toBeNull();
+  });
+
+  it("hides the due reviews section when nothing is due", () => {
+    renderToday(aSaveFile());
+
+    expect(screen.queryByRole("region", { name: /Due reviews/ })).toBeNull();
+    expect(screen.getByRole("region", { name: /New/ })).toBeDefined();
+  });
+
+  it("hides the new section when no new problem is left", () => {
+    const dueReview = anAttempt({ problemId: "contains-duplicate", rating: "hard" });
+
+    renderToday(aSaveFile({ entries: [...allMasteredExcept("contains-duplicate"), dueReview] }));
+
+    expect(screen.getByRole("region", { name: /Due reviews/ })).toBeDefined();
+    expect(screen.queryByRole("region", { name: /New/ })).toBeNull();
   });
 
   it("says everything mastered when nothing is scheduled any more", () => {

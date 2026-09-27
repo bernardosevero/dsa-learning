@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { DueReview } from "@/domain/today";
 import { SectionLabel } from "@/ui/components/SectionLabel";
 import { formatEstimate } from "@/ui/format";
@@ -9,15 +11,24 @@ import { FocusReviewCard } from "./FocusReviewCard";
 const HEADING_ID = "due-reviews-heading";
 
 // The pattern stays hidden on reviews unless the user opted in: recognizing it is the exercise.
-function describeReview(review: DueReview, shouldShowPattern: boolean): string {
+// Only the overdue part is a count, so only it is set in mono.
+function describeReview(review: DueReview, shouldShowPattern: boolean): ReactNode {
   const overdue =
     review.daysOverdue === 0 ? t.today.dueToday : t.today.daysOverdue(review.daysOverdue);
-  const parts = [review.problem.difficulty, overdue];
-  return (shouldShowPattern ? [review.problem.pattern, ...parts] : parts).join(t.separator);
+  const details = shouldShowPattern
+    ? [review.problem.pattern, review.problem.difficulty]
+    : [review.problem.difficulty];
+  return (
+    <>
+      {details.join(t.separator)}
+      {t.separator}
+      <span className="font-mono">{overdue}</span>
+    </>
+  );
 }
 
 export interface DueReviewsProps {
-  /** Sorted by risk; never empty. */
+  /** Sorted by risk; the section renders nothing when it is empty. */
   reviews: readonly DueReview[];
   estimateMinutes: number;
   shouldShowPattern: boolean;

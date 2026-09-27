@@ -1,10 +1,12 @@
+import type { ReactNode } from "react";
+
 import type { Problem } from "@/domain/types";
 import { StartLink } from "@/ui/components/StartLink";
 import { t } from "@/ui/strings";
 
 export interface FocusReviewCardProps {
   problem: Problem;
-  meta: string;
+  meta: ReactNode;
 }
 
 /** The first due review: the one obvious next action, marked ★. */
@@ -16,7 +18,7 @@ export function FocusReviewCard({ problem, meta }: FocusReviewCardProps) {
           {t.today.focus}
         </p>
         <p className="font-serif text-2xl font-semibold">{problem.title}</p>
-        <p className="font-mono text-sm text-muted-foreground">{meta}</p>
+        <p className="text-sm text-muted-foreground">{meta}</p>
       </div>
       <StartLink problem={problem} variant="primary" />
     </div>
