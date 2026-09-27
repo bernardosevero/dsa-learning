@@ -1,3 +1,14 @@
+import { BrowserRouter } from "react-router";
+
+import { AppDataProvider } from "./AppData";
+import { AppRoutes } from "./AppRoutes";
+
 export function App() {
-  return <h1>dta-learning</h1>;
+  return (
+    <AppDataProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AppDataProvider>
+  );
 }

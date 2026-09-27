@@ -79,7 +79,7 @@ Before changing anything in `src/ui/`, load the `working-on-ui` skill. It holds 
 
 Lint and Prettier (100 columns) enforce what they can. These are the rules they can't check.
 
-- **Names read like prose.** Use descriptive names everywhere. Single letters are only for `i` in index loops and `a`/`b` in comparators. Use an abbreviation only when a new reader understands it without context (`id`, `url`, `props`, `config`, `min`/`max`). Booleans start with `is`/`has`/`should`/`can`, functions start with a verb, and numbers with meaning are named constants (`INTERVAL_DAYS.easy`, not `30`).
+- **Names read like prose.** Use descriptive names everywhere. Single letters are only for `i` in index loops, `a`/`b` in comparators and `t`, the strings module (`t.nav.today`). PascalCase is for what renders as JSX: components and React contexts. Use an abbreviation only when a new reader understands it without context (`id`, `url`, `props`, `config`, `min`/`max`). Booleans start with `is`/`has`/`should`/`can`, functions start with a verb, and numbers with meaning are named constants (`INTERVAL_DAYS.easy`, not `30`).
 - **Explicit over clever.**
   - A comparator chains at most 3 comparisons.
   - `reduce` only builds a simple single value (a sum, count, max, or a record keyed by id), with a callback of about 3 lines; anything more is a `for...of` loop.
