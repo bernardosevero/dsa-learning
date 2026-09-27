@@ -1,7 +1,9 @@
 name: Claude review
 
 # Runs on the owner's Claude subscription (OAuth token), never on a per-token API key.
-# Only reviews when it's worth it: feat/refactor PRs once (not on every push), or on request.
+# Reviews every PR except docs, once: when it's opened or marked ready (not on every push), or
+# when the owner comments "@claude review". After reviewing, it merges the PR if the merge gate
+# allows it; otherwise it hands the PR to the owner. The owner approved this policy on 2026-09-27.
 on:
   pull_request:
     types: [opened, ready_for_review]
@@ -14,12 +16,8 @@ jobs:
       (
         github.event_name == 'pull_request' &&
         !github.event.pull_request.draft &&
-        (
-          contains(github.event.pull_request.title, 'feat(') ||
-          contains(github.event.pull_request.title, 'feat:') ||
-          contains(github.event.pull_request.title, 'refactor(') ||
-          contains(github.event.pull_request.title, 'refactor:')
-        )
+        !contains(github.event.pull_request.title, 'docs(') &&
+        !contains(github.event.pull_request.title, 'docs:')
       ) || (
         github.event_name == 'issue_comment' &&
         github.event.issue.pull_request &&
@@ -27,41 +25,115 @@ jobs:
         github.event.comment.author_association == 'OWNER'
       )
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     permissions:
-      contents: read
+      actions: read
+      contents: write
       pull-requests: write
       issues: write
       id-token: write
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
     steps:
       # A comment event runs on the default branch, so check out the PR explicitly. The merge ref
       # carries main's copy of this workflow, which the action requires; a PR branch created before
       # a workflow change would otherwise be skipped.
       - uses: actions/checkout@v5
         with:
-          ref: refs/pull/${{ github.event.pull_request.number || github.event.issue.number }}/merge
+          ref: refs/pull/${{ env.PR_NUMBER }}/merge
           fetch-depth: 1
+
+      # The merge gate is a plain script, not the model: the reviewer is only given
+      # `gh pr merge` when CI passed and the PR stays inside what an AI review may approve.
+      - name: Merge gate
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          reasons=()
+
+          # CI starts alongside this job: wait for its run on the PR's head commit.
+          head_sha=$(gh pr view "$PR_NUMBER" --repo "$repo" --json headRefOid --jq .headRefOid)
+          ci_run_id=""
+          for attempt in $(seq 1 30); do
+            ci_run_id=$(gh run list --repo "$repo" --workflow ci.yml --commit "$head_sha" --limit 1 \
+              --json databaseId --jq '.[0].databaseId // empty')
+            if [ -n "$ci_run_id" ]; then break; fi
+            sleep 10
+          done
+          if [ -z "$ci_run_id" ]; then
+            reasons+=("CI didn't start for ${head_sha:0:7}")
+          elif ! gh run watch "$ci_run_id" --repo "$repo" --exit-status > /dev/null; then
+            reasons+=("CI failed")
+          fi
+
+          # Only code and tests may be approved by the reviewer alone.
+          outside_paths=()
+          while IFS= read -r path; do
+            case "$path" in
+              src/*|e2e/*|scripts/*) ;;
+              *) outside_paths+=("$path") ;;
+            esac
+          done < <(gh pr diff "$PR_NUMBER" --repo "$repo" --name-only)
+          if [ ${#outside_paths[@]} -gt 0 ]; then
+            reasons+=("changes files outside src/, e2e/ and scripts/: ${outside_paths[*]:0:10}")
+          fi
+
+          # Work the owner kept for themselves stays with the owner.
+          pr_body=$(gh pr view "$PR_NUMBER" --repo "$repo" --json body --jq .body)
+          issue_number=$(grep -oiE '(closes|fixes|resolves) #[0-9]+' <<< "$pr_body" | head -1 | grep -oE '[0-9]+' || true)
+          if [ -z "$issue_number" ]; then
+            reasons+=("no linked issue (Closes #N)")
+          else
+            labels=$(gh issue view "$issue_number" --repo "$repo" --json labels --jq '[.labels[].name] | join(",")')
+            case ",$labels," in
+              *,human,*|*,needs-grilling,*) reasons+=("issue #$issue_number is labelled human or needs-grilling") ;;
+            esac
+          fi
+
+          if [ ${#reasons[@]} -eq 0 ]; then
+            echo "can_merge=true" >> "$GITHUB_OUTPUT"
+            echo "reasons=none" >> "$GITHUB_OUTPUT"
+          else
+            echo "can_merge=false" >> "$GITHUB_OUTPUT"
+            { echo "reasons<<GATE_EOF"; printf -- '- %s\n' "${reasons[@]}"; echo "GATE_EOF"; } >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             REPO: ${{ github.repository }}
-            PR NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+            PR NUMBER: ${{ env.PR_NUMBER }}
+            OWNER: ${{ github.repository_owner }}
+            MERGE GATE: ${{ steps.gate.outputs.can_merge == 'true' && 'open' || 'closed' }}
+            GATE REASONS:
+            ${{ steps.gate.outputs.reasons }}
 
             The PR, merged into main, is already checked out in the current working directory.
             Find the linked issue from "Closes #N" in the PR description and read it with `gh issue view`.
             Review by reading the code only. Don't run tests, lint or builds; CI runs them.
 
-            Review this PR against AGENTS.md. Check the log invariants, the product rules
-            (especially the spoiler rule), domain purity, tests for every behaviour the linked
-            issue requires, and the linked issue's acceptance criteria. Report only concrete
-            problems, each with file:line and a suggested fix. If there are none, say so in one line.
+            1. Review this PR against AGENTS.md: the log invariants, the product rules (especially
+               the spoiler rule), domain purity, the code style, tests for every behaviour the linked
+               issue requires, and the linked issue's acceptance criteria. Only concrete problems
+               count, each with file:line and a suggested fix.
+            2. Decide the outcome:
+               - MERGE if the merge gate is open and you found no problems.
+               - HAND OFF otherwise.
+            3. Post one top-level comment with `gh pr comment`: your findings (or "No problems
+               found."), then the outcome. For a hand-off, start the comment with "@OWNER this needs
+               your review" (using the OWNER above) and list the gate reasons and your problems.
+               Use `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) for
+               problems tied to a specific line.
+            4. Act on the outcome:
+               - MERGE: `gh pr merge <PR NUMBER> --merge --delete-branch`.
+               - HAND OFF: `gh pr edit <PR NUMBER> --add-assignee <OWNER> --add-label needs-owner`.
 
-            Post the review with `gh pr comment` (one top-level comment), and use
-            `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) for
-            problems tied to a specific line. Only post GitHub comments; don't reply in messages.
+            Only post GitHub comments; don't reply in messages.
           claude_args: |
             --model claude-sonnet-5
-            --max-turns 15
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*)"
+            --max-turns 20
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(gh pr edit:*)${{ steps.gate.outputs.can_merge == 'true' && ',Bash(gh pr merge:*)' || '' }}"
