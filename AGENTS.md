@@ -11,6 +11,7 @@ Work comes from GitHub issues, ordered on the [project board](https://github.com
 3. Build it. In `src/domain/`, work test-first: write the issue's required tests, watch them go red, then make them green. Elsewhere, deliver the tests with the code. If the change affects how to set up, run, test or build the app (prerequisites, `package.json` scripts, environment variables, setup steps), update "Running locally" in the README in the same PR.
 4. Run `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build`. All four pass.
 5. Open a PR titled like the commit convention below, with `Closes #<number>`, and tick each acceptance criterion in the description. `main` only changes through PRs.
+6. Once the PR is merged, delete its branch.
 
 The issue is the spec: it carries the exact types, signatures and tests. When the issue and this file disagree, or the issue leaves a product decision open, stop and ask in the PR rather than choosing. The decisions are the owner's. Issues labelled `needs-grilling` get a design session with the owner before any code.
 
