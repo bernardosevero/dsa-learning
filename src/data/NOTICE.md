@@ -1,6 +1,17 @@
 # Third-party notice
 
-The problem metadata in `problems.json` (titles, patterns, difficulties, LeetCode slugs, video IDs and the Blind 75 flag) comes from the [neetcode-gh/leetcode](https://github.com/neetcode-gh/leetcode) repository, file `.problemSiteData.json`, used under the MIT License below. The one-line summaries are our own.
+This file says where each piece of the problem data comes from.
+
+## 1. neetcode-gh/leetcode (MIT License)
+
+These fields in `problems.json` come from the [neetcode-gh/leetcode](https://github.com/neetcode-gh/leetcode) repository, file `.problemSiteData.json`, used under the MIT License below:
+
+- problem titles
+- patterns
+- difficulties
+- LeetCode slugs
+- video IDs
+- the Blind 75 flag
 
 ```
 MIT License
@@ -25,3 +36,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## 2. neetcode.io's public website
+
+The NeetCode practice-page slugs (for example `duplicate-integer`) come from neetcode.io's public website. They were snapshotted once into `scripts/data/nc-links.json`. They are not covered by the MIT License above. They are used only to build links to NeetCode's own public practice pages. The app never copies NeetCode's content.
+
+## 3. Our own work
+
+The one-line summaries are our own work, written in our own words (they are added in issue #8). No problem statements from LeetCode or NeetCode are copied. The app links out to them instead.
+
+## 4. Trademarks
+
+LeetCode and NeetCode are trademarks of their respective owners. This project is not affiliated with or endorsed by either.
