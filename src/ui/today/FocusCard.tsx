@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 
 import type { Problem } from "@/domain/types";
+import { Overline } from "@/ui/components/Overline";
 import { StartLink } from "@/ui/components/StartLink";
+import { Card } from "@/ui/components/ui/card";
 
 export interface FocusCardProps {
   /** e.g. "★ Focus · most at risk" or "★ Up next". */
@@ -13,13 +15,13 @@ export interface FocusCardProps {
 /** The one obvious next action on Today, marked ★. */
 export function FocusCard({ label, problem, meta }: FocusCardProps) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border-[1.5px] border-primary bg-card p-5">
+    <Card className="flex-row items-center justify-between gap-4 border-[1.5px] border-primary p-5">
       <div className="flex min-w-0 flex-col gap-1">
-        <p className="text-xs font-semibold tracking-widest text-primary uppercase">{label}</p>
+        <Overline className="text-primary">{label}</Overline>
         <p className="font-serif text-2xl font-semibold">{problem.title}</p>
         <p className="text-sm text-muted-foreground">{meta}</p>
       </div>
       <StartLink problem={problem} variant="primary" />
-    </div>
+    </Card>
   );
 }

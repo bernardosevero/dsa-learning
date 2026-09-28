@@ -2,6 +2,7 @@ import type { Problem } from "@/domain/types";
 import { SectionLabel } from "@/ui/components/SectionLabel";
 import { StartLink } from "@/ui/components/StartLink";
 import { TopicProgress } from "@/ui/components/TopicProgress";
+import { Card } from "@/ui/components/ui/card";
 import { t } from "@/ui/strings";
 
 import { FocusCard } from "./FocusCard";
@@ -28,13 +29,13 @@ export function NextNewProblem({ problem, topic, isFocus }: NextNewProblemProps)
       {isFocus ? (
         <FocusCard label={t.today.upNext} problem={problem} meta={details} />
       ) : (
-        <div className="flex items-center justify-between gap-4 rounded-xl border bg-card p-4">
+        <Card className="flex-row items-center justify-between gap-4 p-4">
           <div className="flex min-w-0 flex-col">
             <p className="font-semibold">{problem.title}</p>
             <p className="text-sm text-muted-foreground">{details}</p>
           </div>
           <StartLink problem={problem} variant="outline" />
-        </div>
+        </Card>
       )}
     </section>
   );

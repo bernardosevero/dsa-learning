@@ -8,15 +8,12 @@ import { ExternalLink } from "@/ui/components/ExternalLink";
 import { FocusFrame } from "@/ui/components/FocusFrame";
 import { Overline } from "@/ui/components/Overline";
 import { RatingChip } from "@/ui/components/RatingChip";
-import { Button, buttonVariants } from "@/ui/components/ui/button";
+import { Button } from "@/ui/components/ui/button";
 import { Card } from "@/ui/components/ui/card";
 import { formatDate, formatMonthDay } from "@/ui/format";
-import { cn } from "@/ui/lib/utils";
 import { t } from "@/ui/strings";
 
 import type { SavedLog, ValidLog } from "./logValues";
-
-const LINK_CLASSES = cn(buttonVariants({ variant: "link" }), "gap-1 px-0");
 
 function describeRating(rating: Rating, help: Help): string {
   const word = t.ratings[rating];
@@ -137,14 +134,11 @@ function NowRevealed({ problem, today, previous }: NowRevealedProps) {
       )}
 
       <div className="flex flex-wrap gap-x-5">
-        <ExternalLink href={`https://neetcode.io/solutions/${problem.id}`} className={LINK_CLASSES}>
+        <ExternalLink href={`https://neetcode.io/solutions/${problem.id}`}>
           {t.log.solutionLink}
         </ExternalLink>
         {problem.videoId !== undefined && (
-          <ExternalLink
-            href={`https://www.youtube.com/watch?v=${problem.videoId}`}
-            className={LINK_CLASSES}
-          >
+          <ExternalLink href={`https://www.youtube.com/watch?v=${problem.videoId}`}>
             {t.log.videoLink}
           </ExternalLink>
         )}

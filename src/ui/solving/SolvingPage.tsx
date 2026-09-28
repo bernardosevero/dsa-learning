@@ -1,20 +1,47 @@
+import { EyeOffIcon } from "lucide-react";
 import { useEffect, useEffectEvent } from "react";
-import { useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 
+import { lastAttempt } from "@/domain/schedule";
+import type { Entry, Problem } from "@/domain/types";
 import { useAppData } from "@/ui/AppData";
+import { ExternalLink } from "@/ui/components/ExternalLink";
 import { FocusFrame } from "@/ui/components/FocusFrame";
+import { ProblemKindBadge } from "@/ui/components/ProblemKindBadge";
+import { Alert, AlertDescription } from "@/ui/components/ui/alert";
+import { Button } from "@/ui/components/ui/button";
+import { Card } from "@/ui/components/ui/card";
+import { formatMonthDay } from "@/ui/format";
 import { t } from "@/ui/strings";
 
-import { ReplaceTimerPrompt } from "./ReplaceTimerPrompt";
-import { SolvingScreen } from "./SolvingScreen";
+import { TimerCard } from "./TimerCard";
+
+// The pattern shows on new problems; on reviews only if the user opted in, since spotting it is
+// the exercise.
+function describeProblem(
+  problem: Problem,
+  entries: readonly Entry[],
+  isReview: boolean,
+  shouldShowPattern: boolean,
+): string {
+  const parts: string[] = shouldShowPattern
+    ? [problem.pattern, problem.difficulty]
+    : [problem.difficulty];
+  const lastSolved = isReview ? lastAttempt(entries, problem.id)?.date : undefined;
+  if (lastSolved !== undefined) {
+    parts.push(t.solving.lastSolved(formatMonthDay(lastSolved)));
+  }
+  return parts.join(t.separator);
+}
 
 /**
- * The Solving route: starts this problem's timer on arrival, unless another problem's timer is
- * running, in which case it asks first.
+ * S2: links out to NeetCode, the timer against the time box, and the way to Log. Starts this
+ * problem's timer on arrival, unless another problem's timer is running: then it asks first.
  */
 export function SolvingPage() {
   const { problemId } = useParams();
-  const { problems, file, startTimer } = useAppData();
+  const { problems, states, file, startTimer, clearTimer } = useAppData();
+  const navigate = useNavigate();
   const problem = problems.find((candidate) => candidate.id === problemId);
   const runningProblemId = file.activeTimer?.problemId;
   const runningProblem =
@@ -43,14 +70,83 @@ export function SolvingPage() {
   if (runningProblem !== undefined) {
     return (
       <FocusFrame>
-        <ReplaceTimerPrompt
-          runningProblem={runningProblem}
-          onReplace={() => startTimer(problem.id)}
-        />
+        <Card className="gap-4 p-5">
+          <p className="font-semibold">{t.solving.replaceTimer(runningProblem.title)}</p>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button type="button" onClick={() => startTimer(problem.id)}>
+              {t.solving.replace}
+            </Button>
+            <Button asChild variant="outline">
+              <Link to={`/solve/${runningProblem.id}`}>
+                {t.solving.keepOther(runningProblem.title)}
+              </Link>
+            </Button>
+          </div>
+        </Card>
       </FocusFrame>
     );
   }
+
   const startedAt =
     file.activeTimer?.problemId === problem.id ? file.activeTimer.startedAt : undefined;
-  return <SolvingScreen problem={problem} startedAt={startedAt} />;
+  const isReview = (states[problem.id]?.status ?? "new") !== "new";
+  const shouldShowPattern = !isReview || file.settings.showPatternOnReviews;
+
+  function handleCancel() {
+    clearTimer();
+    void navigate("/");
+  }
+
+  return (
+    <FocusFrame
+      badge={<ProblemKindBadge isReview={isReview} isPatternHidden={!shouldShowPattern} />}
+    >
+      <title>{t.documentTitle(`${t.pages.solving} ${problem.title}`)}</title>
+      <div className="flex flex-col gap-3">
+        <p className="text-sm text-muted-foreground">
+          {describeProblem(problem, file.entries, isReview, shouldShowPattern)}
+        </p>
+        <h1 className="font-serif text-4xl font-semibold">{problem.title}</h1>
+        <p className="text-base">{problem.summary}</p>
+        <div className="flex items-center gap-4">
+          <ExternalLink href={problem.neetcodeUrl} variant="default" className="flex-1">
+            {t.solving.openOnNeetCode}
+          </ExternalLink>
+          <ExternalLink href={problem.leetcodeUrl}>{t.solving.leetCode}</ExternalLink>
+        </div>
+      </div>
+
+      {/* Undefined only in the moment before the timer starts. */}
+      {startedAt !== undefined && (
+        <TimerCard
+          startedAt={startedAt}
+          timeBoxMinutes={file.settings.timeBoxMinutes[problem.difficulty]}
+          difficulty={problem.difficulty}
+        />
+      )}
+      {isReview && (
+        <Alert>
+          <EyeOffIcon aria-hidden />
+          <AlertDescription>{t.solving.reviewTip}</AlertDescription>
+        </Alert>
+      )}
+
+      <div className="flex flex-col gap-3">
+        <Button asChild className="bg-foreground text-background hover:bg-foreground/90">
+          <Link to={`/log/${problem.id}`}>{t.solving.done}</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link to={`/log/${problem.id}?help=solution`}>{t.solving.lookedAtSolution}</Link>
+        </Button>
+        <Button
+          type="button"
+          variant="link"
+          onClick={handleCancel}
+          className="self-center text-muted-foreground"
+        >
+          {t.solving.cancel}
+        </Button>
+      </div>
+    </FocusFrame>
+  );
 }

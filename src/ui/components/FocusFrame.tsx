@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 
+import { Button } from "@/ui/components/ui/button";
 import { t } from "@/ui/strings";
 
 export interface FocusFrameProps {
@@ -17,12 +18,9 @@ export function FocusFrame({ back, badge, children }: FocusFrameProps) {
   return (
     <div className="mx-auto flex min-h-svh max-w-[640px] flex-col px-5">
       <header className="flex items-center justify-between gap-3 py-4">
-        <Link
-          to={link.to}
-          className="flex min-h-11 items-center rounded-sm text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
-        >
-          {link.label}
-        </Link>
+        <Button asChild variant="link" className="px-0 text-muted-foreground">
+          <Link to={link.to}>{link.label}</Link>
+        </Button>
         {badge}
       </header>
       <main className="flex flex-1 flex-col gap-6 pb-8">{children}</main>

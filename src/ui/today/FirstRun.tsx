@@ -3,12 +3,13 @@ import { Link } from "react-router";
 import { INTERVAL_DAYS } from "@/domain/schedule";
 import type { Problem, Rating } from "@/domain/types";
 import { RatingChip } from "@/ui/components/RatingChip";
+import { Button } from "@/ui/components/ui/button";
+import { Card } from "@/ui/components/ui/card";
 import { t } from "@/ui/strings";
 
 import { FocusCard } from "./FocusCard";
 
 const RATINGS: readonly Rating[] = ["hard", "medium", "easy"];
-const LINK_CLASSES = "text-sm text-primary underline-offset-4 hover:underline";
 
 function describeInterval(rating: Rating): string {
   return `${t.ratings[rating]}${t.separator}${t.today.intro.interval(INTERVAL_DAYS[rating])}`;
@@ -26,7 +27,7 @@ export function FirstRun({ firstProblem }: FirstRunProps) {
         <h2 className="font-serif text-2xl font-semibold">{t.today.intro.title}</h2>
         <p className="text-muted-foreground">{t.today.intro.summary}</p>
       </div>
-      <div className="flex flex-col gap-3 rounded-xl border bg-card p-5">
+      <Card className="gap-3 p-5">
         <ol className="flex flex-col gap-3">
           {t.today.intro.steps.map((step, index) => (
             <li key={step} className="flex gap-3">
@@ -40,19 +41,19 @@ export function FirstRun({ firstProblem }: FirstRunProps) {
             <RatingChip key={rating} rating={rating} label={describeInterval(rating)} />
           ))}
         </div>
-      </div>
+      </Card>
       <FocusCard
         label={t.today.firstProblem}
         problem={firstProblem}
         meta={`${firstProblem.pattern}${t.separator}${firstProblem.difficulty}`}
       />
-      <div className="flex flex-col gap-2">
-        <Link to="/problems" className={LINK_CLASSES}>
-          {t.today.intro.markSolved}
-        </Link>
-        <Link to="/settings" className={LINK_CLASSES}>
-          {t.today.intro.importData}
-        </Link>
+      <div className="flex flex-col items-start">
+        <Button asChild variant="link" className="px-0">
+          <Link to="/problems">{t.today.intro.markSolved}</Link>
+        </Button>
+        <Button asChild variant="link" className="px-0">
+          <Link to="/settings">{t.today.intro.importData}</Link>
+        </Button>
       </div>
     </>
   );
