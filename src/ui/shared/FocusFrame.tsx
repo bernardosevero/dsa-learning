@@ -19,7 +19,8 @@ export function FocusFrame({ back, badge, children }: FocusFrameProps) {
   const link = back ?? { to: "/", label: t.solving.backToToday };
   return (
     <PageSheet
-      mainClassName="flex flex-col gap-6"
+      isReadable
+      contentClassName="flex flex-col gap-6"
       header={
         <>
           <Button asChild variant="link" className="px-0 text-muted-foreground">
