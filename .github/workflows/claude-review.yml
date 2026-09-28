@@ -58,6 +58,17 @@ jobs:
                the spoiler rule), domain purity, the code style, tests for every behaviour the linked
                issue requires, and the linked issue's acceptance criteria. Only concrete problems
                count, each with file:line and a suggested fix.
+               For changes under src/ui/, also review against
+               .claude/skills/working-on-ui/SKILL.md and its design.md, and flag:
+               - a control or surface not built from a shadcn/ui component in
+                 src/ui/components/ui/: a hand-rolled button, badge, card, input, textarea or
+                 radio, or their classes copied onto a plain element;
+               - the same markup or class string repeated across files instead of one shared
+                 piece;
+               - code split into many tiny files, or page/screen pairs, only to fit a size, when
+                 it would read better in one file;
+               - touch targets under 44px (`min-h-11`), and times, dates or counts not in
+                 `font-mono`.
             2. Post one top-level comment with `gh pr comment`. Start it with "@OWNER ready for your
                review" (using the OWNER above), then your findings, or "No problems found.". Use
                `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) for
