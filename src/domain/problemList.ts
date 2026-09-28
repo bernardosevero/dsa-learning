@@ -64,6 +64,18 @@ export function groupByTopic(
   return [...rowsByPattern].map(([pattern, rows]) => countTopic(pattern, rows));
 }
 
+function isInProgress(topic: TopicGroup): boolean {
+  return topic.startedOrMastered > 0 || topic.rows.some((row) => row.isUpNext);
+}
+
+/**
+ * Returns the topics for Today's "Progress by topic": each with a started or mastered problem,
+ * plus the next new problem's topic, in NeetCode order.
+ */
+export function listTopicsInProgress(topics: readonly TopicGroup[]): TopicGroup[] {
+  return topics.filter(isInProgress);
+}
+
 function matchesFilter(row: ProblemRow, filter: ProblemFilter): boolean {
   return filter === "all" || row.status === filter;
 }

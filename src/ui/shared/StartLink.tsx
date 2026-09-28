@@ -6,7 +6,7 @@ import { t } from "@/ui/shared/strings";
 
 const BUTTON_PROPS = {
   primary: { variant: "default", className: "px-5" },
-  outline: { variant: "outline", className: "px-5 text-primary" },
+  outline: { variant: "outline", className: "border-primary px-5 text-primary" },
   muted: { variant: "outline", className: "px-5 text-muted-foreground" },
 } as const;
 

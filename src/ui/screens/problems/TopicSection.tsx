@@ -7,10 +7,9 @@ import { Button } from "@/ui/primitives/button";
 import { Card } from "@/ui/primitives/card";
 import { cn } from "@/ui/primitives/cn";
 import { t } from "@/ui/shared/strings";
+import { TopicBar } from "@/ui/shared/TopicBar";
 
 import { ProblemTableRow } from "./ProblemTableRow";
-
-const PERCENT = 100;
 
 export interface TopicSectionProps {
   topic: TopicGroup;
@@ -59,7 +58,7 @@ export function TopicSection({
                 {t.problems.topicMastered(topic.mastered)}
               </span>
             )}
-            <TopicProgressBar topic={topic} />
+            <TopicBar topic={topic} className="hidden w-24 sm:flex" />
             <span aria-hidden className="font-mono text-sm text-muted-foreground">
               {topic.startedOrMastered}/{topic.total}
             </span>
@@ -110,24 +109,5 @@ export function TopicSection({
         )}
       </Card>
     </section>
-  );
-}
-
-interface TopicProgressBarProps {
-  topic: TopicGroup;
-}
-
-/** A 96px bar: mastered in plum, then started in green, over the rest of the topic. */
-function TopicProgressBar({ topic }: TopicProgressBarProps) {
-  const masteredShare = (topic.mastered / topic.total) * PERCENT;
-  const startedShare = ((topic.startedOrMastered - topic.mastered) / topic.total) * PERCENT;
-  return (
-    <span
-      aria-hidden
-      className="hidden h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-border sm:flex"
-    >
-      <span className="bg-status-mastered" style={{ width: `${masteredShare}%` }} />
-      <span className="bg-primary" style={{ width: `${startedShare}%` }} />
-    </span>
   );
 }

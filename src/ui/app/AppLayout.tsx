@@ -17,7 +17,7 @@ const NAV_LINK_CLASSES =
   "flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 border-transparent py-1.5 text-xs text-muted-foreground nav:flex-row nav:border-b-2 nav:py-0 nav:text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[current=page]:font-semibold aria-[current=page]:text-foreground nav:flex-none nav:aria-[current=page]:border-primary";
 
 export interface AppLayoutProps {
-  /** Lets the sheet widen on wide windows. Today turns it on with its sidebar (#76). */
+  /** Lets the sheet widen on wide windows; Today uses it for its sidebar. */
   isWide?: boolean;
 }
 

@@ -40,6 +40,15 @@ export const en = {
       "Nothing is scheduled any more. You can still practice any problem from Problems; rating it Medium or Hard puts it back in the rotation.",
     openProblems: "Open Problems",
     browseAll: (count: number) => `Browse all ${count} problems`,
+    progress: {
+      title: "Progress by topic",
+      legendMastered: "mastered",
+      legendStarted: "started",
+      // Read by screen readers, since the bar's colours carry the split.
+      topicSummary: (mastered: number, started: number, total: number) =>
+        `${mastered} mastered, ${started} started, of ${total}`,
+      allTopics: (count: number) => `All ${count} topics in Problems`,
+    },
     intro: {
       title: "Re-solve problems right before you forget them.",
       summary:

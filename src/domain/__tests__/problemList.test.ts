@@ -6,6 +6,7 @@ import {
   countByStatus,
   filterTopics,
   groupByTopic,
+  listTopicsInProgress,
   statusOf,
   type TopicGroup,
 } from "../problemList";
@@ -116,6 +117,47 @@ describe("groupByTopic", () => {
       topic.rows.filter((row) => row.isUpNext).map((row) => row.problem.id),
     );
     expect(upNextIds).toEqual(["two-sum"]);
+  });
+});
+
+describe("listTopicsInProgress", () => {
+  it("leaves out a topic with nothing started that isn't the next new problem's topic", () => {
+    const entries = [anAttempt({ problemId: "contains-duplicate" })];
+
+    const topics = listTopicsInProgress(topicsFor(entries));
+
+    expect(topics.map((topic) => topic.pattern)).toEqual(["Arrays & Hashing"]);
+  });
+
+  it("keeps topics in NeetCode order once any of their problems isn't new", () => {
+    const entries = [
+      anAttempt({ id: "later-topic", problemId: "two-sum-ii" }),
+      anAttempt({ id: "earlier-topic", problemId: "contains-duplicate" }),
+    ];
+
+    const topics = listTopicsInProgress(topicsFor(entries));
+
+    expect(topics.map((topic) => topic.pattern)).toEqual(["Arrays & Hashing", TWO_POINTERS]);
+  });
+
+  it("includes the next new problem's topic even with nothing started in it", () => {
+    const entries = [
+      anAttempt({ id: "first", problemId: "contains-duplicate" }),
+      anAttempt({ id: "second", problemId: "valid-anagram" }),
+      anAttempt({ id: "third", problemId: "two-sum" }),
+    ];
+
+    const [, twoPointers] = listTopicsInProgress(topicsFor(entries));
+
+    expect(twoPointers).toMatchObject({ pattern: TWO_POINTERS, startedOrMastered: 0, total: 2 });
+  });
+
+  it("counts a mastered problem as started and as mastered", () => {
+    const entries = [aMasteredMark({ problemId: "contains-duplicate" })];
+
+    const [arrays] = listTopicsInProgress(topicsFor(entries));
+
+    expect(arrays).toMatchObject({ startedOrMastered: 1, mastered: 1, total: 3 });
   });
 });
 
