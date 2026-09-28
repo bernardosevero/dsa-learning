@@ -70,19 +70,10 @@ export function SolvingPage() {
   if (runningProblem !== undefined) {
     return (
       <FocusFrame>
-        <Card className="gap-4 p-5">
-          <p className="font-semibold">{t.solving.replaceTimer(runningProblem.title)}</p>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button type="button" onClick={() => startTimer(problem.id)}>
-              {t.solving.replace}
-            </Button>
-            <Button asChild variant="outline">
-              <Link to={`/solve/${runningProblem.id}`}>
-                {t.solving.keepOther(runningProblem.title)}
-              </Link>
-            </Button>
-          </div>
-        </Card>
+        <ReplaceTimerPrompt
+          runningProblem={runningProblem}
+          onReplace={() => startTimer(problem.id)}
+        />
       </FocusFrame>
     );
   }
@@ -148,5 +139,30 @@ export function SolvingPage() {
         </Button>
       </div>
     </FocusFrame>
+  );
+}
+
+interface ReplaceTimerPromptProps {
+  /** The problem whose timer is already running. */
+  runningProblem: Problem;
+  onReplace: () => void;
+}
+
+/** Asked before starting this problem's timer would throw away another problem's. */
+function ReplaceTimerPrompt({ runningProblem, onReplace }: ReplaceTimerPromptProps) {
+  return (
+    <Card className="gap-4 p-5">
+      <p className="font-semibold">{t.solving.replaceTimer(runningProblem.title)}</p>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Button type="button" onClick={onReplace}>
+          {t.solving.replace}
+        </Button>
+        <Button asChild variant="outline">
+          <Link to={`/solve/${runningProblem.id}`}>
+            {t.solving.keepOther(runningProblem.title)}
+          </Link>
+        </Button>
+      </div>
+    </Card>
   );
 }
