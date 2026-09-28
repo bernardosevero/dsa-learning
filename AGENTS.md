@@ -32,7 +32,7 @@ scripts/              one-off Node scripts, run with `pnpm tsx`
 e2e/                  Playwright tests of the main loop
 ```
 
-`main.tsx` and `index.css` stay at the `src/` root as the Vite entry point. #59 moves the code into this layout; until it merges, files still sit in the old places.
+`main.tsx` and `index.css` stay at the `src/` root as the Vite entry point.
 
 Dependencies point inward: `ui` → `storage` → `domain`, and `ui` → `domain`. `src/domain/` is **pure**: plain TypeScript with no React, no storage and no browser APIs, so it is trivially testable and can move to a server. A lint rule enforces this.
 
