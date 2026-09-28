@@ -7,7 +7,7 @@ The approved design from #27, written as build instructions. The tokens are alre
 
 **Issue vs design:** the issue decides behaviour, data and tests; its quoted wording wins too. This file decides layout, styling and any wording the issue leaves open. If they truly conflict, ask in the PR.
 
-Once every screen of M4 is built, the code is the reference: delete this file in the last M4 PR.
+**Round 2** (from dogfooding) adds the desktop sheet, Progress by topic, the timer restart and narrow Problems rows; they're built in #75–#78, and their pictures are in the Notion page's "Round 2" part of "Screens". Once those four are merged, the code is the reference: delete this file in the last of them.
 
 ## Look
 
