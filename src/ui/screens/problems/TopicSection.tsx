@@ -50,10 +50,12 @@ export function TopicSection({
             <ChevronRightIcon aria-hidden className={cn(isExpanded && "rotate-90")} />
             <span className="min-w-0 flex-1 font-semibold">{topic.pattern}</span>
             {topic.due > 0 && (
-              <span className="text-sm text-primary">{t.problems.topicDue(topic.due)}</span>
+              <span className="font-mono text-sm text-primary">
+                {t.problems.topicDue(topic.due)}
+              </span>
             )}
             {topic.mastered > 0 && (
-              <span className="text-sm text-status-mastered">
+              <span className="font-mono text-sm text-status-mastered">
                 {t.problems.topicMastered(topic.mastered)}
               </span>
             )}
