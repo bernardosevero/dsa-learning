@@ -38,13 +38,16 @@ The app runs at http://localhost:5173.
 |---|---|
 | `pnpm dev` | Starts the dev server with hot reload |
 | `pnpm test` | Runs the tests once (`pnpm test:watch` re-runs them on every change) |
+| `pnpm test:e2e` | Builds the app, serves it and runs the Playwright tests in `e2e/` against it in Chromium |
 | `pnpm lint` | Runs ESLint, including the rule that keeps `src/domain` pure |
 | `pnpm typecheck` | Type-checks the project with TypeScript |
 | `pnpm format` | Formats the code with Prettier |
 | `pnpm build` | Type-checks and builds the static site into `dist/` |
 | `pnpm preview` | Serves the built `dist/` locally |
 
-CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` on every pull request, so run the same four before opening one.
+CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` on every pull request, so run the same four before opening one. A separate CI job runs `pnpm test:e2e`.
+
+The end-to-end tests need a Chromium that matches the installed Playwright version. Install it once with `pnpm exec playwright install chromium`. If your machine already has a different Chromium build (some sandboxes preinstall one), point the tests at it instead with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome pnpm test:e2e`.
 
 The problem list in `src/data/problems.json` is committed, so the app needs no network. To regenerate it (this needs network access):
 
