@@ -101,7 +101,7 @@ export const en = {
     save: "Save",
     saveShortcut: "Ctrl+Enter",
     ratingRequired: "Choose how it felt.",
-    timeInvalid: "Enter the time in minutes, from 1 to 600.",
+    timeInvalid: (min: number, max: number) => `Enter the time in minutes, from ${min} to ${max}.`,
     logged: (rating: string) => `Logged · ${rating}`,
     nextResolve: (date: string) => `Next re-solve: ${date}`,
     mastered: "Mastered!",

@@ -6,15 +6,17 @@ import type { Attempt, Help, Problem, Rating } from "@/domain/types";
 import { useAppData } from "@/ui/AppData";
 import { ExternalLink } from "@/ui/components/ExternalLink";
 import { FocusFrame } from "@/ui/components/FocusFrame";
+import { Overline } from "@/ui/components/Overline";
 import { RatingChip } from "@/ui/components/RatingChip";
-import { Button } from "@/ui/components/ui/button";
+import { Button, buttonVariants } from "@/ui/components/ui/button";
+import { Card } from "@/ui/components/ui/card";
 import { formatDate, formatMonthDay } from "@/ui/format";
+import { cn } from "@/ui/lib/utils";
 import { t } from "@/ui/strings";
 
-import type { SavedLog, ValidLog } from "./logForm";
+import type { SavedLog, ValidLog } from "./logValues";
 
-const LABEL_CLASSES = "text-xs font-semibold tracking-widest text-muted-foreground uppercase";
-const LINK_CLASSES = "flex min-h-11 items-center gap-1 text-sm text-primary hover:underline";
+const LINK_CLASSES = cn(buttonVariants({ variant: "link" }), "gap-1 px-0");
 
 function describeRating(rating: Rating, help: Help): string {
   const word = t.ratings[rating];
@@ -51,41 +53,34 @@ export function LoggedView({ problem, saved, onUndo }: LoggedViewProps) {
       </div>
 
       {state?.status === "active" && (
-        <div className="flex flex-col gap-1 rounded-xl border bg-card p-5">
-          <p className={LABEL_CLASSES}>{t.log.nextResolve(state.dueDate)}</p>
+        <Card className="gap-1 p-5">
+          <Overline>{t.log.nextResolve(state.dueDate)}</Overline>
           <p className="font-mono text-3xl">{formatDate(state.dueDate)}</p>
           <p className="font-mono text-sm text-muted-foreground">
             {t.today.inDays(daysBetween(todayDate, state.dueDate))}
           </p>
-        </div>
+        </Card>
       )}
 
       {/* Mastered is quiet on purpose: no animation. */}
       {state?.status === "mastered" && (
-        <div className="flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center">
+        <Card className="items-center gap-3 p-6 text-center">
           <span className="rounded-full border-2 border-status-mastered p-1.5">
             <CircleCheckBigIcon aria-hidden className="size-8 text-status-mastered" />
           </span>
-          <p className="text-sm font-semibold tracking-widest text-status-mastered uppercase">
-            {t.log.mastered}
-          </p>
+          <Overline className="text-sm text-status-mastered">{t.log.mastered}</Overline>
           <p className="text-muted-foreground">{t.log.masteredDetail}</p>
           <p className="font-mono text-sm">{t.log.masteredCount(masteredCount, problems.length)}</p>
-        </div>
+        </Card>
       )}
 
       <NowRevealed problem={problem} today={saved.log} previous={saved.previous} />
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Button asChild className="min-h-11 flex-1">
+        <Button asChild className="flex-1">
           <Link to="/">{t.log.backToToday}</Link>
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onUndo}
-          className="min-h-11 bg-card shadow-none"
-        >
+        <Button type="button" variant="outline" onClick={onUndo}>
           {t.log.undo}
         </Button>
       </div>
@@ -102,20 +97,17 @@ interface NowRevealedProps {
 /** Everything the spoiler rule hid until now: the pattern, earlier insights, solution and video. */
 function NowRevealed({ problem, today, previous }: NowRevealedProps) {
   return (
-    <section
-      aria-labelledby="now-revealed"
-      className="flex flex-col gap-4 rounded-xl border bg-card p-5"
-    >
-      <h2 id="now-revealed" className={`flex items-center gap-2 ${LABEL_CLASSES}`}>
+    <Card role="region" aria-labelledby="now-revealed" className="gap-4 p-5">
+      <Overline as="h2" id="now-revealed" className="flex items-center gap-2">
         <EyeIcon aria-hidden className="size-4" />
         {t.log.nowRevealed}
-      </h2>
+      </Overline>
       <p className="font-serif text-2xl font-semibold">{problem.pattern}</p>
 
       {previous !== null && (
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col items-start gap-1.5">
-            <p className="text-xs text-muted-foreground">
+            <p className="font-mono text-xs text-muted-foreground">
               {t.log.lastTime(formatMonthDay(previous.date))}
             </p>
             <p className="font-mono text-xl">{t.log.minutes(previous.timeMinutes)}</p>
@@ -128,7 +120,7 @@ function NowRevealed({ problem, today, previous }: NowRevealedProps) {
             <p className="text-xs text-muted-foreground">{t.log.todayColumn}</p>
             <p className="font-mono text-xl">{t.log.minutes(today.timeMinutes)}</p>
             <RatingChip rating={today.rating} label={describeRating(today.rating, today.help)} />
-            <p className="text-sm text-primary">
+            <p className="font-mono text-sm text-primary">
               {describeDifference(today.timeMinutes, previous.timeMinutes)}
             </p>
           </div>
@@ -157,6 +149,6 @@ function NowRevealed({ problem, today, previous }: NowRevealedProps) {
           </ExternalLink>
         )}
       </div>
-    </section>
+    </Card>
   );
 }

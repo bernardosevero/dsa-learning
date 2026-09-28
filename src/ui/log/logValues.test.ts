@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import { initialLogValues, minutesSince, validateLog } from "./logForm";
+import { countMinutesSince, createInitialLogValues, validateLog } from "./logValues";
 
 const STARTED_AT = "2026-10-01T10:00:00.000Z";
 
-describe("minutesSince", () => {
+describe("countMinutesSince", () => {
   it.each([
     ["2026-10-01T10:00:10.000Z", 1],
     ["2026-10-01T10:19:01.000Z", 20],
     ["2026-10-01T10:20:00.000Z", 20],
   ])("rounds the time up to whole minutes, at least 1 (%s)", (now, expected) => {
-    const minutes = minutesSince(STARTED_AT, new Date(now));
+    const minutes = countMinutesSince(STARTED_AT, new Date(now));
 
     expect(minutes).toBe(expected);
   });
@@ -18,7 +18,11 @@ describe("minutesSince", () => {
 
 describe("validateLog", () => {
   it("trims the free text", () => {
-    const values = { ...initialLogValues(null, 20), rating: "easy" as const, keyInsight: "  a  " };
+    const values = {
+      ...createInitialLogValues(null, 20),
+      rating: "easy" as const,
+      keyInsight: "  a  ",
+    };
 
     const result = validateLog(values);
 
@@ -29,7 +33,7 @@ describe("validateLog", () => {
   });
 
   it.each(["", "0", "601", "2.5"])("rejects the time %j", (timeText) => {
-    const values = { ...initialLogValues(null, null), rating: "easy" as const, timeText };
+    const values = { ...createInitialLogValues(null, null), rating: "easy" as const, timeText };
 
     const result = validateLog(values);
 

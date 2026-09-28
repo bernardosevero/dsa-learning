@@ -4,18 +4,19 @@ import { useParams, useSearchParams } from "react-router";
 import { lastAttempt } from "@/domain/schedule";
 import { useAppData } from "@/ui/AppData";
 import { FocusFrame } from "@/ui/components/FocusFrame";
+import { Overline } from "@/ui/components/Overline";
 import { ProblemKindBadge } from "@/ui/components/ProblemKindBadge";
 import { t } from "@/ui/strings";
 
 import { LogForm } from "./LogForm";
 import { LoggedView } from "./LoggedView";
 import {
-  initialLogValues,
-  minutesSince,
-  valuesFromLog,
+  countMinutesSince,
+  createInitialLogValues,
+  toLogValues,
   type SavedLog,
   type ValidLog,
-} from "./logForm";
+} from "./logValues";
 
 /** S3: log an attempt, then see what comes next and what was hidden. Undo goes back to the form. */
 export function LogPage() {
@@ -30,10 +31,10 @@ export function LogPage() {
     if (timer === undefined || timer.problemId !== problemId) {
       return null;
     }
-    return minutesSince(timer.startedAt, new Date());
+    return countMinutesSince(timer.startedAt, new Date());
   });
   const [formValues, setFormValues] = useState(() =>
-    initialLogValues(searchParams.get("help"), timerMinutes),
+    createInitialLogValues(searchParams.get("help"), timerMinutes),
   );
   const [saved, setSaved] = useState<SavedLog | null>(null);
 
@@ -76,7 +77,7 @@ export function LogPage() {
     if (entry !== undefined) {
       deleteEntry(entry.id);
     }
-    setFormValues(valuesFromLog(savedLog.log));
+    setFormValues(toLogValues(savedLog.log));
     setSaved(null);
   }
 
@@ -94,9 +95,7 @@ export function LogPage() {
     >
       <title>{t.documentTitle(`${t.pages.logAttempt} ${problem.title}`)}</title>
       <div className="flex flex-col gap-1">
-        <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-          {t.log.label}
-        </p>
+        <Overline>{t.log.label}</Overline>
         <h1 className="font-serif text-3xl font-semibold">{problem.title}</h1>
       </div>
       <LogForm

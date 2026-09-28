@@ -48,8 +48,12 @@ function renderLog(path: string, file: SaveFile = aSaveFile()) {
   );
 }
 
-function ratingRadio(name: string): HTMLInputElement {
-  return screen.getByRole("radio", { name: new RegExp(`^${name}`) });
+function ratingRadio(name: string): HTMLElement {
+  return screen.getByRole("radio", { name });
+}
+
+function isChecked(radio: HTMLElement): boolean {
+  return radio.getAttribute("aria-checked") === "true";
 }
 
 beforeEach(() => {
@@ -62,16 +66,21 @@ afterEach(() => {
 });
 
 describe("LogPage form", () => {
-  it("pre-selects Hard when the user looked at the solution, and lets them change it", async () => {
+  it("pre-selects Hard and Solution when the user looked at the solution", () => {
+    renderLog("/log/two-sum?help=solution");
+
+    expect(isChecked(ratingRadio("Hard"))).toBe(true);
+    expect(isChecked(screen.getByRole("radio", { name: "Solution" }))).toBe(true);
+  });
+
+  it("lets the user change the pre-selected Hard", async () => {
     const user = userEvent.setup();
     renderLog("/log/two-sum?help=solution");
-    expect(ratingRadio("Hard").checked).toBe(true);
-    expect(screen.getByRole("radio", { name: "Solution" })).toHaveProperty("checked", true);
 
     await user.click(ratingRadio("Medium"));
 
-    expect(ratingRadio("Medium").checked).toBe(true);
-    expect(ratingRadio("Hard").checked).toBe(false);
+    expect(isChecked(ratingRadio("Medium"))).toBe(true);
+    expect(isChecked(ratingRadio("Hard"))).toBe(false);
   });
 
   it("says the pattern is hidden on a review, unless the user opted in to see it", () => {
@@ -176,11 +185,19 @@ describe("LogPage saving", () => {
     expect(screen.getByText("Next re-solve: 2026-10-03")).toBeDefined();
   });
 
+  it("keeps the pattern and earlier insights hidden while logging a review", () => {
+    const previous = anAttempt({ keyInsight: "store what you've seen" });
+
+    renderLog("/log/two-sum", aSaveFile({ entries: [previous] }));
+
+    expect(screen.queryByText("Arrays & Hashing")).toBeNull();
+    expect(screen.queryByText("store what you've seen")).toBeNull();
+  });
+
   it("reveals the pattern, the last attempt's insight and the solution link once saved", async () => {
     const user = userEvent.setup();
     const previous = anAttempt({ keyInsight: "store what you've seen" });
     renderLog("/log/two-sum", aSaveFile({ entries: [previous] }));
-    expect(screen.queryByText("Arrays & Hashing")).toBeNull();
     await user.click(ratingRadio("Medium"));
     await user.type(screen.getByRole("spinbutton", { name: "Time" }), "15");
 
@@ -219,7 +236,7 @@ describe("LogPage saving", () => {
     await user.click(screen.getByRole("button", { name: "Undo" }));
 
     expect(readStoredFile().entries[0]?.deletedAt).toBeDefined();
-    expect(ratingRadio("Hard").checked).toBe(true);
+    expect(isChecked(ratingRadio("Hard"))).toBe(true);
     expect(screen.getByRole("spinbutton", { name: "Time" })).toHaveProperty("value", "30");
   });
 });

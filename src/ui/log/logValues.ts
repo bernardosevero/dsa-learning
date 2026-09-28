@@ -1,8 +1,9 @@
 import type { Attempt, Help, Rating } from "@/domain/types";
 import { t } from "@/ui/strings";
 
-const MIN_MINUTES = 1;
-const MAX_MINUTES = 600;
+/** The shortest and longest attempt the form accepts, in minutes. */
+export const MIN_MINUTES = 1;
+export const MAX_MINUTES = 600;
 const MILLISECONDS_PER_MINUTE = 60_000;
 
 /** The Log form as typed, before validation. */
@@ -30,7 +31,10 @@ export interface LogErrors {
 }
 
 /** Returns the first values of the form: help from `?help=`, and Hard when it's "solution". */
-export function initialLogValues(helpParam: string | null, timerMinutes: number | null): LogValues {
+export function createInitialLogValues(
+  helpParam: string | null,
+  timerMinutes: number | null,
+): LogValues {
   const help: Help = helpParam === "solution" ? "solution" : "none";
   return {
     rating: help === "solution" ? "hard" : null,
@@ -42,7 +46,7 @@ export function initialLogValues(helpParam: string | null, timerMinutes: number 
 }
 
 /** Returns the whole minutes since `startedAt`, rounded up and at least 1. */
-export function minutesSince(startedAt: string, now: Date): number {
+export function countMinutesSince(startedAt: string, now: Date): number {
   const elapsed = now.getTime() - Date.parse(startedAt);
   return Math.max(MIN_MINUTES, Math.ceil(elapsed / MILLISECONDS_PER_MINUTE));
 }
@@ -60,7 +64,7 @@ export function validateLog(
   if (values.rating === null || !isTimeValid) {
     const errors: LogErrors = {};
     if (values.rating === null) errors.rating = t.log.ratingRequired;
-    if (!isTimeValid) errors.time = t.log.timeInvalid;
+    if (!isTimeValid) errors.time = t.log.timeInvalid(MIN_MINUTES, MAX_MINUTES);
     return { ok: false, errors };
   }
   return {
@@ -83,6 +87,6 @@ export interface SavedLog {
 }
 
 /** Returns the form values that re-open a saved log, for Undo. */
-export function valuesFromLog(log: ValidLog): LogValues {
+export function toLogValues(log: ValidLog): LogValues {
   return { ...log, timeText: String(log.timeMinutes) };
 }

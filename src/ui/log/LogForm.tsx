@@ -4,24 +4,40 @@ import { INTERVAL_DAYS } from "@/domain/schedule";
 import type { Help, Rating } from "@/domain/types";
 import { RATING_STYLES } from "@/ui/components/RatingChip";
 import { Button } from "@/ui/components/ui/button";
+import { Card } from "@/ui/components/ui/card";
+import { Input } from "@/ui/components/ui/input";
+import { Label } from "@/ui/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/ui/components/ui/radio-group";
+import { Textarea } from "@/ui/components/ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "@/ui/components/ui/toggle-group";
 import { cn } from "@/ui/lib/utils";
 import { t } from "@/ui/strings";
 
-import { validateLog, type LogErrors, type LogValues, type ValidLog } from "./logForm";
+import {
+  MAX_MINUTES,
+  MIN_MINUTES,
+  validateLog,
+  type LogErrors,
+  type LogValues,
+  type ValidLog,
+} from "./logValues";
 
 const RATINGS: readonly Rating[] = ["hard", "medium", "easy"];
 const SHORTCUT_RATINGS: Record<string, Rating> = { "1": "hard", "2": "medium", "3": "easy" };
 const HELPS: readonly Help[] = ["none", "hint", "solution"];
-const INPUT_CLASSES =
-  "rounded-lg border bg-card outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
-const FOCUS_WITHIN_CLASSES = "has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50";
+const FIELD_LABEL_CLASSES = "text-sm font-semibold";
 
 // Typing a digit into the time or a text box must not change the rating.
 function isTextField(target: EventTarget | null): boolean {
-  if (target instanceof HTMLTextAreaElement) {
-    return true;
-  }
-  return target instanceof HTMLInputElement && target.type !== "radio";
+  return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
+}
+
+function findRating(value: string): Rating | undefined {
+  return RATINGS.find((rating) => rating === value);
+}
+
+function findHelp(value: string): Help | undefined {
+  return HELPS.find((help) => help === value);
 }
 
 export interface LogFormProps {
@@ -40,14 +56,6 @@ export function LogForm({ initialValues, isTimeFromTimer, onSave }: LogFormProps
     setValues((current) => ({ ...current, ...changes }));
   }
 
-  // Looking at the solution pre-selects Hard, but never overrides a rating the user chose.
-  function changeHelp(help: Help) {
-    setValues((current) => {
-      const rating = help === "solution" && current.rating === null ? "hard" : current.rating;
-      return { ...current, help, rating };
-    });
-  }
-
   function submit() {
     const result = validateLog(values);
     if (result.ok) {
@@ -60,6 +68,26 @@ export function LogForm({ initialValues, isTimeFromTimer, onSave }: LogFormProps
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     submit();
+  }
+
+  function handleRatingChange(value: string) {
+    const rating = findRating(value);
+    if (rating !== undefined) {
+      update({ rating });
+    }
+  }
+
+  // Looking at the solution pre-selects Hard, but never overrides a rating the user chose.
+  // A single ToggleGroup reports "" when the chosen item is pressed again; help stays chosen.
+  function handleHelpChange(value: string) {
+    const help = findHelp(value);
+    if (help === undefined) {
+      return;
+    }
+    setValues((current) => {
+      const rating = help === "solution" && current.rating === null ? "hard" : current.rating;
+      return { ...current, help, rating };
+    });
   }
 
   // 1/2/3 choose a rating outside text fields; Ctrl+Enter (or ⌘+Enter) saves from anywhere.
@@ -87,43 +115,50 @@ export function LogForm({ initialValues, isTimeFromTimer, onSave }: LogFormProps
 
   return (
     <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <fieldset aria-describedby={errors.rating === undefined ? undefined : "rating-error"}>
-        <legend className="mb-3 font-semibold">{t.log.ratingLegend}</legend>
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
+        <p id="log-rating-label" className="font-semibold">
+          {t.log.ratingLegend}
+        </p>
+        <RadioGroup
+          value={values.rating ?? ""}
+          onValueChange={handleRatingChange}
+          aria-labelledby="log-rating-label"
+          aria-describedby={errors.rating === undefined ? undefined : "rating-error"}
+          className="gap-2"
+        >
           {RATINGS.map((rating, index) => (
             <RatingCard
               key={rating}
               rating={rating}
               shortcut={String(index + 1)}
               isSelected={values.rating === rating}
-              onSelect={() => update({ rating })}
             />
           ))}
-        </div>
+        </RadioGroup>
         {errors.rating !== undefined && (
-          <p id="rating-error" role="alert" className="mt-2 text-sm text-destructive">
+          <p id="rating-error" role="alert" className="text-sm text-destructive">
             {errors.rating}
           </p>
         )}
-      </fieldset>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="log-time" className="text-sm font-semibold">
+          <Label htmlFor="log-time" className={FIELD_LABEL_CLASSES}>
             {t.log.time}
-          </label>
+          </Label>
           <div className="flex items-center gap-2">
-            <input
+            <Input
               id="log-time"
               type="number"
               inputMode="numeric"
-              min={1}
-              max={600}
+              min={MIN_MINUTES}
+              max={MAX_MINUTES}
               value={values.timeText}
               onChange={(event) => update({ timeText: event.target.value })}
               aria-invalid={errors.time !== undefined}
               aria-describedby={errors.time === undefined ? undefined : "time-error"}
-              className={cn(INPUT_CLASSES, "min-h-10 w-24 px-3 font-mono")}
+              className="w-24 font-mono"
             />
             <span className="text-sm text-muted-foreground">{t.log.minutesSuffix}</span>
           </div>
@@ -135,74 +170,72 @@ export function LogForm({ initialValues, isTimeFromTimer, onSave }: LogFormProps
           )}
         </div>
 
-        <fieldset className="flex flex-col gap-1.5">
-          <legend className="mb-1.5 text-sm font-semibold">{t.log.helpLegend}</legend>
-          <div className="flex rounded-lg border bg-card p-0.5">
+        <div className="flex flex-col gap-1.5">
+          <p id="log-help-label" className={FIELD_LABEL_CLASSES}>
+            {t.log.helpLegend}
+          </p>
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            value={values.help}
+            onValueChange={handleHelpChange}
+            aria-labelledby="log-help-label"
+            className="w-full rounded-lg bg-card"
+          >
             {HELPS.map((help) => (
-              <label
+              <ToggleGroupItem
                 key={help}
-                className={cn(
-                  "flex min-h-10 flex-1 cursor-pointer items-center justify-center rounded-md text-sm text-muted-foreground has-[:checked]:bg-accent has-[:checked]:font-semibold has-[:checked]:text-primary",
-                  FOCUS_WITHIN_CLASSES,
-                )}
+                value={help}
+                className="text-muted-foreground data-[state=on]:bg-accent data-[state=on]:font-semibold data-[state=on]:text-primary"
               >
-                <input
-                  type="radio"
-                  name="help"
-                  value={help}
-                  checked={values.help === help}
-                  onChange={() => changeHelp(help)}
-                  className="sr-only"
-                />
                 {t.log.helps[help]}
-              </label>
+              </ToggleGroupItem>
             ))}
-          </div>
-        </fieldset>
+          </ToggleGroup>
+        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="log-insight" className="text-sm font-semibold">
+        <Label htmlFor="log-insight" className={FIELD_LABEL_CLASSES}>
           {t.log.keyInsight}
-        </label>
+        </Label>
         <p id="log-insight-hint" className="text-xs text-muted-foreground">
           {t.log.keyInsightHint}
         </p>
-        <textarea
+        <Textarea
           id="log-insight"
           rows={2}
           value={values.keyInsight}
           placeholder={t.log.keyInsightPlaceholder}
           aria-describedby="log-insight-hint"
           onChange={(event) => update({ keyInsight: event.target.value })}
-          className={cn(INPUT_CLASSES, "p-3 text-sm")}
         />
       </div>
 
       {isNotesOpen ? (
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="log-notes" className="text-sm font-semibold">
+          <Label htmlFor="log-notes" className={FIELD_LABEL_CLASSES}>
             {t.log.notes}
-          </label>
-          <textarea
+          </Label>
+          <Textarea
             id="log-notes"
             rows={3}
             value={values.notes}
             onChange={(event) => update({ notes: event.target.value })}
-            className={cn(INPUT_CLASSES, "p-3 text-sm")}
           />
         </div>
       ) : (
-        <button
+        <Button
           type="button"
+          variant="link"
           onClick={() => setIsNotesOpen(true)}
-          className="min-h-11 self-start rounded-sm text-sm text-primary outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="self-start px-0"
         >
           {t.log.addNotes}
-        </button>
+        </Button>
       )}
 
-      <Button type="submit" className="min-h-11 w-full">
+      <Button type="submit" className="w-full">
         {t.log.save}
         <kbd className="font-mono text-xs opacity-80">{t.log.saveShortcut}</kbd>
       </Button>
@@ -214,41 +247,39 @@ interface RatingCardProps {
   rating: Rating;
   shortcut: string;
   isSelected: boolean;
-  onSelect: () => void;
 }
 
-/** One rating as a radio card: glyph and word, interval, shortcut, and the anchor text. */
-function RatingCard({ rating, shortcut, isSelected, onSelect }: RatingCardProps) {
+/**
+ * One rating as a radio card: glyph and word, interval, shortcut, and the anchor text. The radio
+ * is named by its word and described by the anchor, so a screen reader doesn't read a paragraph.
+ */
+function RatingCard({ rating, shortcut, isSelected }: RatingCardProps) {
   const style = RATING_STYLES[rating];
   return (
-    <label
-      className={cn(
-        "grid cursor-pointer grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1 rounded-xl border bg-card p-4",
-        FOCUS_WITHIN_CLASSES,
-        isSelected && style.selected,
-      )}
-    >
-      <input
-        type="radio"
-        name="rating"
-        value={rating}
-        checked={isSelected}
-        onChange={onSelect}
-        className="outline-none"
-      />
-      <span className={cn("font-semibold", style.text)}>
-        <span aria-hidden className="mr-1.5 tracking-tighter">
-          {style.glyph}
+    <Card className={cn(isSelected && style.selected)}>
+      <Label className="grid cursor-pointer grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1 p-4 font-normal">
+        <RadioGroupItem
+          value={rating}
+          aria-labelledby={`rating-${rating}-name`}
+          aria-describedby={`rating-${rating}-anchor`}
+        />
+        <span id={`rating-${rating}-name`} className={cn("font-semibold", style.text)}>
+          <span aria-hidden className="mr-1.5 tracking-tighter">
+            {style.glyph}
+          </span>
+          {t.ratings[rating]}
         </span>
-        {t.ratings[rating]}
-      </span>
-      <span className="flex items-center gap-2 text-xs text-muted-foreground">
-        <span className="font-mono">{t.log.intervalDays(INTERVAL_DAYS[rating])}</span>
-        <kbd className="rounded border px-1.5 font-mono">{shortcut}</kbd>
-      </span>
-      <span className="col-span-2 col-start-2 text-sm text-muted-foreground">
-        {t.log.anchors[rating]}
-      </span>
-    </label>
+        <span className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="font-mono">{t.log.intervalDays(INTERVAL_DAYS[rating])}</span>
+          <kbd className="rounded border px-1.5 font-mono">{shortcut}</kbd>
+        </span>
+        <span
+          id={`rating-${rating}-anchor`}
+          className="col-span-2 col-start-2 text-sm leading-normal text-muted-foreground"
+        >
+          {t.log.anchors[rating]}
+        </span>
+      </Label>
+    </Card>
   );
 }
