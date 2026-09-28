@@ -54,27 +54,32 @@ export function PracticeSettings() {
     <section aria-labelledby={headingId}>
       <SectionLabel id={headingId}>{t.settings.practice}</SectionLabel>
       <Card>
-        <fieldset className="flex flex-col gap-3 border-b p-4">
-          <legend className="float-left font-semibold">{t.settings.timeBoxes}</legend>
-          <p className="clear-both text-sm text-muted-foreground">{t.settings.timeBoxesHint}</p>
-          <div className="grid grid-cols-3 gap-3">
-            {DIFFICULTIES.map((difficulty) => (
-              <TimeBoxField
-                key={difficulty}
-                difficulty={difficulty}
-                value={invalidDrafts[difficulty] ?? String(timeBoxMinutes[difficulty])}
-                isInvalid={invalidDifficulties.includes(difficulty)}
-                errorId={errorId}
-                onChange={handleTimeBoxChange}
-              />
-            ))}
-          </div>
-          {invalidDifficulties.length > 0 && (
-            <p id={errorId} className="text-sm text-destructive">
-              {t.settings.timeBoxInvalid(MIN_TIME_BOX_MINUTES, MAX_TIME_BOX_MINUTES)}
-            </p>
-          )}
-        </fieldset>
+        {/* Padded on a wrapper: iOS Safari pins a legend to its fieldset's top edge, past padding. */}
+        <div className="border-b p-4">
+          <fieldset>
+            <legend className="mb-3 font-semibold">{t.settings.timeBoxes}</legend>
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-muted-foreground">{t.settings.timeBoxesHint}</p>
+              <div className="grid grid-cols-3 gap-3">
+                {DIFFICULTIES.map((difficulty) => (
+                  <TimeBoxField
+                    key={difficulty}
+                    difficulty={difficulty}
+                    value={invalidDrafts[difficulty] ?? String(timeBoxMinutes[difficulty])}
+                    isInvalid={invalidDifficulties.includes(difficulty)}
+                    errorId={errorId}
+                    onChange={handleTimeBoxChange}
+                  />
+                ))}
+              </div>
+              {invalidDifficulties.length > 0 && (
+                <p id={errorId} className="text-sm text-destructive">
+                  {t.settings.timeBoxInvalid(MIN_TIME_BOX_MINUTES, MAX_TIME_BOX_MINUTES)}
+                </p>
+              )}
+            </div>
+          </fieldset>
+        </div>
         <div className="flex items-center gap-4 p-4">
           <div className="flex flex-1 flex-col gap-1">
             <Label
