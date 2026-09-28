@@ -10,9 +10,9 @@ import {
 import type { Problem } from "@/domain/types";
 import { useAppData } from "@/ui/app/AppData";
 import { ToggleGroup, ToggleGroupItem } from "@/ui/primitives/toggle-group";
+import { MarkMasteredDialog } from "@/ui/shared/MarkMasteredDialog";
 import { t } from "@/ui/shared/strings";
 
-import { MarkMasteredDialog } from "./MarkMasteredDialog";
 import { TopicSection } from "./TopicSection";
 
 const FILTERS = ["all", "due", "new", "mastered"] as const satisfies readonly ProblemFilter[];

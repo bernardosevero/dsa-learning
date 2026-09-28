@@ -1,11 +1,11 @@
 import type { Problem } from "@/domain/types";
-import { SectionLabel } from "./SectionLabel";
-import { StartLink } from "./StartLink";
-import { TopicProgress } from "./TopicProgress";
 import { Card } from "@/ui/primitives/card";
+import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
 
 import { FocusCard } from "./FocusCard";
+import { StartLink } from "./StartLink";
+import { TopicProgress } from "./TopicProgress";
 
 const HEADING_ID = "new-problem-heading";
 

@@ -28,13 +28,19 @@ describe("AppRoutes", () => {
   it.each([
     ["/", "Today"],
     ["/problems", "Problems"],
-    ["/problems/two-sum", "Problem"],
     ["/settings", "Settings & data"],
   ])("renders %s as the %s screen with its own page title", (path, heading) => {
     renderAt(path);
 
     expect(pageHeading()).toBe(heading);
     expect(document.title).toBe(`${heading} · dta-learning`);
+  });
+
+  it("renders /problems/two-sum as the Problem detail screen for that problem", () => {
+    renderAt("/problems/two-sum");
+
+    expect(pageHeading()).toBe("Two Sum");
+    expect(document.title).toBe("Two Sum · dta-learning");
   });
 
   it("renders /solve/two-sum as the Solving screen for that problem", () => {
@@ -76,6 +82,13 @@ describe("AppRoutes", () => {
     const newSection = within(screen.getByRole("region", { name: /New/ }));
     expect(newSection.queryByText("Contains Duplicate")).toBeNull();
     expect(newSection.getByText("Valid Anagram", { selector: "p" })).toBeDefined();
+  });
+
+  it("marks Problems as the current page on a problem's detail page", () => {
+    renderAt("/problems/two-sum");
+
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    expect(nav.querySelector("[aria-current='page']")?.textContent).toBe("Problems");
   });
 
   it("goes back to Today from the wordmark", async () => {
