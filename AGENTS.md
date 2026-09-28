@@ -86,12 +86,12 @@ Lint and Prettier (100 columns) enforce what they can. These are the rules they 
   - Use `Boolean(value)`, not `!!value`.
   - Helpers are named functions at module level, not one-line arrows defined inside another function.
   - Every `as` cast (except `as const`) has a same-line comment saying why it's safe.
-- **Small functions:** about 30 lines, at most 2 levels of nesting, early returns, one job each.
+- **Readable functions:** at most 2 levels of nesting, early returns, one job each. There is no line limit: code that reads top to bottom beats code split into pieces you have to jump between. Split when a piece has its own job or its own tests, not to hit a size.
 - **Inputs stay untouched:** parameters are `readonly`, and you copy before reordering (`toSorted`, `toReversed`). A local `let` and a loop inside a function are fine.
 - **Expected failures are values:** return `{ ok: true, value } | { ok: false, error }`. Throw only for bugs.
 - **Types:** model states as discriminated unions and let the compiler check exhaustiveness. Their names are plain string literals (`state.status === "mastered"`), because the union type already catches typos and narrows; don't wrap them in constants or enums. Parse untrusted data with zod.
 - **Files:**
-  - Named exports only, one component per file, no barrel `index.ts` files.
+  - Named exports only, one exported component per file (small components only it uses can live in the same file), no barrel `index.ts` files.
   - Components are `PascalCase.tsx`; everything else is `camelCase.ts`.
   - Imports use `@/` across folders and relative paths inside one.
 - **Docs and comments:** exported `domain` and `storage` functions get a one- or two-line JSDoc stating what they return and any product rule. Other comments explain *why*, in one line. `TODO`s name an issue: `// TODO(#14): ...`.
