@@ -1,34 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import { aMasteredMark, anAttempt } from "@/test/builders";
+
 import { mergeEntries } from "../merge";
-import type { Attempt, Entry, MarkedMastered } from "../types";
-
-const DEFAULT_TIME_MINUTES = 20;
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return {
-    type: "attempt",
-    id: "attempt-1",
-    problemId: "contains-duplicate",
-    completedAt: "2026-10-01T12:00:00.000Z",
-    date: "2026-10-01",
-    rating: "medium",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function aMasteredMark(overrides: Partial<MarkedMastered> = {}): MarkedMastered {
-  return {
-    type: "markedMastered",
-    id: "mark-1",
-    problemId: "contains-duplicate",
-    at: "2026-10-01T13:00:00.000Z",
-    date: "2026-10-01",
-    ...overrides,
-  };
-}
+import type { Entry } from "../types";
 
 function idsOf(entries: readonly Entry[]): string[] {
   return entries.map((entry) => entry.id);

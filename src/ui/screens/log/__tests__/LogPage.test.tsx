@@ -3,33 +3,17 @@ import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EMPTY_SAVE_FILE, type Attempt, type SaveFile } from "@/domain/types";
+import { EMPTY_SAVE_FILE, type SaveFile } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
+import { anAttempt, aSaveFile } from "@/test/builders";
 import { AppDataProvider } from "@/ui/app/AppData";
 
 import { LogPage } from "../LogPage";
 
+// The earlier attempt took 25 minutes, so the time comparison has something to report.
+const PREVIOUS_TIME_MINUTES = 25;
 const NOW = new Date(2026, 9, 1, 10, 0);
 const TWENTY_MINUTES_AGO = new Date(NOW.getTime() - 20 * 60_000).toISOString();
-const DEFAULT_TIME_MINUTES = 25;
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return {
-    type: "attempt",
-    id: "attempt-1",
-    problemId: "two-sum",
-    completedAt: "2026-09-01T12:00:00.000Z",
-    date: "2026-09-01",
-    rating: "medium",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function aSaveFile(overrides: Partial<SaveFile> = {}): SaveFile {
-  return { ...EMPTY_SAVE_FILE, ...overrides };
-}
 
 function readStoredFile(): SaveFile {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as SaveFile; // safe: written by the provider
@@ -84,7 +68,15 @@ describe("LogPage form", () => {
   });
 
   it("says the pattern is hidden on a review, unless the user opted in to see it", () => {
-    const review = aSaveFile({ entries: [anAttempt()] });
+    const review = aSaveFile({
+      entries: [
+        anAttempt({
+          problemId: "two-sum",
+          timeMinutes: PREVIOUS_TIME_MINUTES,
+          date: "2026-09-01",
+        }),
+      ],
+    });
     const optedIn = { ...EMPTY_SAVE_FILE.settings, showPatternOnReviews: true };
 
     renderLog("/log/two-sum", { ...review, settings: optedIn });
@@ -187,7 +179,12 @@ describe("LogPage saving", () => {
   });
 
   it("keeps the pattern and earlier insights hidden while logging a review", () => {
-    const previous = anAttempt({ keyInsight: "store what you've seen" });
+    const previous = anAttempt({
+      problemId: "two-sum",
+      timeMinutes: PREVIOUS_TIME_MINUTES,
+      date: "2026-09-01",
+      keyInsight: "store what you've seen",
+    });
 
     renderLog("/log/two-sum", aSaveFile({ entries: [previous] }));
 
@@ -197,7 +194,12 @@ describe("LogPage saving", () => {
 
   it("reveals the pattern, the last attempt's insight and the solution link once saved", async () => {
     const user = userEvent.setup();
-    const previous = anAttempt({ keyInsight: "store what you've seen" });
+    const previous = anAttempt({
+      problemId: "two-sum",
+      timeMinutes: PREVIOUS_TIME_MINUTES,
+      date: "2026-09-01",
+      keyInsight: "store what you've seen",
+    });
     renderLog("/log/two-sum", aSaveFile({ entries: [previous] }));
     await user.click(ratingRadio("Medium"));
     await user.type(screen.getByRole("spinbutton", { name: "Time" }), "15");
@@ -216,7 +218,12 @@ describe("LogPage saving", () => {
 
   it("says Mastered! after Easy on a due review that followed an Easy", async () => {
     const user = userEvent.setup();
-    const easy = anAttempt({ rating: "easy", date: "2026-09-01" });
+    const easy = anAttempt({
+      problemId: "two-sum",
+      timeMinutes: PREVIOUS_TIME_MINUTES,
+      rating: "easy",
+      date: "2026-09-01",
+    });
     renderLog("/log/two-sum", aSaveFile({ entries: [easy] }));
     await user.click(ratingRadio("Easy"));
     await user.type(screen.getByRole("spinbutton", { name: "Time" }), "10");

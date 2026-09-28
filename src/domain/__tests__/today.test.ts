@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 
+import { aMasteredMark, anAttempt, aProblem } from "@/test/builders";
+
 import { deriveAllStates } from "../schedule";
 import { buildToday, countStatuses, type TodayView } from "../today";
 import {
   DEFAULT_SETTINGS,
-  type Attempt,
   type Entry,
   type LocalDate,
   type MarkedMastered,
@@ -15,19 +16,6 @@ import {
 const TODAY: LocalDate = "2026-10-10";
 const ARRAYS = "Arrays & Hashing";
 const TWO_POINTERS = "Two Pointers";
-const DEFAULT_TIME_MINUTES = 20;
-
-function aProblem(overrides: Partial<Problem> & Pick<Problem, "id" | "order">): Problem {
-  return {
-    title: overrides.id,
-    summary: "A one-line summary.",
-    pattern: ARRAYS,
-    difficulty: "Easy",
-    neetcodeUrl: `https://neetcode.io/problems/${overrides.id}`,
-    leetcodeUrl: `https://leetcode.com/problems/${overrides.id}/`,
-    ...overrides,
-  };
-}
 
 const PROBLEMS: readonly Problem[] = [
   aProblem({ id: "contains-duplicate", order: 1 }),
@@ -37,38 +25,6 @@ const PROBLEMS: readonly Problem[] = [
   aProblem({ id: "two-sum-ii", order: 5, pattern: TWO_POINTERS, difficulty: "Medium" }),
   aProblem({ id: "three-sum", order: 6, pattern: TWO_POINTERS, difficulty: "Medium" }),
 ];
-
-let nextEntryNumber = 0;
-
-function nextEntryId(): string {
-  nextEntryNumber += 1;
-  return `entry-${nextEntryNumber}`;
-}
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return {
-    type: "attempt",
-    id: nextEntryId(),
-    problemId: "contains-duplicate",
-    completedAt: `${overrides.date ?? "2026-10-01"}T12:00:00.000Z`,
-    date: "2026-10-01",
-    rating: "medium",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function aMasteredMark(overrides: Partial<MarkedMastered> = {}): MarkedMastered {
-  return {
-    type: "markedMastered",
-    id: nextEntryId(),
-    problemId: "contains-duplicate",
-    at: `${overrides.date ?? "2026-10-01"}T13:00:00.000Z`,
-    date: "2026-10-01",
-    ...overrides,
-  };
-}
 
 function statesFor(entries: readonly Entry[]): Record<string, ProblemState> {
   return deriveAllStates(

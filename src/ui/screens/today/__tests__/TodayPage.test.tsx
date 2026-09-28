@@ -4,51 +4,16 @@ import { MemoryRouter, Route, Routes, useParams } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PROBLEMS } from "@/data/problems";
-import {
-  EMPTY_SAVE_FILE,
-  type Attempt,
-  type Entry,
-  type MarkedMastered,
-  type SaveFile,
-} from "@/domain/types";
+import { EMPTY_SAVE_FILE, type Entry, type SaveFile } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
+import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
 import { AppDataProvider } from "@/ui/app/AppData";
 
 import { TodayPage } from "../TodayPage";
 
-const DEFAULT_TIME_MINUTES = 20;
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return {
-    type: "attempt",
-    id: `attempt-${overrides.problemId ?? "contains-duplicate"}`,
-    problemId: "contains-duplicate",
-    completedAt: "2026-10-01T12:00:00.000Z",
-    date: "2026-10-01",
-    rating: "medium",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function aMasteredMark(problemId: string): MarkedMastered {
-  return {
-    type: "markedMastered",
-    id: `mark-${problemId}`,
-    problemId,
-    at: "2026-09-01T12:00:00.000Z",
-    date: "2026-09-01",
-  };
-}
-
-function aSaveFile(overrides: Partial<SaveFile> = {}): SaveFile {
-  return { ...EMPTY_SAVE_FILE, ...overrides };
-}
-
 function allMasteredExcept(problemId: string): Entry[] {
   return PROBLEMS.filter((problem) => problem.id !== problemId).map((problem) =>
-    aMasteredMark(problem.id),
+    aMasteredMark({ id: `mark-${problem.id}`, problemId: problem.id, date: "2026-09-01" }),
   );
 }
 

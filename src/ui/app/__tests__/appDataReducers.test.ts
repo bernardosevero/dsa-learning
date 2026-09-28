@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EMPTY_SAVE_FILE, type Attempt, type MarkedMastered, type SaveFile } from "@/domain/types";
-
 import { today } from "@/domain/dates";
+import { aMasteredMark, anAttempt, aNewAttempt, aSaveFile } from "@/test/builders";
 
 import {
   addAttempt,
@@ -12,43 +11,10 @@ import {
   resetProgress,
   startTimer,
   updateSettings,
-  type NewAttempt,
 } from "../appDataReducers";
 
-const DEFAULT_TIME_MINUTES = 20;
 const NOW = "2026-10-03T09:00:00.000Z";
 const UUID_PATTERN = /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/;
-
-function aNewAttempt(overrides: Partial<NewAttempt> = {}): NewAttempt {
-  return {
-    problemId: "contains-duplicate",
-    completedAt: "2026-10-01T12:00:00.000Z",
-    date: "2026-10-01",
-    rating: "medium",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return { ...aNewAttempt(), type: "attempt", id: "attempt-1", ...overrides };
-}
-
-function aMasteredMark(overrides: Partial<MarkedMastered> = {}): MarkedMastered {
-  return {
-    type: "markedMastered",
-    id: "mark-1",
-    problemId: "two-sum",
-    at: "2026-10-02T13:00:00.000Z",
-    date: "2026-10-02",
-    ...overrides,
-  };
-}
-
-function aSaveFile(overrides: Partial<SaveFile> = {}): SaveFile {
-  return { ...EMPTY_SAVE_FILE, ...overrides };
-}
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ["Date"], now: new Date(NOW) });

@@ -1,48 +1,18 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_SETTINGS, type Attempt, type MarkedMastered, type SaveFile } from "@/domain/types";
+import { DEFAULT_SETTINGS } from "@/domain/types";
+import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
 
 import { parseSaveFile } from "../saveFile";
 
-const DEFAULT_TIME_MINUTES = 20;
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return {
-    type: "attempt",
-    id: "attempt-1",
-    problemId: "contains-duplicate",
-    completedAt: "2026-10-01T12:00:00.000Z",
-    date: "2026-10-01",
-    rating: "medium",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function aMasteredMark(overrides: Partial<MarkedMastered> = {}): MarkedMastered {
-  return {
-    type: "markedMastered",
-    id: "mark-1",
-    problemId: "two-sum",
-    at: "2026-10-01T13:00:00.000Z",
-    date: "2026-10-01",
-    ...overrides,
-  };
-}
-
-function aSaveFile(overrides: Partial<SaveFile> = {}): SaveFile {
-  return {
-    version: 1,
-    entries: [anAttempt(), aMasteredMark()],
-    settings: DEFAULT_SETTINGS,
-    ...overrides,
-  };
-}
+// One attempt and one mark: the valid file most tests parse or break one field of.
+const SAMPLE_FILE = aSaveFile({
+  entries: [anAttempt(), aMasteredMark({ problemId: "two-sum" })],
+  settings: DEFAULT_SETTINGS,
+});
 
 function withFirstEntryField(field: string, value: unknown): unknown {
-  const file = aSaveFile();
-  return { ...file, entries: [{ ...file.entries[0], [field]: value }] };
+  return { ...SAMPLE_FILE, entries: [{ ...SAMPLE_FILE.entries[0], [field]: value }] };
 }
 
 function errorOf(result: ReturnType<typeof parseSaveFile>): string {
@@ -73,7 +43,7 @@ describe("parseSaveFile", () => {
   });
 
   it("rejects a file with an unsupported version", () => {
-    const result = parseSaveFile({ ...aSaveFile(), version: 2 });
+    const result = parseSaveFile({ ...SAMPLE_FILE, version: 2 });
 
     expect(errorOf(result)).toContain("version");
   });
