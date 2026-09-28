@@ -591,7 +591,7 @@
   {
     "id": "lowest-common-ancestor-of-a-binary-search-tree",
     "title": "Lowest Common Ancestor of a Binary Search Tree",
-    "summary": "In a binary search tree, return the deepest node that has both given nodes as descendants.",
+    "summary": "In a binary search tree, return the deepest node whose subtree contains both given nodes.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/lowest-common-ancestor-in-binary-search-tree",
@@ -637,7 +637,7 @@
   {
     "id": "validate-binary-search-tree",
     "title": "Validate Binary Search Tree",
-    "summary": "Decide whether a binary tree follows the binary search tree ordering at every node.",
+    "summary": "Decide whether each node of a binary tree is larger than all values to its left and smaller than all to its right.",
     "pattern": "Trees",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/valid-binary-search-tree",
@@ -947,7 +947,7 @@
   {
     "id": "pacific-atlantic-water-flow",
     "title": "Pacific Atlantic Water Flow",
-    "summary": "On a height grid between two oceans, list the cells from which water can flow downhill to both oceans.",
+    "summary": "On a height grid between two oceans, list the cells whose water can reach both, flowing only to equal or lower cells.",
     "pattern": "Graphs",
     "difficulty": "Medium",
     "neetcodeUrl": "https://neetcode.io/problems/pacific-atlantic-water-flow",
