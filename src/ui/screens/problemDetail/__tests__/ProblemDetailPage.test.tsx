@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { Link, MemoryRouter, Route, Routes } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EMPTY_SAVE_FILE, type SaveFile } from "@/domain/types";
@@ -196,6 +196,43 @@ describe("ProblemDetailPage", () => {
     const start = screen.getByRole("link", { name: "Start Two Sum" });
 
     expect(start.getAttribute("href")).toBe("/solve/two-sum");
+  });
+
+  it("hides the spoilers again when moving straight to another due problem", async () => {
+    const dueAnagram = anAttempt({
+      id: "anagram",
+      problemId: "valid-anagram",
+      date: "2026-10-01",
+      keyInsight: SECOND_INSIGHT,
+    });
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(aSaveFile({ entries: [...DUE_HISTORY, dueAnagram] })),
+    );
+    render(
+      <AppDataProvider>
+        <MemoryRouter initialEntries={["/problems/two-sum"]}>
+          <Routes>
+            <Route
+              path="problems/:problemId"
+              element={
+                <>
+                  <ProblemDetailPage />
+                  <Link to="/problems/valid-anagram">Go to Valid Anagram</Link>
+                </>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </AppDataProvider>,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Reveal (spoilers)" }));
+
+    await userEvent.click(screen.getByRole("link", { name: "Go to Valid Anagram" }));
+
+    expect(screen.getByRole("heading", { level: 1, name: "Valid Anagram" })).toBeDefined();
+    expect(screen.queryByText(SECOND_INSIGHT)).toBeNull();
+    expect(screen.getByRole("button", { name: "Reveal (spoilers)" })).toBeDefined();
   });
 
   it("says so when the problem isn't in the list", () => {

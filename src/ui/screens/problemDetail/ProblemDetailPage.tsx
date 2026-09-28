@@ -11,6 +11,7 @@ import { Button } from "@/ui/primitives/button";
 import { ExternalLink } from "@/ui/shared/ExternalLink";
 import { formatMonthDay } from "@/ui/shared/format";
 import { MarkMasteredDialog } from "@/ui/shared/MarkMasteredDialog";
+import { StartLink } from "@/ui/shared/StartLink";
 import { StatusBadge } from "@/ui/shared/StatusBadge";
 import { t } from "@/ui/shared/strings";
 
@@ -38,14 +39,20 @@ function describeDue(state: ProblemState, status: ProblemStatus, todayDate: Loca
 
 /** S5: one problem's details, links and history, keeping a due review's spoilers hidden. */
 export function ProblemDetailPage() {
-  const { problemId } = useParams();
+  const { problemId = "" } = useParams();
+  // Keyed by the problem, so a review revealed on one problem never stays revealed on the next.
+  return <ProblemDetail key={problemId} problemId={problemId} />;
+}
+
+interface ProblemDetailProps {
+  problemId: string;
+}
+
+function ProblemDetail({ problemId }: ProblemDetailProps) {
   const { problems, states, file, todayDate, markMastered, deleteEntry } = useAppData();
   const [isRevealed, setIsRevealed] = useState(false);
   const [problemToMark, setProblemToMark] = useState<Problem | null>(null);
-  const history = useMemo(
-    () => problemHistory(file.entries, problemId ?? ""),
-    [file.entries, problemId],
-  );
+  const history = useMemo(() => problemHistory(file.entries, problemId), [file.entries, problemId]);
 
   const problem = problems.find((candidate) => candidate.id === problemId);
   if (problem === undefined) {
@@ -101,11 +108,7 @@ export function ProblemDetailPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2">
-          <Button asChild className="px-5">
-            <Link to={`/solve/${problem.id}`}>
-              {t.problemDetail.start} <span className="sr-only">{problem.title}</span>
-            </Link>
-          </Button>
+          <StartLink problem={problem} variant="primary" />
           <ExternalLink href={problem.neetcodeUrl} variant="outline">
             {t.problemDetail.neetCode}
           </ExternalLink>

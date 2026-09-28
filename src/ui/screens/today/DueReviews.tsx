@@ -7,10 +7,10 @@ import { Button } from "@/ui/primitives/button";
 import { Card } from "@/ui/primitives/card";
 import { formatEstimate } from "@/ui/shared/format";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
+import { StartLink } from "@/ui/shared/StartLink";
 import { t } from "@/ui/shared/strings";
 
 import { FocusCard } from "./FocusCard";
-import { StartLink } from "./StartLink";
 
 const HEADING_ID = "due-reviews-heading";
 /** Past the focus, a big backlog shows this many rows until the user asks for the rest. */

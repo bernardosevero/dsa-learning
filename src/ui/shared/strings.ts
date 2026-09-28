@@ -86,7 +86,6 @@ export const en = {
     backToProblems: "All problems",
     dueToday: "due today",
     nextDue: (date: string) => `next ${date}`,
-    start: "Start",
     neetCode: "NeetCode",
     leetCode: "LeetCode",
     markMastered: "Mark as already mastered",
