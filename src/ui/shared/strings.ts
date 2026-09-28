@@ -1,6 +1,6 @@
 /** Every user-visible string, so a translation only has to replace this object. */
 export const en = {
-  appName: "dta-learning",
+  appName: "dsa-learning",
   nav: {
     label: "Main",
     today: "Today",
@@ -241,7 +241,7 @@ export const en = {
     undo: "Undo",
   },
   opensInNewTab: "(opens in a new tab)",
-  documentTitle: (page: string) => `${page} · dta-learning`,
+  documentTitle: (page: string) => `${page} · dsa-learning`,
 } as const;
 
 export const t = en;

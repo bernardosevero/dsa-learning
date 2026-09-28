@@ -47,7 +47,7 @@ Icons: lucide-react style outline icons, 16–18px. No emoji.
 
 ## Screens
 
-Top bar on every main screen: wordmark `dta-learning` (`font-serif text-xl font-semibold`, links to Today) on the left, nav `Today · Problems · Settings` on the right; the current one is `font-semibold text-foreground` with a 2px `border-primary` underline, others `text-muted-foreground`. A `border-b` separates the top bar from the content. On phones only (below 440px, e.g. `max-[440px]:`), the nav moves to a bottom bar with icon + label (calendar, list, sliders); the narrow window beside NeetCode (440–720px) keeps the top nav.
+Top bar on every main screen: wordmark `dsa-learning` (`font-serif text-xl font-semibold`, links to Today) on the left, nav `Today · Problems · Settings` on the right; the current one is `font-semibold text-foreground` with a 2px `border-primary` underline, others `text-muted-foreground`. A `border-b` separates the top bar from the content. On phones only (below 440px, e.g. `max-[440px]:`), the nav moves to a bottom bar with icon + label (calendar, list, sliders); the narrow window beside NeetCode (440–720px) keeps the top nav.
 
 Page heading row: `h1` `font-serif text-3xl` on the left, today's date in mono on the right (Today only).
 

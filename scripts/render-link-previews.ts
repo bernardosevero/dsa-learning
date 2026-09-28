@@ -129,7 +129,7 @@ function drawOgImageHtml(fontsCss: string): string {
 </style>
 </head>
 <body>
-  <div class="wordmark">${drawIconSvg(8)}dta-learning</div>
+  <div class="wordmark">${drawIconSvg(8)}dsa-learning</div>
   <h1>Re-solve problems right before you <em>forget</em> them.</h1>
   <div class="chips">
     ${drawRatingChip("Hard · 2 days", COLORS.ratingHard, COLORS.ratingHardMuted)}

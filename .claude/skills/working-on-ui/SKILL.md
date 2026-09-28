@@ -50,7 +50,7 @@ Any screen that shows a problem under review (not `new`) keeps its **pattern, ea
 
 **App screens** (Today, Solving, Log, Problems, Problem detail, Settings) show personal data from the browser, so they are **not indexed**:
 - `<meta name="robots" content="noindex">`
-- a unique, descriptive `<title>` per route (e.g. "Today · dta-learning")
+- a unique, descriptive `<title>` per route (e.g. "Today · dsa-learning")
 - one `<h1>`, headings in order, and landmarks (`<header>`, `<nav>`, `<main>`)
 
 **Public pages** (landing, how it works, FAQ, guides) come with the second release, and exist so search engines and answer engines (ChatGPT, Claude, Perplexity, Google AI answers) can read and cite them:

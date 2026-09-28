@@ -33,28 +33,28 @@ describe("AppRoutes", () => {
     renderAt(path);
 
     expect(pageHeading()).toBe(heading);
-    expect(document.title).toBe(`${heading} · dta-learning`);
+    expect(document.title).toBe(`${heading} · dsa-learning`);
   });
 
   it("renders /problems/two-sum as the Problem detail screen for that problem", () => {
     renderAt("/problems/two-sum");
 
     expect(pageHeading()).toBe("Two Sum");
-    expect(document.title).toBe("Two Sum · dta-learning");
+    expect(document.title).toBe("Two Sum · dsa-learning");
   });
 
   it("renders /solve/two-sum as the Solving screen for that problem", () => {
     renderAt("/solve/two-sum");
 
     expect(pageHeading()).toBe("Two Sum");
-    expect(document.title).toBe("Solving Two Sum · dta-learning");
+    expect(document.title).toBe("Solving Two Sum · dsa-learning");
   });
 
   it("renders /log/two-sum as the Log attempt screen for that problem", () => {
     renderAt("/log/two-sum");
 
     expect(pageHeading()).toBe("Two Sum");
-    expect(document.title).toBe("Log attempt Two Sum · dta-learning");
+    expect(document.title).toBe("Log attempt Two Sum · dsa-learning");
   });
 
   it("moves between Today, Problems and Settings from the nav and marks the current one", async () => {
@@ -95,7 +95,7 @@ describe("AppRoutes", () => {
     const user = userEvent.setup();
     renderAt("/settings");
 
-    await user.click(screen.getByRole("link", { name: "dta-learning" }));
+    await user.click(screen.getByRole("link", { name: "dsa-learning" }));
 
     expect(pageHeading()).toBe("Today");
   });

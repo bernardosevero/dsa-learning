@@ -61,7 +61,7 @@ afterEach(() => {
 });
 
 describe("AppDataProvider", () => {
-  it("saves an added attempt to localStorage under dta-learning:v1", () => {
+  it("saves an added attempt to localStorage under dsa-learning:v1", () => {
     const appData = renderProvider();
 
     act(() => {

@@ -1,4 +1,4 @@
-# dta-learning
+# dsa-learning
 
 A spaced-repetition trainer for coding interviews. It tells you which problem to practice next (a review you're about to forget, or a new one from the NeetCode 150) and schedules each re-solve from how hard it felt.
 

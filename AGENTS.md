@@ -1,6 +1,6 @@
 # AGENTS.md
 
-dta-learning is a spaced-repetition trainer for coding interviews: it tells the user which NeetCode 150 problem to re-solve today and schedules the next re-solve from how hard it felt. The README has the product overview and the research behind it.
+dsa-learning is a spaced-repetition trainer for coding interviews: it tells the user which NeetCode 150 problem to re-solve today and schedules the next re-solve from how hard it felt. The README has the product overview and the research behind it.
 
 ## Picking up work
 
