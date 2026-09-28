@@ -1,0 +1,11 @@
+// Deploys dist/ to Cloudflare Workers as static assets. With this file in the repo, Workers Builds
+// uses it as is instead of generating a config (and adding dependencies) on every build.
+{
+  "name": "dta-learning",
+  "compatibility_date": "2026-09-26",
+  "assets": {
+    "directory": "./dist",
+    // Paths that aren't files (/problems, /settings) get index.html, so a reload keeps the route.
+    "not_found_handling": "single-page-application",
+  },
+}
