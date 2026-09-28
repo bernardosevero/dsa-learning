@@ -33,6 +33,8 @@ AGENTS.md "Architecture" has the full layout. In short:
   - Our own shared pieces (`RatingChip`, `ProblemKindBadge`, `SectionLabel`, `Overline`…) are thin wrappers over these components, never a second copy of their styles.
 - Color only with theme tokens (`bg-primary`, `text-muted-foreground`, `--rating-hard`...), never raw colors, so a design change is a token change.
 - Compact layout, max width about 640px, because the app sits next to a NeetCode tab. Check it at 375px (phone) too.
+- **A change to a shared piece is a change to every screen that uses it.** Before touching anything in `src/ui/shared/` or `src/ui/app/` (`PageSheet`, `FocusFrame`, `AppLayout`, `AppRoutes`, a shared component or a theme token), find every screen that renders it (`grep` the name), then open each of those screens in the built app at 390px, 700px, 900px and 1440px. A layout that's right on the screen you changed can still be wrong on the next one.
+  - **The frame stays the same on every screen.** The sheet's width and position never change when the user moves between screens; content adapts inside it. A screen that needs more room uses the room the sheet already has, and never a wider sheet of its own. `e2e/pageWidth.spec.ts` checks this on every screen; a new screen goes into its `SCREENS` list in the same PR.
 - Every user-visible string comes from `src/ui/shared/strings.ts`. User-written text (insights, notes) renders as plain React text.
 
 ## Accessibility

@@ -13,12 +13,12 @@ import { AppLayout } from "./AppLayout";
 export function AppRoutes() {
   return (
     <Routes>
-      {/* Only Today's sheet widens on wide windows, for its sidebar. */}
-      <Route element={<AppLayout isWide />}>
-        <Route index element={<TodayPage />} />
-      </Route>
+      {/* Every sheet is the same width; Today's sidebar and the Problems table use all of it. */}
       <Route element={<AppLayout />}>
+        <Route index element={<TodayPage />} />
         <Route path="problems" element={<ProblemsPage />} />
+      </Route>
+      <Route element={<AppLayout isReadable />}>
         <Route path="problems/:problemId" element={<ProblemDetailPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
