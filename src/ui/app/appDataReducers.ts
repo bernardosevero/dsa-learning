@@ -60,9 +60,10 @@ export function clearTimer(file: SaveFile): SaveFile {
   return withoutTimer;
 }
 
-/** Returns the file with every entry marked deleted and no timer, so an import can bring it back. */
+/**
+ * Returns the file with an empty log and no timer, keeping the settings. Unlike undo, the entries
+ * go, so importing an export made before the reset brings them back (a deleted copy would win).
+ */
 export function resetProgress(file: SaveFile): SaveFile {
-  const deletedAt = new Date().toISOString();
-  const entries = file.entries.map((entry) => markDeleted(entry, deletedAt));
-  return clearTimer({ ...file, entries });
+  return clearTimer({ ...file, entries: [] });
 }

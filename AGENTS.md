@@ -50,6 +50,7 @@ The **log** is the single source of truth. Everything else is derived from it.
 - The log is an append-only list of **entries**: `attempt` or `markedMastered` (`src/domain/types.ts`).
 - A problem's state (`new` / `active` / `mastered`) is **derived** by replaying its entries (`deriveState`). It is never stored.
 - Undo sets `deletedAt` on an entry; the entry stays in the log and the replay skips it. This keeps undo exact and makes merging safe.
+- Reset progress is the one exception: it empties the log, so importing an export made before the reset brings everything back. The export is the backup.
 - Merging two logs (import now, device sync later) is `mergeEntries`: a union by entry `id`, where a deletion on either side wins.
 - Dates used for scheduling are `LocalDate` strings (`"YYYY-MM-DD"` in the user's time zone), handled only through `src/domain/dates.ts`. Timestamps are ISO strings.
 
