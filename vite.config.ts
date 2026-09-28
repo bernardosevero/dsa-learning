@@ -15,7 +15,13 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        test: { name: "node", environment: "node", include: ["src/**/*.test.ts"] },
+        test: {
+          name: "node",
+          environment: "node",
+          include: ["src/**/*.test.ts"],
+          // Vitest empties CSS imports; the index.html test reads the theme tokens from this one.
+          css: { include: [/index\.css/] },
+        },
       },
       {
         extends: true,
