@@ -46,6 +46,12 @@ function rowOf(title: string) {
   return within(row);
 }
 
+// The line under the title; its rating and date parts only show on narrow windows.
+function detailLineOf(title: string): string | null {
+  const titleCell = screen.getByRole("link", { name: title }).closest("td");
+  return titleCell?.querySelector("p")?.textContent ?? null;
+}
+
 function problemTitles(): string[] {
   return screen
     .getAllByRole("row")
@@ -82,11 +88,33 @@ describe("ProblemsPage", () => {
     );
 
     expect(rowOf("Two Sum").getByText("Due")).toBeDefined();
-    expect(rowOf("Two Sum").getByText("Hard")).toBeDefined();
-    expect(rowOf("Two Sum").getByText("Oct 3")).toBeDefined();
+    expect(rowOf("Two Sum").getByRole("cell", { name: "Hard" })).toBeDefined();
+    expect(rowOf("Two Sum").getByRole("cell", { name: "Oct 3" })).toBeDefined();
     expect(rowOf("Valid Anagram").getByText("Scheduled")).toBeDefined();
-    expect(rowOf("Valid Anagram").getByText("Oct 15")).toBeDefined();
+    expect(rowOf("Valid Anagram").getByRole("cell", { name: "Oct 15" })).toBeDefined();
     expect(rowOf("Contains Duplicate").getByText("Mastered")).toBeDefined();
+  });
+
+  it("sums up each row on one detail line for narrow windows", () => {
+    const dueToday = anAttempt({
+      id: "due-today",
+      problemId: "group-anagrams",
+      rating: "hard",
+      date: "2026-10-08",
+    });
+
+    renderProblems(
+      aSaveFile({
+        entries: [DUE_TWO_SUM, SCHEDULED_VALID_ANAGRAM, MASTERED_CONTAINS_DUPLICATE, dueToday],
+      }),
+    );
+
+    expect(detailLineOf("Valid Anagram")).toBe("Easy · felt Medium · next Oct 15");
+    expect(detailLineOf("Two Sum")).toBe("Easy · felt Hard · 7 days overdue");
+    expect(detailLineOf("Group Anagrams")).toBe("Medium · felt Hard · due today");
+    expect(detailLineOf("Contains Duplicate")).toBe("Easy · marked as already mastered");
+    expect(detailLineOf("Top K Frequent Elements")).toBe("Medium · up next");
+    expect(detailLineOf("Encode and Decode Strings")).toBe("Medium");
   });
 
   it("marks the next new problem as up next", () => {

@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { aMasteredMark, anAttempt } from "@/test/builders";
 
-import { deriveAllStates, deriveState, earliestDueDate, lastAttempt } from "../schedule";
+import {
+  deriveAllStates,
+  deriveState,
+  earliestDueDate,
+  isMarkedMastered,
+  lastAttempt,
+} from "../schedule";
 import type { ProblemState } from "../types";
 
 describe("deriveState", () => {
@@ -227,5 +233,35 @@ describe("lastAttempt", () => {
     const result = lastAttempt([masteredMark, deleted], "contains-duplicate");
 
     expect(result).toBeUndefined();
+  });
+});
+
+describe("isMarkedMastered", () => {
+  it("is true when the problem's latest entry is an Already mastered mark", () => {
+    const entries = [anAttempt({ rating: "medium" }), aMasteredMark({ date: "2026-10-05" })];
+
+    const isMarked = isMarkedMastered(entries, "contains-duplicate");
+
+    expect(isMarked).toBe(true);
+  });
+
+  it("is false once an attempt comes after the mark", () => {
+    const entries = [aMasteredMark(), anAttempt({ date: "2026-10-05", rating: "easy" })];
+
+    const isMarked = isMarkedMastered(entries, "contains-duplicate");
+
+    expect(isMarked).toBe(false);
+  });
+
+  it("ignores deleted marks and other problems' marks", () => {
+    const entries = [
+      anAttempt({ rating: "easy" }),
+      aMasteredMark({ date: "2026-10-05", deletedAt: "2026-10-06T10:00:00.000Z" }),
+      aMasteredMark({ id: "mark-2", problemId: "other-problem", date: "2026-10-07" }),
+    ];
+
+    const isMarked = isMarkedMastered(entries, "contains-duplicate");
+
+    expect(isMarked).toBe(false);
   });
 });

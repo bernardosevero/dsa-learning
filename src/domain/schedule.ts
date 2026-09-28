@@ -103,3 +103,17 @@ export function lastAttempt(entries: readonly Entry[], problemId: string): Attem
   }
   return latest;
 }
+
+/**
+ * Returns whether the problem's latest non-deleted entry is an Already mastered mark, so it's
+ * mastered by the user's word rather than by an Easy review.
+ */
+export function isMarkedMastered(entries: readonly Entry[], problemId: string): boolean {
+  let latest: Entry | undefined;
+  for (const entry of sortByTimestamp(withoutDeleted(entries))) {
+    if (entry.problemId === problemId) {
+      latest = entry;
+    }
+  }
+  return latest?.type === "markedMastered";
+}
