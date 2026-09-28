@@ -75,6 +75,8 @@ Later phases:
 
 Before changing anything in `src/ui/`, load the `working-on-ui` skill. It holds the React, component, layout, accessibility and SEO rules.
 
+Build every control and surface from shadcn/ui components in `src/ui/components/ui/` (add the one you need if it's missing). Don't hand-roll a button, badge, card, input or radio, or copy their styles.
+
 ## Code style
 
 Lint and Prettier (100 columns) enforce what they can. These are the rules they can't check.

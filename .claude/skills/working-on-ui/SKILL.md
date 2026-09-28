@@ -18,7 +18,11 @@ These rules apply on top of AGENTS.md. Before opening the PR, go through every s
 ## Components and layout
 
 - **Match the approved design.** Read `design.md` (next to this file) and look at the screen pictures it links before building a screen. It says how each screen and shared piece looks.
-- Build screens from shadcn/ui components (`src/ui/components/ui/`). Color them only with theme tokens (`bg-primary`, `text-muted-foreground`, `--rating-hard`...), never raw colors, so a design change is a token change.
+- **Always use a shadcn/ui component when one exists for the job** (button, badge, card, input, textarea, label, radio group, toggle group, switch, dialog, dropdown menu, …). Never hand-roll the element or copy its classes onto a `<span>`/`<div>`/`<input>`.
+  - If it isn't in `src/ui/components/ui/` yet, add it: `pnpm dlx shadcn@latest add <name>`, or, when the registry is blocked, copy its source from ui.shadcn.com into that folder. Its Radix primitive comes from the installed `radix-ui` package.
+  - Adapt it to design.md once, in that file (tokens, no shadow, 44px targets); screens pass only layout classes.
+  - Our own shared pieces (`RatingChip`, `ProblemKindBadge`, `SectionLabel`, `Overline`…) are thin wrappers over these components, never a second copy of their styles.
+- Color only with theme tokens (`bg-primary`, `text-muted-foreground`, `--rating-hard`...), never raw colors, so a design change is a token change.
 - Compact layout, max width about 640px, because the app sits next to a NeetCode tab. Check it at 375px (phone) too.
 - Every user-visible string comes from `src/ui/strings.ts`. User-written text (insights, notes) renders as plain React text.
 
