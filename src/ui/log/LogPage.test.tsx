@@ -74,6 +74,16 @@ describe("LogPage form", () => {
     expect(ratingRadio("Hard").checked).toBe(false);
   });
 
+  it("says the pattern is hidden on a review, unless the user opted in to see it", () => {
+    const review = aSaveFile({ entries: [anAttempt()] });
+    const optedIn = { ...EMPTY_SAVE_FILE.settings, showPatternOnReviews: true };
+
+    renderLog("/log/two-sum", { ...review, settings: optedIn });
+
+    expect(screen.getByText("Review")).toBeDefined();
+    expect(screen.queryByText("Review · pattern hidden")).toBeNull();
+  });
+
   it("prefills the time from the timer, rounded up", () => {
     renderLog(
       "/log/two-sum",

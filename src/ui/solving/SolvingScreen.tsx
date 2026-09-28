@@ -4,13 +4,13 @@ import { useNavigate } from "react-router";
 import { lastAttempt } from "@/domain/schedule";
 import type { Entry, Problem } from "@/domain/types";
 import { useAppData } from "@/ui/AppData";
+import { FocusFrame } from "@/ui/components/FocusFrame";
 import { NoteBox } from "@/ui/components/NoteBox";
+import { ProblemKindBadge } from "@/ui/components/ProblemKindBadge";
 import { formatMonthDay } from "@/ui/format";
 import { t } from "@/ui/strings";
 
-import { ProblemKindBadge } from "@/ui/components/ProblemKindBadge";
 import { SolvingActions } from "./SolvingActions";
-import { FocusFrame } from "@/ui/components/FocusFrame";
 import { SolvingHeader } from "./SolvingHeader";
 import { TimerCard } from "./TimerCard";
 

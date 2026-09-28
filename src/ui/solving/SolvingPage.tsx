@@ -2,10 +2,10 @@ import { useEffect, useEffectEvent } from "react";
 import { useParams } from "react-router";
 
 import { useAppData } from "@/ui/AppData";
+import { FocusFrame } from "@/ui/components/FocusFrame";
 import { t } from "@/ui/strings";
 
 import { ReplaceTimerPrompt } from "./ReplaceTimerPrompt";
-import { FocusFrame } from "@/ui/components/FocusFrame";
 import { SolvingScreen } from "./SolvingScreen";
 
 /**
