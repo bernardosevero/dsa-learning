@@ -162,6 +162,36 @@ describe("TodayPage", () => {
     expect(screen.getByRole("link", { name: "Open Problems" })).toBeDefined();
   });
 
+  it("lists progress by topic for started topics and the next new one, with their counts", () => {
+    const entries = [
+      ...TWO_DUE_REVIEWS,
+      aMasteredMark({ problemId: "two-sum" }),
+      anAttempt({ id: "two-pointers", problemId: "valid-palindrome" }),
+    ];
+
+    renderToday(aSaveFile({ entries }));
+
+    const progress = screen.getByRole("region", { name: "Progress by topic" });
+    const rows = within(progress).getAllByRole("listitem");
+    expect(rows.map((row) => row.textContent)).toEqual([
+      "Arrays & Hashing3/91 mastered, 2 started, of 9",
+      "Two Pointers1/50 mastered, 1 started, of 5",
+    ]);
+    expect(within(progress).getByRole("link", { name: "All 18 topics in Problems" })).toBeDefined();
+  });
+
+  it("leaves progress by topic out on the first run", () => {
+    renderToday(EMPTY_SAVE_FILE);
+
+    expect(screen.queryByRole("region", { name: "Progress by topic" })).toBeNull();
+  });
+
+  it("renders the counters once, whatever the window width", () => {
+    renderToday(aSaveFile({ entries: TWO_DUE_REVIEWS }));
+
+    expect(screen.getAllByText("New left")).toHaveLength(1);
+  });
+
   it("goes to the solve route of the problem when Start is pressed", async () => {
     const user = userEvent.setup();
     renderToday(aSaveFile({ entries: TWO_DUE_REVIEWS }));

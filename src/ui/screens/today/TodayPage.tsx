@@ -3,18 +3,21 @@ import { useMemo } from "react";
 import { Link } from "react-router";
 
 import { daysBetween } from "@/domain/dates";
+import { groupByTopic, listTopicsInProgress } from "@/domain/problemList";
 import { buildToday, countStatuses } from "@/domain/today";
 import type { LocalDate } from "@/domain/types";
 import { useAppData } from "@/ui/app/AppData";
 import { Overline } from "@/ui/shared/Overline";
 import { Button } from "@/ui/primitives/button";
 import { Card } from "@/ui/primitives/card";
+import { cn } from "@/ui/primitives/cn";
 import { formatDate } from "@/ui/shared/format";
 import { t } from "@/ui/shared/strings";
 
 import { DueReviews } from "./DueReviews";
 import { FirstRun } from "./FirstRun";
 import { NextNewProblem } from "./NextNewProblem";
+import { ProgressByTopic } from "./ProgressByTopic";
 
 /** S1: what to re-solve today, most at risk first, plus the next new problem. */
 export function TodayPage() {
@@ -35,7 +38,17 @@ export function TodayPage() {
     () => countStatuses(problems, states, todayDate),
     [problems, states, todayDate],
   );
+  const topics = useMemo(
+    () => groupByTopic(problems, states, todayDate),
+    [problems, states, todayDate],
+  );
+  const topicsInProgress = useMemo(() => listTopicsInProgress(topics), [topics]);
   const isFirstRun = counts.newLeft === problems.length;
+  const browseAll = (
+    <Button asChild variant="link" className="self-center wide:col-start-1 wide:row-start-3">
+      <Link to="/problems">{t.today.browseAll(problems.length)}</Link>
+    </Button>
+  );
 
   return (
     <>
@@ -44,12 +57,21 @@ export function TodayPage() {
         <h1 className="font-serif text-3xl">{t.pages.today}</h1>
         <span className="font-mono text-sm text-muted-foreground">{formatDate(todayDate)}</span>
       </div>
-      <div className="flex flex-col gap-7">
-        {isFirstRun && view.kind === "list" && view.nextNew !== null ? (
+      {isFirstRun && view.kind === "list" && view.nextNew !== null ? (
+        <div className="flex flex-col gap-7">
           <FirstRun firstProblem={view.nextNew} />
-        ) : (
-          <>
-            <Counters counts={counts} />
+          {browseAll}
+        </div>
+      ) : (
+        // One grid so the counters render once: stacked in a sidebar from `wide`, on top below it.
+        <div
+          className={cn(
+            "flex flex-col gap-7",
+            "wide:grid wide:grid-cols-[minmax(0,1fr)_300px] wide:grid-rows-[auto_1fr] wide:gap-x-10",
+          )}
+        >
+          <Counters counts={counts} className="wide:col-start-2 wide:row-start-1 wide:self-start" />
+          <div className="flex flex-col gap-7 wide:col-start-1 wide:row-span-2 wide:row-start-1">
             {view.kind === "caught-up" && <CaughtUp nextDue={view.nextDue} todayDate={todayDate} />}
             {view.kind === "list" && (
               <DueReviews
@@ -66,34 +88,44 @@ export function TodayPage() {
                 isFocus={view.reviews.length === 0}
               />
             )}
-          </>
-        )}
-        <Button asChild variant="link" className="self-center">
-          <Link to="/problems">{t.today.browseAll(problems.length)}</Link>
-        </Button>
-      </div>
+          </div>
+          <div className="wide:col-start-2 wide:row-start-2 wide:self-start">
+            <ProgressByTopic topics={topicsInProgress} topicCount={topics.length} />
+          </div>
+          {browseAll}
+        </div>
+      )}
     </>
   );
 }
 
 interface CountersProps {
   counts: { due: number; newLeft: number; mastered: number };
+  /** Where it sits in Today's grid. */
+  className?: string;
 }
 
-/** The Due · New left · Mastered strip at the top of Today. */
-function Counters({ counts }: CountersProps) {
+/** Due · New left · Mastered: a strip on top, or stacked rows in the sidebar from `wide`. */
+function Counters({ counts, className }: CountersProps) {
   const items = [
     { label: t.today.counters.due, value: counts.due },
     { label: t.today.counters.newLeft, value: counts.newLeft },
     { label: t.today.counters.mastered, value: counts.mastered },
   ];
   return (
-    <Card>
-      <dl className="grid grid-cols-3">
+    <Card className={className}>
+      <dl className="grid grid-cols-3 wide:grid-cols-1">
         {items.map((item) => (
-          <div key={item.label} className="flex flex-col-reverse px-4 py-3 not-first:border-l">
-            <dt className="text-xs text-muted-foreground">{item.label}</dt>
-            <dd className="font-mono text-2xl">{item.value}</dd>
+          <div
+            key={item.label}
+            className={cn(
+              "flex flex-col-reverse px-4 py-3 not-first:border-l",
+              "wide:flex-row wide:items-baseline wide:justify-between",
+              "wide:not-first:border-t wide:not-first:border-l-0",
+            )}
+          >
+            <dt className="text-xs text-muted-foreground wide:text-sm">{item.label}</dt>
+            <dd className="font-mono text-2xl wide:text-xl">{item.value}</dd>
           </div>
         ))}
       </dl>
