@@ -7,7 +7,7 @@ import ogImageDataUrl from "../../public/og-image.png?inline";
 import themeCss from "../index.css?raw";
 
 // Unfurlers read index.html as served, after Vite fills in %VITE_SITE_URL% from the environment.
-const SITE_URL = "https://dta-learning.example.dev";
+const SITE_URL = "https://dsa-learning.example.dev";
 const indexHtml = indexHtmlSource.replaceAll("%VITE_SITE_URL%", SITE_URL);
 
 const OG_IMAGE_WIDTH = 1200;

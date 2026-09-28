@@ -9,9 +9,11 @@ export interface Store {
   save(file: SaveFile): void;
 }
 
-export const STORAGE_KEY = "dta-learning:v1";
+export const STORAGE_KEY = "dsa-learning:v1";
+/** Where the app saved before it was renamed from dta-learning; read once and moved. */
+export const LEGACY_STORAGE_KEY = "dta-learning:v1";
 /** Invalid stored data is copied to this prefix plus an ISO time instead of being overwritten. */
-export const CORRUPT_BACKUP_KEY_PREFIX = "dta-learning:corrupt:";
+export const CORRUPT_BACKUP_KEY_PREFIX = "dsa-learning:corrupt:";
 
 const JSON_INDENT_SPACES = 2;
 
@@ -26,7 +28,7 @@ function parseSaveFileText(text: string): ParseResult {
   }
   const parsed = parseSaveFile(json);
   if (!parsed.ok) {
-    return { ok: false, error: `The file is not a valid dta-learning save file:\n${parsed.error}` };
+    return { ok: false, error: `The file is not a valid dsa-learning save file:\n${parsed.error}` };
   }
   return parsed;
 }
@@ -43,14 +45,6 @@ function resolveStorage(storage: Storage | undefined): Storage | undefined {
   }
 }
 
-function readStoredText(storage: Storage | undefined): string | null {
-  try {
-    return storage?.getItem(STORAGE_KEY) ?? null;
-  } catch {
-    return null;
-  }
-}
-
 function writeItem(storage: Storage | undefined, key: string, value: string): boolean {
   if (storage === undefined) {
     return false;
@@ -61,6 +55,35 @@ function writeItem(storage: Storage | undefined, key: string, value: string): bo
   } catch {
     return false;
   }
+}
+
+function readItem(storage: Storage | undefined, key: string): string | null {
+  try {
+    return storage?.getItem(key) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function removeItem(storage: Storage | undefined, key: string): void {
+  try {
+    storage?.removeItem(key);
+  } catch {
+    // Blocked storage: the old copy stays, and the new key is read first from now on anyway.
+  }
+}
+
+// Moved as it is, so a corrupt copy goes through the same backup as any other.
+function moveLegacyText(storage: Storage | undefined): string | null {
+  const legacyText = readItem(storage, LEGACY_STORAGE_KEY);
+  if (legacyText !== null && writeItem(storage, STORAGE_KEY, legacyText)) {
+    removeItem(storage, LEGACY_STORAGE_KEY);
+  }
+  return legacyText;
+}
+
+function readStoredText(storage: Storage | undefined): string | null {
+  return readItem(storage, STORAGE_KEY) ?? moveLegacyText(storage);
 }
 
 function backUpCorruptText(storage: Storage | undefined, text: string): void {

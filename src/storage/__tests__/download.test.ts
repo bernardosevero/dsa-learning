@@ -6,7 +6,7 @@ import { EMPTY_SAVE_FILE } from "@/domain/types";
 import { downloadExport } from "../download";
 import { exportJson } from "../localStore";
 
-const OBJECT_URL = "blob:dta-learning-export";
+const OBJECT_URL = "blob:dsa-learning-export";
 const SEPTEMBER = 8;
 
 describe("downloadExport", () => {
@@ -44,7 +44,7 @@ describe("downloadExport", () => {
     downloadExport(EMPTY_SAVE_FILE);
 
     expect(clickedLinks).toHaveLength(1);
-    expect(clickedLinks[0]?.download).toBe("dta-learning-2026-09-27.json");
+    expect(clickedLinks[0]?.download).toBe("dsa-learning-2026-09-27.json");
     expect(clickedLinks[0]?.href).toBe(OBJECT_URL);
     expect(clickedLinks[0]?.isConnected).toBe(false);
     expect(createdBlobs).toHaveLength(1);

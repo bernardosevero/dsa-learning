@@ -39,7 +39,7 @@ function fileInput(): HTMLInputElement {
   return input;
 }
 
-function aJsonFile(content: unknown, name = "dta-learning-2026-09-20.json"): File {
+function aJsonFile(content: unknown, name = "dsa-learning-2026-09-20.json"): File {
   return new File([JSON.stringify(content)], name, { type: "application/json" });
 }
 
