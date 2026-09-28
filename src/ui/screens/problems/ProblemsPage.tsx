@@ -44,7 +44,7 @@ function toggledIn(patterns: ReadonlySet<string>, pattern: string): ReadonlySet<
 
 /** S4: all 150 problems by topic, with a filter and "Mark as already mastered". */
 export function ProblemsPage() {
-  const { problems, states, todayDate, markMastered } = useAppData();
+  const { problems, states, file, todayDate, markMastered } = useAppData();
   const [filter, setFilter] = useState<ProblemFilter>("all");
   const [problemToMark, setProblemToMark] = useState<Problem | null>(null);
 
@@ -119,6 +119,7 @@ export function ProblemsPage() {
             key={topic.pattern}
             topic={topic}
             isExpanded={openTopics.has(topic.pattern)}
+            entries={file.entries}
             todayDate={todayDate}
             onToggle={handleToggle}
             onMarkMastered={setProblemToMark}

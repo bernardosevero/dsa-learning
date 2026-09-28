@@ -2,7 +2,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { useId } from "react";
 
 import type { TopicGroup } from "@/domain/problemList";
-import type { LocalDate, Problem } from "@/domain/types";
+import type { Entry, LocalDate, Problem } from "@/domain/types";
 import { Button } from "@/ui/primitives/button";
 import { Card } from "@/ui/primitives/card";
 import { cn } from "@/ui/primitives/cn";
@@ -14,6 +14,8 @@ import { ProblemTableRow } from "./ProblemTableRow";
 export interface TopicSectionProps {
   topic: TopicGroup;
   isExpanded: boolean;
+  /** The log, passed through to the rows. */
+  entries: readonly Entry[];
   todayDate: LocalDate;
   onToggle: (pattern: string) => void;
   onMarkMastered: (problem: Problem) => void;
@@ -23,6 +25,7 @@ export interface TopicSectionProps {
 export function TopicSection({
   topic,
   isExpanded,
+  entries,
   todayDate,
   onToggle,
   onMarkMastered,
@@ -68,20 +71,22 @@ export function TopicSection({
           </Button>
         </h2>
         {isExpanded && (
-          <table id={tableId} className="w-full table-fixed text-left">
+          // Below 560px the rows are grids (see ProblemTableRow), so the table and body turn to
+          // blocks and the column headers go.
+          <table id={tableId} className="w-full table-fixed text-left max-[560px]:block">
             <colgroup>
               <col />
-              <col className="hidden w-[84px] min-[440px]:table-column" />
+              <col className="w-[84px]" />
               <col className="w-[70px]" />
               <col className="w-[116px]" />
               <col className="w-[48px]" />
             </colgroup>
-            <thead className="text-xs text-muted-foreground">
+            <thead className="text-xs text-muted-foreground max-[560px]:hidden">
               <tr className="border-t">
                 <th scope="col" className="py-2 pr-2 pl-4 font-medium">
                   {t.problems.columns.problem}
                 </th>
-                <th scope="col" className="hidden px-2 font-medium min-[440px]:table-cell">
+                <th scope="col" className="px-2 font-medium">
                   {t.problems.columns.lastRating}
                 </th>
                 <th scope="col" className="px-2 font-medium">
@@ -95,11 +100,12 @@ export function TopicSection({
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="max-[560px]:block">
               {topic.rows.map((row) => (
                 <ProblemTableRow
                   key={row.problem.id}
                   row={row}
+                  entries={entries}
                   todayDate={todayDate}
                   onMarkMastered={onMarkMastered}
                 />

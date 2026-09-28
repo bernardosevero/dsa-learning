@@ -72,6 +72,13 @@ export const en = {
     statuses: { new: "New", scheduled: "Scheduled", due: "Due", mastered: "Mastered" },
     upNext: "up next",
     dueToday: "today",
+    // The narrow rows' detail line: "Medium · felt Hard · next Sep 29".
+    detail: {
+      felt: "felt",
+      next: "next",
+      dueToday: "due today",
+      markedMastered: "marked as already mastered",
+    },
     noValue: "—",
     actionsFor: (title: string) => `Actions for ${title}`,
     startNow: "Start now",

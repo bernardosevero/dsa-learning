@@ -2,7 +2,7 @@ import { EllipsisIcon } from "lucide-react";
 import { Link } from "react-router";
 
 import type { ProblemRow } from "@/domain/problemList";
-import type { LocalDate, Problem, ProblemState } from "@/domain/types";
+import type { Entry, LocalDate, Problem, ProblemState } from "@/domain/types";
 import { Button } from "@/ui/primitives/button";
 import { cn } from "@/ui/primitives/cn";
 import {
@@ -16,15 +16,24 @@ import { RATING_STYLES } from "@/ui/shared/RatingChip";
 import { StatusBadge } from "@/ui/shared/StatusBadge";
 import { t } from "@/ui/shared/strings";
 
+import { RowDetailLine } from "./RowDetailLine";
+
 export interface ProblemTableRowProps {
   row: ProblemRow;
+  /** The log, to tell a mastered problem's last rating from an Already mastered mark. */
+  entries: readonly Entry[];
   todayDate: LocalDate;
   onMarkMastered: (problem: Problem) => void;
 }
 
+// Below 560px the columns can't fit, so the row becomes a grid: title and detail line on the left,
+// the status cell beside the title, the menu on the right, and the rating and date cells hidden.
+const NARROW_ROW = "max-[560px]:grid max-[560px]:grid-cols-[minmax(0,1fr)_auto_auto]";
+const WIDE_ONLY_CELL = "hidden px-2 min-[560px]:table-cell";
+
 /** One problem: title and difficulty, last rating, next due date, status and its actions menu. */
-export function ProblemTableRow({ row, todayDate, onMarkMastered }: ProblemTableRowProps) {
-  const { problem, state, status, isUpNext } = row;
+export function ProblemTableRow({ row, entries, todayDate, onMarkMastered }: ProblemTableRowProps) {
+  const { problem, state, status } = row;
   const isDue = status === "due";
 
   function handleMarkMastered() {
@@ -32,7 +41,7 @@ export function ProblemTableRow({ row, todayDate, onMarkMastered }: ProblemTable
   }
 
   return (
-    <tr className={cn("border-t", isDue && "bg-accent")}>
+    <tr className={cn("border-t", NARROW_ROW, isDue && "bg-accent")}>
       <td className="py-2 pr-2 pl-4">
         <Link
           to={`/problems/${problem.id}`}
@@ -40,19 +49,16 @@ export function ProblemTableRow({ row, todayDate, onMarkMastered }: ProblemTable
         >
           {problem.title}
         </Link>
-        <span className="text-xs text-muted-foreground">
-          {problem.difficulty}
-          {isUpNext && `${t.separator}${t.problems.upNext}`}
-        </span>
+        <RowDetailLine row={row} entries={entries} todayDate={todayDate} />
       </td>
-      <td className="hidden px-2 text-sm min-[440px]:table-cell">
+      <td className={cn(WIDE_ONLY_CELL, "text-sm")}>
         <LastRating state={state} />
       </td>
-      <td className="px-2 font-mono text-sm">{formatNext(state, todayDate)}</td>
-      <td className="px-2">
+      <td className={cn(WIDE_ONLY_CELL, "font-mono text-sm")}>{formatNext(state, todayDate)}</td>
+      <td className="px-2 max-[560px]:self-start max-[560px]:pt-2.5">
         <StatusBadge status={status} />
       </td>
-      <td className="pr-1 text-right">
+      <td className="pr-1 text-right max-[560px]:self-center">
         {/* Not modal, so the confirm dialog it opens gets focus and pointer events back. */}
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
