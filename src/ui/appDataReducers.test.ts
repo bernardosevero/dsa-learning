@@ -149,6 +149,15 @@ describe("startTimer and clearTimer", () => {
     expect(updated.activeTimer).toEqual({ problemId: "valid-anagram", startedAt: NOW });
   });
 
+  it("keeps a timer already running for the same problem", () => {
+    const running = { problemId: "two-sum", startedAt: "2026-10-01T09:00:00.000Z" };
+    const file = aSaveFile({ activeTimer: running });
+
+    const updated = startTimer(file, "two-sum");
+
+    expect(updated.activeTimer).toEqual(running);
+  });
+
   it("clears the running timer", () => {
     const file = aSaveFile({
       activeTimer: { problemId: "two-sum", startedAt: "2026-10-01T09:00:00.000Z" },

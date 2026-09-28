@@ -42,8 +42,14 @@ export function updateSettings(file: SaveFile, partial: Partial<Settings>): Save
   return { ...file, settings: { ...file.settings, ...partial } };
 }
 
-/** Returns the file with a timer for the problem started now, replacing any other timer. */
+/**
+ * Returns the file with a timer for the problem started now, replacing any other timer.
+ * A timer already running for the same problem is kept, so reloading doesn't reset it.
+ */
 export function startTimer(file: SaveFile, problemId: string): SaveFile {
+  if (file.activeTimer?.problemId === problemId) {
+    return file;
+  }
   return { ...file, activeTimer: { problemId, startedAt: new Date().toISOString() } };
 }
 
