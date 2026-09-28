@@ -61,7 +61,7 @@ jobs:
                For changes under src/ui/, also review against
                .claude/skills/working-on-ui/SKILL.md and its design.md, and flag:
                - a control or surface not built from a shadcn/ui component in
-                 src/ui/components/ui/: a hand-rolled button, badge, card, input, textarea or
+                 src/ui/primitives/: a hand-rolled button, badge, card, input, textarea or
                  radio, or their classes copied onto a plain element;
                - the same markup or class string repeated across files instead of one shared
                  piece;

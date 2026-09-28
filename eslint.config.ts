@@ -1,3 +1,6 @@
+import { readdirSync } from "node:fs";
+import path from "node:path";
+
 import eslint from "@eslint/js";
 import type { Linter } from "eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -67,6 +70,45 @@ const codeStyleRules: Linter.RulesRecord = {
   "max-depth": ["warn", 2],
 };
 
+const SCREEN_NAMES = readdirSync(path.join(import.meta.dirname, "src/ui/screens"), {
+  withFileTypes: true,
+})
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
+
+// Dependencies point inward: ui/app → screens → shared → primitives, and storage never sees ui.
+const layerZones = [
+  {
+    target: "./src/storage",
+    from: "./src/ui",
+    message: "src/storage must not import from src/ui.",
+  },
+  {
+    target: "./src/ui/primitives",
+    from: ["./src/ui/shared", "./src/ui/screens", "./src/ui/app"],
+    message: "Primitives are shadcn components only; they don't import our code.",
+  },
+  {
+    target: "./src/ui/shared",
+    from: ["./src/ui/screens", "./src/ui/app"],
+    message: "Shared pieces don't import screens or the app shell.",
+  },
+  {
+    target: "./src/ui/screens",
+    from: "./src/ui/app",
+    except: ["./AppData.tsx"],
+    message: "Screens take only useAppData from src/ui/app.",
+  },
+];
+
+// The rule of two: a piece a second screen needs moves to src/ui/shared.
+const screenZones = SCREEN_NAMES.map((screenName) => ({
+  target: `./src/ui/screens/${screenName}`,
+  from: "./src/ui/screens",
+  except: [`./${screenName}`],
+  message: "Screens don't import each other. Move the piece to @/ui/shared/.",
+}));
+
 export default defineConfig(
   globalIgnores(["dist", "coverage"]),
   {
@@ -78,6 +120,15 @@ export default defineConfig(
       jsxA11y.flatConfigs.recommended,
     ],
     plugins: { "import-x": importX, unicorn },
+    settings: {
+      "import-x/resolver-next": [
+        // Resolves the @/ alias, so import-x/no-restricted-paths sees the real file.
+        importX.createNodeResolver({
+          tsconfig: { configFile: path.join(import.meta.dirname, "tsconfig.app.json") },
+          extensions: [".ts", ".tsx", ".js", ".json"],
+        }),
+      ],
+    },
     languageOptions: {
       globals: globals.browser,
       parserOptions: {
@@ -91,6 +142,27 @@ export default defineConfig(
     files: ["*.config.ts"],
     languageOptions: { globals: globals.node },
     rules: { "import-x/no-default-export": "off" },
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "import-x/no-restricted-paths": ["error", { zones: [...layerZones, ...screenZones] }],
+    },
+  },
+  {
+    files: ["src/**/*.tsx"],
+    ignores: ["src/main.tsx", "src/ui/primitives/**"],
+    rules: { "unicorn/filename-case": ["error", { case: "pascalCase", checkDirectories: false }] },
+  },
+  {
+    files: ["src/**/*.ts"],
+    ignores: ["src/ui/primitives/**"],
+    rules: { "unicorn/filename-case": ["error", { case: "camelCase", checkDirectories: false }] },
+  },
+  {
+    // shadcn's own file names, so `shadcn add` works unchanged.
+    files: ["src/ui/primitives/**"],
+    rules: { "unicorn/filename-case": ["error", { case: "kebabCase", checkDirectories: false }] },
   },
   {
     // Domain purity: src/domain is plain TypeScript, so it can move to a server.
