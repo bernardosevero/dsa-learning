@@ -37,7 +37,7 @@ export function ProblemTableRow({ row, todayDate, onMarkMastered }: ProblemTable
       <td className="py-2 pr-2 pl-4">
         <Link
           to={`/problems/${problem.id}`}
-          className={cn("block truncate hover:underline", isDue && "font-semibold")}
+          className={cn("block break-words hover:underline", isDue && "font-semibold")}
         >
           {problem.title}
         </Link>
@@ -46,14 +46,14 @@ export function ProblemTableRow({ row, todayDate, onMarkMastered }: ProblemTable
           {isUpNext && `${t.separator}${t.problems.upNext}`}
         </span>
       </td>
-      <td className="hidden px-2 text-sm sm:table-cell">
+      <td className="hidden px-2 text-sm min-[440px]:table-cell">
         <LastRating state={state} />
       </td>
       <td className="px-2 font-mono text-sm">{formatNext(state, todayDate)}</td>
       <td className="px-2">
         <StatusBadge status={status} />
       </td>
-      <td className="pr-2 text-right">
+      <td className="pr-1 text-right">
         {/* Not modal, so the confirm dialog it opens gets focus and pointer events back. */}
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>

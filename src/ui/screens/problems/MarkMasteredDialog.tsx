@@ -37,7 +37,7 @@ export function MarkMasteredDialog({ problem, onConfirm, onClose }: MarkMastered
   return (
     <AlertDialog open={problem !== null} onOpenChange={handleOpenChange}>
       <AlertDialogContent>
-        <AlertDialogHeader className="items-start gap-4">
+        <AlertDialogHeader className="gap-4">
           <span className="flex size-11 items-center justify-center rounded-full bg-status-mastered-muted text-status-mastered">
             <CircleCheckIcon aria-hidden />
           </span>

@@ -45,10 +45,10 @@ export function TopicSection({
             aria-expanded={isExpanded}
             aria-controls={isExpanded ? tableId : undefined}
             onClick={handleToggle}
-            className="h-auto w-full justify-start gap-3 rounded-xl px-4 py-3 text-left"
+            className="h-auto w-full flex-wrap justify-start gap-x-3 gap-y-1 rounded-xl px-4 py-3 text-left whitespace-normal"
           >
             <ChevronRightIcon aria-hidden className={cn(isExpanded && "rotate-90")} />
-            <span className="flex-1 truncate font-semibold">{topic.pattern}</span>
+            <span className="min-w-0 flex-1 font-semibold">{topic.pattern}</span>
             {topic.due > 0 && (
               <span className="text-sm text-primary">{t.problems.topicDue(topic.due)}</span>
             )}
@@ -70,17 +70,17 @@ export function TopicSection({
           <table id={tableId} className="w-full table-fixed text-left">
             <colgroup>
               <col />
-              <col className="hidden w-[90px] sm:table-column" />
+              <col className="hidden w-[84px] min-[440px]:table-column" />
               <col className="w-[70px]" />
-              <col className="w-[104px]" />
-              <col className="w-[52px]" />
+              <col className="w-[116px]" />
+              <col className="w-[48px]" />
             </colgroup>
             <thead className="text-xs text-muted-foreground">
               <tr className="border-t">
                 <th scope="col" className="py-2 pr-2 pl-4 font-medium">
                   {t.problems.columns.problem}
                 </th>
-                <th scope="col" className="hidden px-2 font-medium sm:table-cell">
+                <th scope="col" className="hidden px-2 font-medium min-[440px]:table-cell">
                   {t.problems.columns.lastRating}
                 </th>
                 <th scope="col" className="px-2 font-medium">
