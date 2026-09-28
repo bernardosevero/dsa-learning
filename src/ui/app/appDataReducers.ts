@@ -53,6 +53,14 @@ export function startTimer(file: SaveFile, problemId: string): SaveFile {
   return { ...file, activeTimer: { problemId, startedAt: new Date().toISOString() } };
 }
 
+/**
+ * Returns the file with the problem's timer started over from now. Unlike `startTimer`, it
+ * replaces a timer already running for the same problem: the user asked to drop that time.
+ */
+export function restartTimer(file: SaveFile, problemId: string): SaveFile {
+  return { ...file, activeTimer: { problemId, startedAt: new Date().toISOString() } };
+}
+
 /** Returns the file without a running timer. */
 export function clearTimer(file: SaveFile): SaveFile {
   const withoutTimer = { ...file };

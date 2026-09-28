@@ -174,6 +174,11 @@ export const en = {
       Medium: "Time box for a Medium problem. It's guidance, not a deadline.",
       Hard: "Time box for a Hard problem. It's guidance, not a deadline.",
     },
+    restart: "Restart",
+    restartQuestion: "Restart from 00:00?",
+    restartDrops: (elapsed: string) => `The ${elapsed} so far is dropped.`,
+    keep: "Keep",
+    confirmRestart: "Restart",
     overTimeBox: (minutes: number) =>
       `${minutes} min past the time box. Keep going, or log it as it is.`,
     reviewTip: "Don't use NeetCode's list or prev/next arrows. They reveal the pattern.",

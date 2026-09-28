@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -12,6 +12,7 @@ import { SolvingPage } from "../SolvingPage";
 
 const NOW = new Date(2026, 9, 10, 10, 0);
 const TWO_MINUTES = 2 * 60_000;
+const TWELVE_MINUTES = 12 * 60_000;
 
 function readStoredFile(): SaveFile {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as SaveFile; // safe: written by the provider
@@ -111,6 +112,61 @@ describe("SolvingPage", () => {
 
     expect(screen.getByText("20:00")).toBeDefined();
     expect(screen.getByText(/5 min past the time box/)).toBeDefined();
+  });
+
+  it("restarts the timer from 00:00 once the user confirms", async () => {
+    const user = userEvent.setup();
+    renderSolving("two-sum");
+    act(() => {
+      vi.advanceTimersByTime(TWELVE_MINUTES);
+    });
+
+    await user.click(screen.getByRole("button", { name: "Restart" }));
+    const question = screen.getByRole("group", { name: /Restart from 00:00\?/ });
+    await user.click(within(question).getByRole("button", { name: "Restart" }));
+
+    expect(screen.getByText("00:00")).toBeDefined();
+    expect(screen.queryByRole("group", { name: /Restart from 00:00\?/ })).toBeNull();
+    expect(readStoredFile().activeTimer).toEqual({
+      problemId: "two-sum",
+      startedAt: new Date(NOW.getTime() + TWELVE_MINUTES).toISOString(),
+    });
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Restart" }));
+  });
+
+  it("keeps the time as it was when the user answers Keep", async () => {
+    const user = userEvent.setup();
+    renderSolving("two-sum");
+    act(() => {
+      vi.advanceTimersByTime(TWELVE_MINUTES);
+    });
+
+    await user.click(screen.getByRole("button", { name: "Restart" }));
+    const question = screen.getByRole("group", { name: /Restart from 00:00\?/ });
+    expect(within(question).getByText(/The 12:00 so far is dropped/)).toBeDefined();
+    await user.click(within(question).getByRole("button", { name: "Keep" }));
+
+    expect(screen.getByText("12:00")).toBeDefined();
+    expect(screen.queryByRole("group", { name: /Restart from 00:00\?/ })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Restart" }));
+  });
+
+  it("moves focus to the restart question and treats Escape as Keep", async () => {
+    const user = userEvent.setup();
+    renderSolving("two-sum");
+    act(() => {
+      vi.advanceTimersByTime(TWELVE_MINUTES);
+    });
+
+    screen.getByRole("button", { name: "Restart" }).focus();
+    await user.keyboard("{Enter}");
+    const question = screen.getByRole("group", { name: /Restart from 00:00\?/ });
+    expect(question.contains(document.activeElement)).toBe(true);
+    await user.keyboard("{Escape}");
+
+    expect(screen.getByText("12:00")).toBeDefined();
+    expect(screen.queryByRole("group", { name: /Restart from 00:00\?/ })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Restart" }));
   });
 
   it("clears the timer and goes back to Today on Cancel", async () => {

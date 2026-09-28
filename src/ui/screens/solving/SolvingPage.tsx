@@ -40,7 +40,7 @@ function describeProblem(
  */
 export function SolvingPage() {
   const { problemId } = useParams();
-  const { problems, states, file, startTimer, clearTimer } = useAppData();
+  const { problems, states, file, startTimer, restartTimer, clearTimer } = useAppData();
   const navigate = useNavigate();
   const problem = problems.find((candidate) => candidate.id === problemId);
   const runningProblemId = file.activeTimer?.problemId;
@@ -113,6 +113,7 @@ export function SolvingPage() {
           startedAt={startedAt}
           timeBoxMinutes={file.settings.timeBoxMinutes[problem.difficulty]}
           difficulty={problem.difficulty}
+          onRestart={() => restartTimer(problem.id)}
         />
       )}
       {isReview && (
