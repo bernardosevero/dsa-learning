@@ -19,6 +19,8 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        // Solving's main actions ("I'm done", confirming a restart), in ink rather than green.
+        dark: "bg-foreground text-background hover:bg-foreground/90",
         // Confirms "already mastered": the quiet plum of the mastered status.
         mastered: "bg-status-mastered text-background hover:bg-status-mastered/90",
       },

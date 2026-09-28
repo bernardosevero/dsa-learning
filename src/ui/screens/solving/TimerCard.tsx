@@ -135,12 +135,7 @@ function RestartQuestion({ elapsed, onKeep, onRestart }: RestartQuestionProps) {
         >
           {t.solving.keep}
         </Button>
-        <Button
-          type="button"
-          onClick={onRestart}
-          onKeyDown={handleKeyDown}
-          className="bg-foreground text-background hover:bg-foreground/90"
-        >
+        <Button type="button" onClick={onRestart} onKeyDown={handleKeyDown} variant="dark">
           {t.solving.confirmRestart}
         </Button>
       </div>

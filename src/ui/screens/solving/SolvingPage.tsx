@@ -124,7 +124,7 @@ export function SolvingPage() {
       )}
 
       <div className="flex flex-col gap-3">
-        <Button asChild className="bg-foreground text-background hover:bg-foreground/90">
+        <Button asChild variant="dark">
           <Link to={`/log/${problem.id}`}>{t.solving.done}</Link>
         </Button>
         <Button asChild variant="outline">
