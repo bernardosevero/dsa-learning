@@ -7,6 +7,8 @@
 :root {
   --radius: 0.625rem;
   --background: #f6f4ee;
+  /* The darker surface around the app's sheet on wide windows. */
+  --desk: #e9e5db;
   --foreground: #1d1c19;
   --card: #fffefa;
   --card-foreground: #1d1c19;
@@ -42,6 +44,7 @@
 
 .dark {
   --background: #141513;
+  --desk: #0e0f0d;
   --foreground: #ece9e1;
   --card: #1c1e1b;
   --card-foreground: #ece9e1;
@@ -73,8 +76,12 @@
   --status-mastered-muted: #2a2336;
 }
 
-/* Loaded in index.html from Google Fonts. Newsreader is for titles; mono is for times, dates and counts. */
 @theme {
+  /* nav: top nav from here (bottom bar below). sheet: the app is framed. wide: Today's sidebar. */
+  --breakpoint-nav: 440px;
+  --breakpoint-sheet: 720px;
+  --breakpoint-wide: 1100px;
+  /* Loaded in index.html from Google Fonts. Newsreader is for titles; mono for times and counts. */
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Newsreader", ui-serif, Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -86,6 +93,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --color-background: var(--background);
+  --color-desk: var(--desk);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -120,6 +128,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground sheet:bg-desk;
   }
 }
