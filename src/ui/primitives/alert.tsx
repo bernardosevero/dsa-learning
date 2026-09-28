@@ -3,16 +3,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/ui/primitives/cn";
 
-// Adapted to design.md once, here: the default is the gentle muted note box, and there is no
-// role="alert", since these notes are read in place rather than announced.
+// Adapted to design.md once, here: the default is the gentle muted note box, success and
+// destructive are the Settings import results, and there is no role="alert": callers that must be
+// announced set role="status" or role="alert" themselves.
 const alertVariants = cva(
   "relative w-full rounded-xl p-4 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5",
   {
     variants: {
       variant: {
         default: "bg-muted text-foreground [&>svg]:text-muted-foreground",
+        success: "bg-accent font-medium text-primary [&>svg]:text-current",
         destructive:
-          "border text-destructive bg-card [&>svg]:text-current *:data-[slot=alert-description]:text-destructive/90",
+          "bg-rating-hard-muted text-destructive [&>svg]:text-current *:data-[slot=alert-description]:text-destructive",
       },
     },
     defaultVariants: {
