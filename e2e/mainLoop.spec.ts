@@ -98,3 +98,23 @@ test("an exported file imported into a fresh browser shows the same Today", asyn
   await expect(freshPage.getByRole("main")).toHaveText(todayBefore);
   await freshContext.close();
 });
+
+test("an export imported after Reset progress brings Today back", async ({ page }) => {
+  await openToday(page);
+  await logFirstProblem(page, "Medium");
+  await page.goto("/");
+  const todayBefore = (await page.getByRole("main").textContent()) ?? "";
+  await page.goto("/settings");
+  const downloadEvent = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download JSON" }).click();
+  const exportPath = await (await downloadEvent).path();
+
+  await page.getByLabel("Type reset to confirm").fill("reset");
+  await page.getByRole("button", { name: "Reset progress" }).click();
+  await expect(page.getByText("Progress reset. Every problem is new again.")).toBeVisible();
+  await page.locator("input[type='file']").setInputFiles(exportPath);
+  await expect(page.getByText("Imported: 1 new entry")).toBeVisible();
+  await page.goto("/");
+
+  await expect(page.getByRole("main")).toHaveText(todayBefore);
+});

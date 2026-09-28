@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { today } from "@/domain/dates";
+import { exportJson, importJson } from "@/storage/localStore";
 import { aMasteredMark, anAttempt, aNewAttempt, aSaveFile } from "@/test/builders";
 
 import {
@@ -137,18 +138,46 @@ describe("startTimer and clearTimer", () => {
 });
 
 describe("resetProgress", () => {
-  it("marks every entry deleted, keeps them all and clears the timer", () => {
+  const CUSTOM_SETTINGS = {
+    timeBoxMinutes: { Easy: 10, Medium: 20, Hard: 40 },
+    showPatternOnReviews: true,
+  };
+
+  it("empties the log, clears the timer and keeps the settings", () => {
     const file = aSaveFile({
       entries: [anAttempt(), aMasteredMark()],
+      settings: CUSTOM_SETTINGS,
       activeTimer: { problemId: "two-sum", startedAt: "2026-10-01T09:00:00.000Z" },
     });
 
     const updated = resetProgress(file);
 
-    expect(updated.entries).toEqual([
-      anAttempt({ deletedAt: NOW }),
-      aMasteredMark({ deletedAt: NOW }),
-    ]);
+    expect(updated).toEqual(aSaveFile({ entries: [], settings: CUSTOM_SETTINGS }));
     expect(updated).not.toHaveProperty("activeTimer");
+  });
+
+  it("brings back every entry when an export made before the reset is imported", () => {
+    const undone = aMasteredMark({ id: "undone", deletedAt: NOW });
+    const file = aSaveFile({ entries: [anAttempt(), aMasteredMark(), undone] });
+    const exported = exportJson(file);
+
+    const restored = importJson(exported, resetProgress(file));
+
+    expect(restored).toEqual({ ok: true, file, added: file.entries.length });
+  });
+
+  it("takes the imported file's settings on the first import after a reset", () => {
+    const current = aSaveFile({ entries: [anAttempt({ id: "local" })] });
+    const exported = exportJson(
+      aSaveFile({ entries: [anAttempt({ id: "remote" })], settings: CUSTOM_SETTINGS }),
+    );
+
+    const restored = importJson(exported, resetProgress(current));
+
+    expect(restored).toEqual({
+      ok: true,
+      file: aSaveFile({ entries: [anAttempt({ id: "remote" })], settings: CUSTOM_SETTINGS }),
+      added: 1,
+    });
   });
 });

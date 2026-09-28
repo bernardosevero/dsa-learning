@@ -217,6 +217,19 @@ describe("exportJson and importJson", () => {
     expect(result).toEqual({ ok: true, file: incoming, added: 0 });
   });
 
+  it("keeps an entry undone here when an older export that still has it is imported", () => {
+    const live = anAttempt();
+    const olderExport = exportJson(aSaveFile({ ...SAMPLE_FILE, entries: [live] }));
+    const current = aSaveFile({
+      ...SAMPLE_FILE,
+      entries: [{ ...live, deletedAt: "2026-10-05T10:00:00.000Z" }],
+    });
+
+    const result = importJson(olderExport, current);
+
+    expect(result).toEqual({ ok: true, file: current, added: 0 });
+  });
+
   it("rejects text that is not JSON with a readable error", () => {
     const result = importJson("not json at all", EMPTY_SAVE_FILE);
 

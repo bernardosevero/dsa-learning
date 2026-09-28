@@ -135,15 +135,13 @@ describe("SettingsPage", () => {
     expect(resetButton.hasAttribute("disabled")).toBe(false);
   });
 
-  it("marks every entry deleted on reset, keeping them in the log", async () => {
+  it("empties the log on reset", async () => {
     renderSettings();
 
     await userEvent.type(screen.getByLabelText("Type reset to confirm"), "reset");
     await userEvent.click(screen.getByRole("button", { name: "Reset progress" }));
 
-    const entries = readStoredFile().entries;
-    expect(entries).toHaveLength(1);
-    expect(entries[0]?.deletedAt).toBeDefined();
+    expect(readStoredFile().entries).toEqual([]);
     expect(screen.getByText("Progress reset. Every problem is new again.")).toBeDefined();
   });
 
