@@ -1,10 +1,23 @@
 import type { Rating } from "@/domain/types";
-import { cn } from "@/ui/lib/utils";
+import { Badge } from "@/ui/components/ui/badge";
 
-const CHIP_STYLES: Record<Rating, { classes: string; glyph: string }> = {
-  hard: { classes: "bg-rating-hard-muted text-rating-hard", glyph: "●●●" },
-  medium: { classes: "bg-rating-medium-muted text-rating-medium", glyph: "●●○" },
-  easy: { classes: "bg-rating-easy-muted text-rating-easy", glyph: "●○○" },
+/** Each rating's dot glyph, text color and selected-card style, shared with the Log rating cards. */
+export const RATING_STYLES: Record<Rating, { glyph: string; text: string; selected: string }> = {
+  hard: {
+    glyph: "●●●",
+    text: "text-rating-hard",
+    selected: "border-2 border-rating-hard bg-rating-hard-muted",
+  },
+  medium: {
+    glyph: "●●○",
+    text: "text-rating-medium",
+    selected: "border-2 border-rating-medium bg-rating-medium-muted",
+  },
+  easy: {
+    glyph: "●○○",
+    text: "text-rating-easy",
+    selected: "border-2 border-rating-easy bg-rating-easy-muted",
+  },
 };
 
 export interface RatingChipProps {
@@ -13,20 +26,14 @@ export interface RatingChipProps {
   label: string;
 }
 
-/** How an attempt felt: a colored pill with a dot glyph and its word. */
+/** How an attempt felt: a Badge in the rating's colors with its dot glyph and word. */
 export function RatingChip({ rating, label }: RatingChipProps) {
-  const style = CHIP_STYLES[rating];
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
-        style.classes,
-      )}
-    >
+    <Badge variant={rating}>
       <span aria-hidden className="tracking-tighter">
-        {style.glyph}
+        {RATING_STYLES[rating].glyph}
       </span>
       {label}
-    </span>
+    </Badge>
   );
 }

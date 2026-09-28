@@ -2,6 +2,7 @@ import { ClockIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { Difficulty } from "@/domain/types";
+import { Card } from "@/ui/components/ui/card";
 import { formatElapsed } from "@/ui/format";
 import { cn } from "@/ui/lib/utils";
 import { t } from "@/ui/strings";
@@ -35,12 +36,7 @@ export function TimerCard({ startedAt, timeBoxMinutes, difficulty }: TimerCardPr
   const minutesOver = Math.max(1, Math.floor((elapsed - timeBox) / MILLISECONDS_PER_MINUTE));
 
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-3 rounded-xl border bg-card p-5",
-        isOver && "border-rating-medium",
-      )}
-    >
+    <Card className={cn("gap-3 p-5", isOver && "border-rating-medium")}>
       <div className="flex items-baseline justify-between gap-3">
         <span className="font-mono text-6xl">{formatElapsed(elapsed)}</span>
         <span className="font-mono text-muted-foreground">
@@ -58,6 +54,6 @@ export function TimerCard({ startedAt, timeBoxMinutes, difficulty }: TimerCardPr
           {t.solving.overTimeBox(minutesOver)}
         </p>
       )}
-    </div>
+    </Card>
   );
 }

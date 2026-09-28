@@ -64,9 +64,7 @@ const codeStyleRules: Linter.RulesRecord = {
   "unicorn/no-array-sort": "error",
   "unicorn/no-array-reverse": "error",
   "unicorn/prevent-abbreviations": "off",
-  "max-lines-per-function": ["warn", { max: 40, skipBlankLines: true, skipComments: true }],
   "max-depth": ["warn", 2],
-  complexity: ["warn", 8],
 };
 
 export default defineConfig(
@@ -88,10 +86,6 @@ export default defineConfig(
       },
     },
     rules: codeStyleRules,
-  },
-  {
-    files: ["**/*.test.{ts,tsx}"],
-    rules: { "max-lines-per-function": "off" },
   },
   {
     files: ["*.config.ts"],

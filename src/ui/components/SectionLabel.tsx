@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { Overline } from "./Overline";
+
 export interface SectionLabelProps {
   /** Lets the section name itself with aria-labelledby. */
   id: string;
@@ -8,13 +10,13 @@ export interface SectionLabelProps {
   aside?: ReactNode;
 }
 
-/** The small uppercase heading above a section. */
+/** The heading above a section, with an optional detail on the right. */
 export function SectionLabel({ id, children, aside }: SectionLabelProps) {
   return (
     <div className="mb-3 flex items-center justify-between gap-3">
-      <h2 id={id} className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+      <Overline as="h2" id={id}>
         {children}
-      </h2>
+      </Overline>
       {aside}
     </div>
   );
