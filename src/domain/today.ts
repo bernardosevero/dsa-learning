@@ -90,7 +90,8 @@ function collectDueReviews(
   return dueReviews.toSorted(compareByForgettingRisk);
 }
 
-function findNextNew(problems: readonly Problem[], states: States): Problem | null {
+/** Returns the new problem lowest in NeetCode order: the one Today offers next. Null if none is new. */
+export function findNextNew(problems: readonly Problem[], states: States): Problem | null {
   let nextNew: Problem | null = null;
   for (const problem of problems) {
     if (isNewProblem(states, problem) && (nextNew === null || problem.order < nextNew.order)) {

@@ -11,6 +11,9 @@ const toggleVariants = cva(
       variant: {
         default: "bg-transparent",
         outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
+        // A segmented control: the chosen segment sits on the card over a muted track.
+        segmented:
+          "bg-transparent text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:bg-card data-[state=on]:text-foreground",
       },
       size: {
         default: "h-11 min-w-11 px-2",

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it } from "vitest";
@@ -62,6 +62,20 @@ describe("AppRoutes", () => {
 
     expect(pageHeading()).toBe("Settings & data");
     expect(nav.querySelector("[aria-current='page']")?.textContent).toBe("Settings");
+  });
+
+  it("drops a problem marked as already mastered in Problems from Today's New section", async () => {
+    const user = userEvent.setup();
+    renderAt("/problems");
+
+    await user.click(screen.getByRole("button", { name: "Actions for Contains Duplicate" }));
+    await user.click(screen.getByRole("menuitem", { name: "Mark as already mastered…" }));
+    await user.click(screen.getByRole("button", { name: "Mark as mastered" }));
+    await user.click(screen.getByRole("link", { name: "Today" }));
+
+    const newSection = within(screen.getByRole("region", { name: /New/ }));
+    expect(newSection.queryByText("Contains Duplicate")).toBeNull();
+    expect(newSection.getByText("Valid Anagram", { selector: "p" })).toBeDefined();
   });
 
   it("goes back to Today from the wordmark", async () => {
