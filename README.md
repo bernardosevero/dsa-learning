@@ -34,11 +34,7 @@ pnpm dev
 
 The app runs at http://localhost:5173.
 
-One environment variable feeds the link previews (what Slack, WhatsApp or iMessage show when someone pastes the app's URL):
-
-| Variable | What it is |
-|---|---|
-| `VITE_SITE_URL` | The deployed site's URL, without a trailing slash (e.g. `https://dta-learning.<account>.workers.dev`). Vite writes it into the `og:url`, `og:image` and `twitter:image` tags in `index.html`, which must be absolute URLs. On Cloudflare it's a build variable (see [Deploy](#deploy)). Locally it's optional: without it the build warns that it isn't defined and leaves the placeholder in, which only matters on a deployed site. To set it locally, put `VITE_SITE_URL=http://localhost:5173` in `.env.local` |
+No environment variables are needed locally. The build warns that `VITE_SITE_URL` isn't defined; it only matters on the deployed site (see [Deploy](#deploy)).
 
 | Command | What it does |
 |---|---|
@@ -77,9 +73,9 @@ Workers Builds, connected to this repository in the Cloudflare dashboard (Worker
 | Build command | `pnpm build` |
 | Deploy command | `npx wrangler deploy`, for pushes to `main` |
 | Preview command | `npx wrangler preview`, for every other branch; each one gets its own Preview URL |
-| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL`, the production URL (see [Running locally](#running-locally)) |
+| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL`, the production URL with no trailing slash |
 
-The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` is read when the site is built, so it goes under the build variables (not the Worker's runtime variables), and changing it takes a new build.
+The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` turns the link-preview tags in `index.html` (`og:url`, `og:image`) into the absolute URLs that Slack or WhatsApp need. Vite reads it when the site is built, so it's a build variable (not a runtime one), and changing it takes a new build.
 
 Everything a user logs stays in their browser, stored per address: the production URL, each Preview URL and each machine start with an empty log. Move a log between them with Export and Import in Settings.
 
