@@ -3,33 +3,15 @@ import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EMPTY_SAVE_FILE, type Attempt, type SaveFile } from "@/domain/types";
+import { EMPTY_SAVE_FILE, type SaveFile } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
+import { anAttempt, aSaveFile } from "@/test/builders";
 import { AppDataProvider } from "@/ui/app/AppData";
 
 import { SolvingPage } from "../SolvingPage";
 
 const NOW = new Date(2026, 9, 10, 10, 0);
 const TWO_MINUTES = 2 * 60_000;
-const DEFAULT_TIME_MINUTES = 20;
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return {
-    type: "attempt",
-    id: "attempt-1",
-    problemId: "contains-duplicate",
-    completedAt: "2026-10-01T12:00:00.000Z",
-    date: "2026-10-01",
-    rating: "hard",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function aSaveFile(overrides: Partial<SaveFile> = {}): SaveFile {
-  return { ...EMPTY_SAVE_FILE, ...overrides };
-}
 
 function readStoredFile(): SaveFile {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as SaveFile; // safe: written by the provider
@@ -65,7 +47,7 @@ afterEach(() => {
 
 describe("SolvingPage", () => {
   it("hides the pattern on a review", () => {
-    renderSolving("contains-duplicate", aSaveFile({ entries: [anAttempt()] }));
+    renderSolving("contains-duplicate", aSaveFile({ entries: [anAttempt({ rating: "hard" })] }));
 
     expect(screen.getByText("Review · pattern hidden")).toBeDefined();
     expect(screen.getByText("Easy · last solved Oct 1")).toBeDefined();
@@ -76,7 +58,10 @@ describe("SolvingPage", () => {
   it("shows the pattern on a review when the user opted in", () => {
     const settings = { ...EMPTY_SAVE_FILE.settings, showPatternOnReviews: true };
 
-    renderSolving("contains-duplicate", aSaveFile({ entries: [anAttempt()], settings }));
+    renderSolving(
+      "contains-duplicate",
+      aSaveFile({ entries: [anAttempt({ rating: "hard" })], settings }),
+    );
 
     expect(screen.getByText("Review")).toBeDefined();
     expect(screen.queryByText("Review · pattern hidden")).toBeNull();

@@ -23,7 +23,7 @@ Every PR except `docs` gets an automatic Claude review when it's opened or marke
 src/data/             static problem list (problems.json), generated once by scripts/, then edited by hand
 src/domain/           pure logic: types, dates, schedule, today, merge, metrics
 src/storage/          persistence behind the Store interface (localStorage now, Supabase later)
-src/test/             shared test code: setup.ts (and the builders, #60)
+src/test/             shared test code: setup.ts and the builders in builders.ts
 src/ui/app/           what exists once per app: App, AppRoutes, AppLayout, AppData and its reducers
 src/ui/screens/<s>/   one folder per screen, named after its page component: today/ holds TodayPage
 src/ui/shared/        our pieces used by two or more screens, format.ts, strings.ts
@@ -113,7 +113,7 @@ Lint and Prettier (100 columns) enforce what they can. These are the rules they 
 - **Tests:**
   - Names are sentences that pin down a behaviour ("marks a problem mastered after Easy on the due review").
   - Separate arrange / act / assert with blank lines.
-  - Build data with builders like `anAttempt({ rating: "easy" })`.
+  - Build data with the builders in `src/test/builders.ts`, like `anAttempt({ rating: "easy" })`. Add a missing one there, never a local copy in a test file.
   - The naming rules apply in tests too.
   - Use `@ts-expect-error` (with a description) to test invalid input.
 - **Dependencies:** add only the ones the issue names. For anything else, explain in the PR why the platform or an existing dependency isn't enough, and wait for the owner's approval.

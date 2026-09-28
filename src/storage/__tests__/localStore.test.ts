@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { EMPTY_SAVE_FILE, type Attempt, type MarkedMastered, type SaveFile } from "@/domain/types";
+import { EMPTY_SAVE_FILE } from "@/domain/types";
+import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
 
 import {
   CORRUPT_BACKUP_KEY_PREFIX,
@@ -10,52 +11,22 @@ import {
   importJson,
 } from "../localStore";
 
-const DEFAULT_TIME_MINUTES = 20;
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return {
-    type: "attempt",
-    id: "attempt-1",
-    problemId: "contains-duplicate",
-    completedAt: "2026-10-01T12:00:00.000Z",
-    date: "2026-10-01",
-    rating: "medium",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function aMasteredMark(overrides: Partial<MarkedMastered> = {}): MarkedMastered {
-  return {
-    type: "markedMastered",
-    id: "mark-1",
-    problemId: "two-sum",
-    at: "2026-10-02T13:00:00.000Z",
-    date: "2026-10-02",
-    ...overrides,
-  };
-}
-
-function aSaveFile(overrides: Partial<SaveFile> = {}): SaveFile {
-  return {
-    version: 1,
-    entries: [
-      anAttempt({ startedAt: "2026-10-01T11:40:00.000Z", keyInsight: "Remember what was seen" }),
-      aMasteredMark(),
-      anAttempt({
-        id: "attempt-2",
-        completedAt: "2026-10-03T12:00:00.000Z",
-        date: "2026-10-03",
-        rating: "hard",
-        help: "hint",
-        deletedAt: "2026-10-03T12:05:00.000Z",
-      }),
-    ],
-    settings: { timeBoxMinutes: { Easy: 10, Medium: 25, Hard: 50 }, showPatternOnReviews: true },
-    ...overrides,
-  };
-}
+// Every kind of entry and non-default settings, so a round trip that drops anything shows.
+const SAMPLE_FILE = aSaveFile({
+  entries: [
+    anAttempt({ startedAt: "2026-10-01T11:40:00.000Z", keyInsight: "Remember what was seen" }),
+    aMasteredMark({ problemId: "two-sum", date: "2026-10-02" }),
+    anAttempt({
+      id: "attempt-2",
+      completedAt: "2026-10-03T12:00:00.000Z",
+      date: "2026-10-03",
+      rating: "hard",
+      help: "hint",
+      deletedAt: "2026-10-03T12:05:00.000Z",
+    }),
+  ],
+  settings: { timeBoxMinutes: { Easy: 10, Medium: 25, Hard: 50 }, showPatternOnReviews: true },
+});
 
 function createMemoryStorage(initialItems: Record<string, string> = {}): Storage {
   const items = new Map(Object.entries(initialItems));
@@ -122,6 +93,7 @@ describe("createLocalStore", () => {
   it("round-trips a saved file exactly through load", () => {
     const storage = createMemoryStorage();
     const file = aSaveFile({
+      ...SAMPLE_FILE,
       activeTimer: { problemId: "two-sum", startedAt: "2026-10-04T08:00:00.000Z" },
     });
 
@@ -145,7 +117,7 @@ describe("createLocalStore", () => {
   });
 
   it("backs up stored JSON that is not a valid save file", () => {
-    const invalidText = JSON.stringify({ ...aSaveFile(), version: 2 });
+    const invalidText = JSON.stringify({ ...SAMPLE_FILE, version: 2 });
     const storage = createMemoryStorage({ [STORAGE_KEY]: invalidText });
 
     const loaded = createLocalStore(storage).load();
@@ -158,7 +130,7 @@ describe("createLocalStore", () => {
 
   it("keeps working in memory when storage throws", () => {
     const store = createLocalStore(createUnavailableStorage());
-    const file = aSaveFile();
+    const file = SAMPLE_FILE;
 
     const loadedBeforeSave = store.load();
     store.save(file);
@@ -170,7 +142,7 @@ describe("createLocalStore", () => {
 
   it("keeps working in memory when there is no window storage", () => {
     const store = createLocalStore();
-    const file = aSaveFile();
+    const file = SAMPLE_FILE;
 
     store.save(file);
     const loaded = store.load();
@@ -182,7 +154,7 @@ describe("createLocalStore", () => {
 describe("exportJson and importJson", () => {
   it("restores the original entries and settings after export, clearing storage and import", () => {
     const storage = createMemoryStorage();
-    const original = aSaveFile();
+    const original = SAMPLE_FILE;
     createLocalStore(storage).save(original);
     const exported = exportJson(createLocalStore(storage).load());
 
@@ -195,13 +167,13 @@ describe("exportJson and importJson", () => {
   });
 
   it("exports pretty-printed JSON", () => {
-    const exported = exportJson(aSaveFile());
+    const exported = exportJson(SAMPLE_FILE);
 
     expect(exported).toContain('\n  "version": 1');
   });
 
   it("adds nothing when the same file is imported twice", () => {
-    const file = aSaveFile();
+    const file = SAMPLE_FILE;
     const exported = exportJson(file);
 
     const firstImport = importJson(exported, EMPTY_SAVE_FILE);
@@ -213,8 +185,9 @@ describe("exportJson and importJson", () => {
   });
 
   it("merges an import into a non-empty log and keeps the current settings", () => {
-    const current = aSaveFile({ entries: [anAttempt({ id: "local-only" })] });
+    const current = aSaveFile({ ...SAMPLE_FILE, entries: [anAttempt({ id: "local-only" })] });
     const incoming = aSaveFile({
+      ...SAMPLE_FILE,
       entries: [aMasteredMark({ id: "remote-only" })],
       settings: { timeBoxMinutes: { Easy: 5, Medium: 5, Hard: 5 }, showPatternOnReviews: false },
     });
@@ -233,8 +206,11 @@ describe("exportJson and importJson", () => {
 
   it("applies a deletion from the imported file without counting it as added", () => {
     const live = anAttempt();
-    const current = aSaveFile({ entries: [live] });
-    const incoming = aSaveFile({ entries: [{ ...live, deletedAt: "2026-10-05T10:00:00.000Z" }] });
+    const current = aSaveFile({ ...SAMPLE_FILE, entries: [live] });
+    const incoming = aSaveFile({
+      ...SAMPLE_FILE,
+      entries: [{ ...live, deletedAt: "2026-10-05T10:00:00.000Z" }],
+    });
 
     const result = importJson(exportJson(incoming), current);
 
@@ -248,7 +224,7 @@ describe("exportJson and importJson", () => {
   });
 
   it("rejects a file with version 2 with a readable error", () => {
-    const text = JSON.stringify({ ...aSaveFile(), version: 2 });
+    const text = JSON.stringify({ ...SAMPLE_FILE, version: 2 });
 
     const result = importJson(text, EMPTY_SAVE_FILE);
 
@@ -256,7 +232,7 @@ describe("exportJson and importJson", () => {
   });
 
   it("rejects a file with an unknown rating with a readable error", () => {
-    const file = aSaveFile();
+    const file = SAMPLE_FILE;
     const text = JSON.stringify({ ...file, entries: [{ ...file.entries[0], rating: "trivial" }] });
 
     const result = importJson(text, EMPTY_SAVE_FILE);
@@ -265,10 +241,10 @@ describe("exportJson and importJson", () => {
   });
 
   it("leaves the current file untouched", () => {
-    const current = aSaveFile({ entries: [anAttempt({ id: "local-only" })] });
+    const current = aSaveFile({ ...SAMPLE_FILE, entries: [anAttempt({ id: "local-only" })] });
     const snapshot = structuredClone(current);
 
-    importJson(exportJson(aSaveFile()), current);
+    importJson(exportJson(SAMPLE_FILE), current);
 
     expect(current).toEqual(snapshot);
   });

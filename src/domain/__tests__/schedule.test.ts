@@ -1,34 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import { aMasteredMark, anAttempt } from "@/test/builders";
+
 import { deriveAllStates, deriveState, earliestDueDate, lastAttempt } from "../schedule";
-import type { Attempt, MarkedMastered, ProblemState } from "../types";
-
-const DEFAULT_TIME_MINUTES = 20;
-
-function anAttempt(overrides: Partial<Attempt> = {}): Attempt {
-  return {
-    type: "attempt",
-    id: "attempt-1",
-    problemId: "contains-duplicate",
-    completedAt: `${overrides.date ?? "2026-10-01"}T12:00:00.000Z`,
-    date: "2026-10-01",
-    rating: "medium",
-    timeMinutes: DEFAULT_TIME_MINUTES,
-    help: "none",
-    ...overrides,
-  };
-}
-
-function aMasteredMark(overrides: Partial<MarkedMastered> = {}): MarkedMastered {
-  return {
-    type: "markedMastered",
-    id: "mark-1",
-    problemId: "contains-duplicate",
-    at: `${overrides.date ?? "2026-10-01"}T13:00:00.000Z`,
-    date: "2026-10-01",
-    ...overrides,
-  };
-}
+import type { ProblemState } from "../types";
 
 describe("deriveState", () => {
   it("returns new when the problem has no entries", () => {
