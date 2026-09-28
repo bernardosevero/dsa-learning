@@ -67,7 +67,7 @@ These are settled decisions. Code that contradicts one is a bug.
 
 | Concern | Choice | Why |
 |---|---|---|
-| App | Vite + React + TypeScript (strict, `noUncheckedIndexedAccess`), a static single-page app on Cloudflare Workers (static assets) | Six screens and local data: no server of ours runs code |
+| App | Vite + React + TypeScript (strict, `noUncheckedIndexedAccess`), a static single-page app on Cloudflare Pages | Six screens and local data: no server of ours runs code |
 | Toolchain | pnpm, Node 24 LTS | Strict `node_modules`: a missing dependency fails immediately |
 | Routing | React Router v7, library mode | Familiar and small; six routes don't need typed routing |
 | State | One React context over pure reducer functions (`src/ui/app/appDataReducers.ts`) | Reducers are testable without React. Reach for Zustand only when re-renders measurably hurt |

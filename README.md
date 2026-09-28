@@ -38,7 +38,7 @@ One environment variable feeds the link previews (what Slack, WhatsApp or iMessa
 
 | Variable | What it is |
 |---|---|
-| `VITE_SITE_URL` | The deployed site's URL, without a trailing slash (e.g. `https://dta-learning.<account>.workers.dev`). Vite writes it into the `og:url`, `og:image` and `twitter:image` tags in `index.html`, which must be absolute URLs. On Cloudflare it's a build variable (see [Deploy](#deploy)). Locally it's optional: without it the build warns that it isn't defined and leaves the placeholder in, which only matters on a deployed site. To set it locally, put `VITE_SITE_URL=http://localhost:5173` in `.env.local` |
+| `VITE_SITE_URL` | The deployed site's URL, without a trailing slash (e.g. `https://dta-learning.pages.dev`). Vite writes it into the `og:url`, `og:image` and `twitter:image` tags in `index.html`, which must be absolute URLs. On Cloudflare Pages it's an environment variable (see [Deploy](#deploy)). Locally it's optional: without it the build warns that it isn't defined and leaves the placeholder in, which only matters on a deployed site. To set it locally, put `VITE_SITE_URL=http://localhost:5173` in `.env.local` |
 
 | Command | What it does |
 |---|---|
@@ -68,20 +68,18 @@ The favicon, the Apple touch icon and the link-preview image in `public/` are dr
 
 ## Deploy
 
-The app is a static site on Cloudflare Workers, served from `dist/` as static assets. `wrangler.jsonc` holds that setup: it names the Worker and sends every path that isn't a file (`/problems`, `/settings`) to `index.html`, so reloading a screen keeps it. Nothing runs on the server.
-
-Workers Builds, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dta-learning` → Settings → Build), deploys on every push:
+The app is a static site on Cloudflare Pages. Pages is connected to this repository in the Cloudflare dashboard (Workers & Pages → `dta-learning` → Settings) and deploys on every push: `main` to production, every other branch to a preview with its own URL.
 
 | Setting | Value |
 |---|---|
+| Framework preset | Vite |
 | Build command | `pnpm build` |
-| Deploy command | `npx wrangler deploy`, for pushes to `main` |
-| Preview command | `npx wrangler preview`, for every other branch; each one gets its own Preview URL |
-| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL`, the production URL (see [Running locally](#running-locally)) |
+| Build output directory | `dist` |
+| Environment variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL`, the production URL (see [Running locally](#running-locally)) |
 
-The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` is read when the site is built, so it goes under the build variables (not the Worker's runtime variables), and changing it takes a new build.
+The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` is read when the site is built, so changing it takes a new deployment. The repository needs no Cloudflare config: with no `404.html` in `dist/`, Pages serves `index.html` for every path that isn't a file, so reloading `/problems` or `/settings` keeps the screen.
 
-Everything a user logs stays in their browser, stored per address: the production URL, each Preview URL and each machine start with an empty log. Move a log between them with Export and Import in Settings.
+Everything a user logs stays in their browser, stored per address: the production URL, each preview URL and each machine start with an empty log. Move a log between them with Export and Import in Settings.
 
 ## Research basis
 
