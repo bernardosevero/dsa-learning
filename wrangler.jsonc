@@ -8,4 +8,6 @@
     // Paths that aren't files (/problems, /settings) get index.html, so a reload keeps the route.
     "not_found_handling": "single-page-application",
   },
+  // Required by `npx wrangler preview` (the preview builds). Empty: previews need no own settings.
+  "previews": {},
 }
