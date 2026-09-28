@@ -97,6 +97,7 @@ export function LogPage() {
       <div className="flex flex-col gap-1">
         <Overline>{t.log.label}</Overline>
         <h1 className="font-serif text-3xl font-semibold">{problem.title}</h1>
+        {shouldShowPattern && <p className="text-sm text-muted-foreground">{problem.pattern}</p>}
       </div>
       <LogForm
         initialValues={formValues}

@@ -91,6 +91,7 @@ describe("LogPage form", () => {
 
     expect(screen.getByText("Review")).toBeDefined();
     expect(screen.queryByText("Review · pattern hidden")).toBeNull();
+    expect(screen.getByText("Arrays & Hashing")).toBeDefined();
   });
 
   it("prefills the time from the timer, rounded up", () => {
