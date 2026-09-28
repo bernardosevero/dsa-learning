@@ -72,7 +72,10 @@ describe("SettingsPage", () => {
     await userEvent.type(hard, "0");
 
     expect(readStoredFile().settings.timeBoxMinutes.Hard).toBe(45);
-    expect(screen.getByText("Enter whole minutes, from 1 to 180.")).toBeDefined();
+    const errorId = hard.getAttribute("aria-describedby") ?? "";
+    expect(document.getElementById(errorId)?.textContent).toBe(
+      "Enter whole minutes, from 1 to 180.",
+    );
   });
 
   it("saves the show-the-pattern switch", async () => {

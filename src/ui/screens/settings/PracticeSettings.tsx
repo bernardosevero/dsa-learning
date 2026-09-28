@@ -54,10 +54,7 @@ export function PracticeSettings() {
     <section aria-labelledby={headingId}>
       <SectionLabel id={headingId}>{t.settings.practice}</SectionLabel>
       <Card>
-        <fieldset
-          aria-describedby={invalidDifficulties.length > 0 ? errorId : undefined}
-          className="flex flex-col gap-3 border-b p-4"
-        >
+        <fieldset className="flex flex-col gap-3 border-b p-4">
           <legend className="float-left font-semibold">{t.settings.timeBoxes}</legend>
           <p className="clear-both text-sm text-muted-foreground">{t.settings.timeBoxesHint}</p>
           <div className="grid grid-cols-3 gap-3">
@@ -67,6 +64,7 @@ export function PracticeSettings() {
                 difficulty={difficulty}
                 value={invalidDrafts[difficulty] ?? String(timeBoxMinutes[difficulty])}
                 isInvalid={invalidDifficulties.includes(difficulty)}
+                errorId={errorId}
                 onChange={handleTimeBoxChange}
               />
             ))}
@@ -106,10 +104,12 @@ interface TimeBoxFieldProps {
   difficulty: Difficulty;
   value: string;
   isInvalid: boolean;
+  /** The shared error message, read out on the field that is invalid. */
+  errorId: string;
   onChange: (difficulty: Difficulty, event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-function TimeBoxField({ difficulty, value, isInvalid, onChange }: TimeBoxFieldProps) {
+function TimeBoxField({ difficulty, value, isInvalid, errorId, onChange }: TimeBoxFieldProps) {
   const inputId = useId();
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -129,6 +129,7 @@ function TimeBoxField({ difficulty, value, isInvalid, onChange }: TimeBoxFieldPr
           step={1}
           value={value}
           aria-invalid={isInvalid}
+          aria-describedby={isInvalid ? errorId : undefined}
           onChange={handleChange}
           className="w-20 font-mono"
         />
