@@ -38,7 +38,7 @@ One environment variable feeds the link previews (what Slack, WhatsApp or iMessa
 
 | Variable | What it is |
 |---|---|
-| `VITE_SITE_URL` | The deployed site's URL, without a trailing slash (e.g. `https://dta-learning.pages.dev`). Vite writes it into the `og:url`, `og:image` and `twitter:image` tags in `index.html`, which must be absolute URLs. Set it in the Cloudflare Pages project's environment variables. Locally it's optional: without it the build warns that it isn't defined and leaves the placeholder in, which only matters on a deployed site. To set it locally, put `VITE_SITE_URL=http://localhost:5173` in `.env.local` |
+| `VITE_SITE_URL` | The deployed site's URL, without a trailing slash (e.g. `https://dta-learning.<account>.workers.dev`). Vite writes it into the `og:url`, `og:image` and `twitter:image` tags in `index.html`, which must be absolute URLs. On Cloudflare it's a build variable (see [Deploy](#deploy)). Locally it's optional: without it the build warns that it isn't defined and leaves the placeholder in, which only matters on a deployed site. To set it locally, put `VITE_SITE_URL=http://localhost:5173` in `.env.local` |
 
 | Command | What it does |
 |---|---|
@@ -65,6 +65,23 @@ The problem list in `src/data/problems.json` is committed, so the app needs no n
 To see the success metrics (on-time reviews, re-solve speed, rating progress, load and habit), export your data from the app and run `pnpm tsx scripts/metrics.ts <export.json>`. It prints a small table.
 
 The favicon, the Apple touch icon and the link-preview image in `public/` are drawn by `pnpm tsx scripts/render-link-previews.ts`. Run it after changing their design in that script. It needs network access to download the fonts from Google Fonts, and a Chromium like the end-to-end tests (`PLAYWRIGHT_CHROMIUM_EXECUTABLE` works here too).
+
+## Deploy
+
+The app is a static site on Cloudflare Workers, served from `dist/` as static assets. `wrangler.jsonc` holds that setup: it names the Worker and sends every path that isn't a file (`/problems`, `/settings`) to `index.html`, so reloading a screen keeps it. Nothing runs on the server.
+
+Workers Builds, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dta-learning` → Settings → Build), deploys on every push:
+
+| Setting | Value |
+|---|---|
+| Build command | `pnpm build` |
+| Deploy command | `npx wrangler deploy`, for pushes to `main` |
+| Preview command | `npx wrangler preview`, for every other branch; each one gets its own Preview URL |
+| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL`, the production URL (see [Running locally](#running-locally)) |
+
+The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` is read when the site is built, so it goes under the build variables (not the Worker's runtime variables), and changing it takes a new build.
+
+Everything a user logs stays in their browser, stored per address: the production URL, each Preview URL and each machine start with an empty log. Move a log between them with Export and Import in Settings.
 
 ## Research basis
 
