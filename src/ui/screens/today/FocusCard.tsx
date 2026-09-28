@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
 import type { Problem } from "@/domain/types";
-import { Overline } from "@/ui/shared/Overline";
-import { StartLink } from "./StartLink";
 import { Card } from "@/ui/primitives/card";
+import { Overline } from "@/ui/shared/Overline";
+import { StartLink } from "@/ui/shared/StartLink";
 
 export interface FocusCardProps {
   /** e.g. "★ Focus · most at risk" or "★ Up next". */

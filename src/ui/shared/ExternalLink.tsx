@@ -7,8 +7,8 @@ import { t } from "@/ui/shared/strings";
 
 export interface ExternalLinkProps {
   href: string;
-  /** A text link by default; "default" makes it the primary button. */
-  variant?: "link" | "default";
+  /** A text link by default; "default" makes it the primary button, "outline" a secondary one. */
+  variant?: "link" | "default" | "outline";
   className?: string;
   children: ReactNode;
 }

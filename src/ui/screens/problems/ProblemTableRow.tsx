@@ -13,9 +13,8 @@ import {
 } from "@/ui/primitives/dropdown-menu";
 import { formatMonthDay } from "@/ui/shared/format";
 import { RATING_STYLES } from "@/ui/shared/RatingChip";
+import { StatusBadge } from "@/ui/shared/StatusBadge";
 import { t } from "@/ui/shared/strings";
-
-import { StatusBadge } from "./StatusBadge";
 
 export interface ProblemTableRowProps {
   row: ProblemRow;

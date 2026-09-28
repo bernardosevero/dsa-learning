@@ -2,12 +2,12 @@ import { CheckIcon, ChevronDownIcon, ClockIcon } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import type { DueReview } from "@/domain/today";
-import { SectionLabel } from "./SectionLabel";
-import { StartLink } from "./StartLink";
 import { Alert, AlertDescription } from "@/ui/primitives/alert";
 import { Button } from "@/ui/primitives/button";
 import { Card } from "@/ui/primitives/card";
 import { formatEstimate } from "@/ui/shared/format";
+import { SectionLabel } from "@/ui/shared/SectionLabel";
+import { StartLink } from "@/ui/shared/StartLink";
 import { t } from "@/ui/shared/strings";
 
 import { FocusCard } from "./FocusCard";

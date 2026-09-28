@@ -30,7 +30,7 @@ export function AppLayout() {
           <ul className="flex sm:gap-5">
             {NAV_LINKS.map((link) => (
               <li key={link.to} className="flex flex-1">
-                <NavLink to={link.to} end className={NAV_LINK_CLASSES}>
+                <NavLink to={link.to} end={link.to === "/"} className={NAV_LINK_CLASSES}>
                   <link.Icon aria-hidden className="size-5 sm:hidden" />
                   {link.label}
                 </NavLink>
