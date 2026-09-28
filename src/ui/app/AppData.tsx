@@ -20,6 +20,7 @@ export interface AppDataValue {
   deleteEntry: (entryId: string) => void;
   updateSettings: (partial: Partial<Settings>) => void;
   startTimer: (problemId: string) => void;
+  restartTimer: (problemId: string) => void;
   clearTimer: () => void;
   importText: (text: string) => ReturnType<typeof importJson>;
   resetProgress: () => void;
@@ -73,6 +74,7 @@ export function AppDataProvider({ children }: AppDataProviderProps) {
       deleteEntry: (entryId) => setFile((current) => reducers.deleteEntry(current, entryId)),
       updateSettings: (partial) => setFile((current) => reducers.updateSettings(current, partial)),
       startTimer: (problemId) => setFile((current) => reducers.startTimer(current, problemId)),
+      restartTimer: (problemId) => setFile((current) => reducers.restartTimer(current, problemId)),
       clearTimer: () => setFile(reducers.clearTimer),
       importText: (text) => {
         const result = importJson(text, file);

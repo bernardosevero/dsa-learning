@@ -10,6 +10,7 @@ import {
   deleteEntry,
   markMastered,
   resetProgress,
+  restartTimer,
   startTimer,
   updateSettings,
 } from "../appDataReducers";
@@ -105,7 +106,7 @@ describe("updateSettings", () => {
   });
 });
 
-describe("startTimer and clearTimer", () => {
+describe("startTimer, restartTimer and clearTimer", () => {
   it("starts a timer for the problem now, replacing a running one", () => {
     const file = aSaveFile({
       activeTimer: { problemId: "two-sum", startedAt: "2026-10-01T09:00:00.000Z" },
@@ -134,6 +135,16 @@ describe("startTimer and clearTimer", () => {
 
     expect(updated).not.toHaveProperty("activeTimer");
     expect(file.activeTimer).toBeDefined();
+  });
+
+  it("restarts the problem's running timer from now, leaving the input untouched", () => {
+    const running = { problemId: "two-sum", startedAt: "2026-10-01T09:00:00.000Z" };
+    const file = aSaveFile({ activeTimer: running });
+
+    const updated = restartTimer(file, "two-sum");
+
+    expect(updated.activeTimer).toEqual({ problemId: "two-sum", startedAt: NOW });
+    expect(file.activeTimer).toEqual(running);
   });
 });
 

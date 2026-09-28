@@ -40,7 +40,7 @@ function describeProblem(
  */
 export function SolvingPage() {
   const { problemId } = useParams();
-  const { problems, states, file, startTimer, clearTimer } = useAppData();
+  const { problems, states, file, startTimer, restartTimer, clearTimer } = useAppData();
   const navigate = useNavigate();
   const problem = problems.find((candidate) => candidate.id === problemId);
   const runningProblemId = file.activeTimer?.problemId;
@@ -113,6 +113,7 @@ export function SolvingPage() {
           startedAt={startedAt}
           timeBoxMinutes={file.settings.timeBoxMinutes[problem.difficulty]}
           difficulty={problem.difficulty}
+          onRestart={() => restartTimer(problem.id)}
         />
       )}
       {isReview && (
@@ -123,7 +124,7 @@ export function SolvingPage() {
       )}
 
       <div className="flex flex-col gap-3">
-        <Button asChild className="bg-foreground text-background hover:bg-foreground/90">
+        <Button asChild variant="dark">
           <Link to={`/log/${problem.id}`}>{t.solving.done}</Link>
         </Button>
         <Button asChild variant="outline">
