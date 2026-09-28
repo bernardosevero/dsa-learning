@@ -15,7 +15,6 @@ export const en = {
     problemDetail: "Problem",
     settings: "Settings & data",
   },
-  placeholder: "This screen is on its way.",
   separator: " · ",
   today: {
     counters: { due: "Due", newLeft: "New left", mastered: "Mastered" },
@@ -118,6 +117,38 @@ export const en = {
       "Deleting an entry asks first, then recalculates the schedule from the entries left.",
     cancel: "Cancel",
     confirmDelete: "Delete",
+  },
+  settings: {
+    practice: "Practice",
+    timeBoxes: "Time boxes",
+    timeBoxesHint:
+      "Guidance only: the timer shows elapsed time against it. By LeetCode difficulty.",
+    minutesSuffix: "min",
+    timeBoxInvalid: (min: number, max: number) => `Enter whole minutes, from ${min} to ${max}.`,
+    showPattern: "Show the pattern on reviews",
+    showPatternHint: "Off by default: recognizing the pattern yourself is part of the practice.",
+    yourData: "Your data",
+    dataIntro:
+      "Everything lives in this browser. Export a backup now and then, or to move to another device.",
+    export: "Export",
+    exportHint: "Every attempt, mark and setting, as one JSON file.",
+    downloadJson: "Download JSON",
+    import: "Import",
+    importHint: "Merges with what's here. Nothing is overwritten.",
+    chooseFile: "Choose file",
+    imported: (count: number) =>
+      count === 1 ? "Imported: 1 new entry" : `Imported: ${count} new entries`,
+    importFailed: (fileName: string) => `Couldn't import ${fileName}.`,
+    dataUnchanged: "Your data is unchanged.",
+    dangerZone: "Danger zone",
+    reset: "Reset progress",
+    resetHint:
+      "Deletes every attempt and mark in this browser. Export first if you might want them back.",
+    resetConfirmBefore: "Type",
+    resetWord: "reset",
+    resetConfirmAfter: "to confirm",
+    resetDone: "Progress reset. Every problem is new again.",
+    credit: "Problem metadata from neetcode-gh/leetcode (MIT)",
   },
   ratings: { hard: "Hard", medium: "Medium", easy: "Easy" },
   solving: {
