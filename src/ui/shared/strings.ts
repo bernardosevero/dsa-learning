@@ -77,7 +77,6 @@ export const en = {
       felt: "felt",
       next: "next",
       dueToday: "due today",
-      daysOverdue: (days: number) => (days === 1 ? "1 day overdue" : `${days} days overdue`),
       markedMastered: "marked as already mastered",
     },
     noValue: "—",
