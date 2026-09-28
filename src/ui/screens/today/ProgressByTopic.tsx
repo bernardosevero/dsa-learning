@@ -68,8 +68,8 @@ function TopicRow({ topic }: TopicRowProps) {
     <li
       className={cn(
         "grid grid-cols-[minmax(0,1fr)_6rem_2.75rem] items-center gap-3 text-sm",
-        // max-wide: our `wide` breakpoint sorts before `sm`, so sm's width must stop at wide.
-        "sm:max-wide:grid-cols-[minmax(0,1fr)_10rem_2.75rem]",
+        // design.md widens the bar from 480px; max-wide stops it where the sidebar layout starts.
+        "min-[480px]:max-wide:grid-cols-[minmax(0,1fr)_10rem_2.75rem]",
         "wide:grid-cols-[minmax(0,1fr)_4.5rem_2.25rem]",
         isNextTopic && "font-semibold",
         !hasStarted && "text-muted-foreground",
