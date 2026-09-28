@@ -34,6 +34,12 @@ pnpm dev
 
 The app runs at http://localhost:5173.
 
+One environment variable feeds the link previews (what Slack, WhatsApp or iMessage show when someone pastes the app's URL):
+
+| Variable | What it is |
+|---|---|
+| `VITE_SITE_URL` | The deployed site's URL, without a trailing slash (e.g. `https://dta-learning.pages.dev`). Vite writes it into the `og:url`, `og:image` and `twitter:image` tags in `index.html`, which must be absolute URLs. Set it in the Cloudflare Pages project's environment variables. Locally it's optional: without it the build warns that it isn't defined and leaves the placeholder in, which only matters on a deployed site. To set it locally, put `VITE_SITE_URL=http://localhost:5173` in `.env.local` |
+
 | Command | What it does |
 |---|---|
 | `pnpm dev` | Starts the dev server with hot reload |
@@ -57,6 +63,8 @@ The problem list in `src/data/problems.json` is committed, so the app needs no n
 | `pnpm tsx scripts/build-problems.ts` | Rebuilds `src/data/problems.json` from neetcode-gh/leetcode and the slug snapshot, keeping existing summaries |
 
 To see the success metrics (on-time reviews, re-solve speed, rating progress, load and habit), export your data from the app and run `pnpm tsx scripts/metrics.ts <export.json>`. It prints a small table.
+
+The favicon, the Apple touch icon and the link-preview image in `public/` are drawn by `pnpm tsx scripts/render-link-previews.ts`. Run it after changing their design in that script. It needs network access to download the fonts from Google Fonts, and a Chromium like the end-to-end tests (`PLAYWRIGHT_CHROMIUM_EXECUTABLE` works here too).
 
 ## Research basis
 
