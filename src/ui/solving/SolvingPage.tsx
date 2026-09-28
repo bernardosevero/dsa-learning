@@ -5,7 +5,7 @@ import { useAppData } from "@/ui/AppData";
 import { t } from "@/ui/strings";
 
 import { ReplaceTimerPrompt } from "./ReplaceTimerPrompt";
-import { SolvingFrame } from "./SolvingFrame";
+import { FocusFrame } from "@/ui/components/FocusFrame";
 import { SolvingScreen } from "./SolvingScreen";
 
 /**
@@ -35,19 +35,19 @@ export function SolvingPage() {
 
   if (problem === undefined) {
     return (
-      <SolvingFrame>
+      <FocusFrame>
         <p>{t.solving.notFound}</p>
-      </SolvingFrame>
+      </FocusFrame>
     );
   }
   if (runningProblem !== undefined) {
     return (
-      <SolvingFrame>
+      <FocusFrame>
         <ReplaceTimerPrompt
           runningProblem={runningProblem}
           onReplace={() => startTimer(problem.id)}
         />
-      </SolvingFrame>
+      </FocusFrame>
     );
   }
   const startedAt =

@@ -8,9 +8,9 @@ import { NoteBox } from "@/ui/components/NoteBox";
 import { formatMonthDay } from "@/ui/format";
 import { t } from "@/ui/strings";
 
-import { ProblemKindBadge } from "./ProblemKindBadge";
+import { ProblemKindBadge } from "@/ui/components/ProblemKindBadge";
 import { SolvingActions } from "./SolvingActions";
-import { SolvingFrame } from "./SolvingFrame";
+import { FocusFrame } from "@/ui/components/FocusFrame";
 import { SolvingHeader } from "./SolvingHeader";
 import { TimerCard } from "./TimerCard";
 
@@ -51,7 +51,7 @@ export function SolvingScreen({ problem, startedAt }: SolvingScreenProps) {
   }
 
   return (
-    <SolvingFrame
+    <FocusFrame
       badge={<ProblemKindBadge isReview={isReview} isPatternHidden={!shouldShowPattern} />}
     >
       <title>{t.documentTitle(`${t.pages.solving} ${problem.title}`)}</title>
@@ -68,6 +68,6 @@ export function SolvingScreen({ problem, startedAt }: SolvingScreenProps) {
       )}
       {isReview && <NoteBox Icon={EyeOffIcon}>{t.solving.reviewTip}</NoteBox>}
       <SolvingActions problemId={problem.id} onCancel={handleCancel} />
-    </SolvingFrame>
+    </FocusFrame>
   );
 }

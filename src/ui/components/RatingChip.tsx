@@ -1,10 +1,29 @@
 import type { Rating } from "@/domain/types";
 import { cn } from "@/ui/lib/utils";
 
-const CHIP_STYLES: Record<Rating, { classes: string; glyph: string }> = {
-  hard: { classes: "bg-rating-hard-muted text-rating-hard", glyph: "●●●" },
-  medium: { classes: "bg-rating-medium-muted text-rating-medium", glyph: "●●○" },
-  easy: { classes: "bg-rating-easy-muted text-rating-easy", glyph: "●○○" },
+/** Each rating's colors and dot glyph, shared by the chip and the Log rating cards. */
+export const RATING_STYLES: Record<
+  Rating,
+  { chip: string; text: string; selected: string; glyph: string }
+> = {
+  hard: {
+    chip: "bg-rating-hard-muted text-rating-hard",
+    text: "text-rating-hard",
+    selected: "border-2 border-rating-hard bg-rating-hard-muted",
+    glyph: "●●●",
+  },
+  medium: {
+    chip: "bg-rating-medium-muted text-rating-medium",
+    text: "text-rating-medium",
+    selected: "border-2 border-rating-medium bg-rating-medium-muted",
+    glyph: "●●○",
+  },
+  easy: {
+    chip: "bg-rating-easy-muted text-rating-easy",
+    text: "text-rating-easy",
+    selected: "border-2 border-rating-easy bg-rating-easy-muted",
+    glyph: "●○○",
+  },
 };
 
 export interface RatingChipProps {
@@ -15,12 +34,12 @@ export interface RatingChipProps {
 
 /** How an attempt felt: a colored pill with a dot glyph and its word. */
 export function RatingChip({ rating, label }: RatingChipProps) {
-  const style = CHIP_STYLES[rating];
+  const style = RATING_STYLES[rating];
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
-        style.classes,
+        style.chip,
       )}
     >
       <span aria-hidden className="tracking-tighter">
