@@ -115,6 +115,29 @@ describe("createLocalStore", () => {
     expect(storage.getItem(LEGACY_STORAGE_KEY)).toBeNull();
   });
 
+  it("backs up a corrupt copy under the old key like any other corrupt data", () => {
+    const corruptText = "{ this is not json";
+    const storage = createMemoryStorage({ [LEGACY_STORAGE_KEY]: corruptText });
+
+    const loaded = createLocalStore(storage).load();
+
+    const backupKeys = keysOf(storage).filter((key) => key.startsWith(CORRUPT_BACKUP_KEY_PREFIX));
+    expect(loaded).toEqual(EMPTY_SAVE_FILE);
+    expect(storage.getItem(LEGACY_STORAGE_KEY)).toBeNull();
+    expect(backupKeys.map((key) => storage.getItem(key))).toEqual([corruptText]);
+  });
+
+  it("keeps the old key when the new key can't be written, still loading its progress", () => {
+    const savedText = JSON.stringify(SAMPLE_FILE);
+    const storage = { ...createMemoryStorage({ [LEGACY_STORAGE_KEY]: savedText }) };
+    storage.setItem = throwStorageError;
+
+    const loaded = createLocalStore(storage).load();
+
+    expect(loaded).toEqual(SAMPLE_FILE);
+    expect(storage.getItem(LEGACY_STORAGE_KEY)).toBe(savedText);
+  });
+
   it("ignores the old key once the new key holds a save file", () => {
     const oldText = JSON.stringify(aSaveFile({ entries: [anAttempt()] }));
     const storage = createMemoryStorage({
