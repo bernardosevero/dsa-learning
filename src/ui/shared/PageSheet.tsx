@@ -9,8 +9,6 @@ export interface PageSheetProps {
   isWide?: boolean;
   /** Extra classes for `<main>`, e.g. the gap between sections. */
   mainClassName?: string;
-  /** Rendered after `<main>`, e.g. the phone bottom bar. */
-  footer?: ReactNode;
   children: ReactNode;
 }
 
@@ -18,7 +16,7 @@ export interface PageSheetProps {
  * The frame every screen sits in. In a narrow window it fills the width; from the `sheet`
  * breakpoint it becomes a bordered sheet on the darker desk.
  */
-export function PageSheet({ header, isWide, mainClassName, footer, children }: PageSheetProps) {
+export function PageSheet({ header, isWide, mainClassName, children }: PageSheetProps) {
   return (
     <div className="sheet:px-8 sheet:py-8">
       <div
@@ -28,11 +26,10 @@ export function PageSheet({ header, isWide, mainClassName, footer, children }: P
           isWide && "wide:max-w-[1040px]",
         )}
       >
-        <header className="flex items-center justify-between gap-3 border-b px-5 py-3 sheet:px-8">
+        <header className="flex items-center justify-between gap-3 border-b px-5 py-4 sheet:px-8">
           {header}
         </header>
-        <main className={cn("flex-1 px-5 pt-6 pb-8 sheet:px-8", mainClassName)}>{children}</main>
-        {footer}
+        <main className={cn("flex-1 px-5 pt-4 pb-8 sheet:px-8", mainClassName)}>{children}</main>
       </div>
     </div>
   );
