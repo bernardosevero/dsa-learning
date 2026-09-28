@@ -66,7 +66,7 @@ The favicon, the Apple touch icon and the link-preview image in `public/` are dr
 
 The app is a static site on Cloudflare Workers, served from `dist/` as static assets. `wrangler.jsonc` holds that setup: it names the Worker and sends every path that isn't a file (`/problems`, `/settings`) to `index.html`, so reloading a screen keeps it. Nothing runs on the server.
 
-Workers Builds, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dta-learning` → Settings → Build), deploys on every push:
+Workers Builds, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dsa-learning` → Settings → Build), deploys on every push:
 
 | Setting | Value |
 |---|---|

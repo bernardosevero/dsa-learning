@@ -1,8 +1,7 @@
 // Deploys dist/ to Cloudflare Workers as static assets. With this file in the repo, Workers Builds
 // uses it as is instead of generating a config (and adding dependencies) on every build.
 {
-  // Kept from before the rename: a new Worker name means a new URL, and progress stays behind.
-  "name": "dta-learning",
+  "name": "dsa-learning",
   "compatibility_date": "2026-09-26",
   "assets": {
     "directory": "./dist",
