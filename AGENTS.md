@@ -20,15 +20,28 @@ Every PR except `docs` gets an automatic Claude review when it's opened or marke
 ## Architecture
 
 ```
-src/data/      static problem list (problems.json), generated once by scripts/, then edited by hand
-src/domain/    pure logic: types, dates, schedule, today, merge, metrics
-src/storage/   persistence behind the Store interface (localStorage now, Supabase later)
-src/ui/        React screens, the AppData provider, strings.ts
-scripts/       one-off Node scripts, run with `pnpm tsx`
-e2e/           Playwright tests of the main loop
+src/data/             static problem list (problems.json), generated once by scripts/, then edited by hand
+src/domain/           pure logic: types, dates, schedule, today, merge, metrics
+src/storage/          persistence behind the Store interface (localStorage now, Supabase later)
+src/test/             shared test code: setup.ts (and the builders, #60)
+src/ui/app/           what exists once per app: App, AppRoutes, AppLayout, AppData and its reducers
+src/ui/screens/<s>/   one folder per screen, named after its page component: today/ holds TodayPage
+src/ui/shared/        our pieces used by two or more screens, format.ts, strings.ts
+src/ui/primitives/    shadcn/ui components, under shadcn's kebab-case names, and cn.ts
+scripts/              one-off Node scripts, run with `pnpm tsx`
+e2e/                  Playwright tests of the main loop
 ```
 
+`main.tsx` and `index.css` stay at the `src/` root as the Vite entry point. #59 moves the code into this layout; until it merges, files still sit in the old places.
+
 Dependencies point inward: `ui` → `storage` → `domain`, and `ui` → `domain`. `src/domain/` is **pure**: plain TypeScript with no React, no storage and no browser APIs, so it is trivially testable and can move to a server. A lint rule enforces this.
+
+Inside `src/ui/` they point the same way: `app` → `screens` → `shared` → `primitives`. Screens take only `useAppData` from `app/`.
+
+- **Screens don't import each other.** A piece lives in its screen's folder until a second screen needs it; the PR that adds the second user moves it to `shared/` with `git mv`. Lint enforces this, so the move is never a judgement call.
+- **Screen folders** are camelCase and take the page component's name without `Page` (`problemDetail/` holds `ProblemDetailPage`). No S-numbers in paths; each page's JSDoc names its S-number.
+- **Depth:** the deepest file is `src/ui/screens/<screen>/File.tsx`. The only subfolder below that is `__tests__/`.
+- **Tests** sit in a `__tests__/` folder next to the code they test (`src/domain/__tests__/today.test.ts`).
 
 ### The log
 
@@ -57,7 +70,7 @@ These are settled decisions. Code that contradicts one is a bug.
 | App | Vite + React + TypeScript (strict, `noUncheckedIndexedAccess`), a static single-page app on Cloudflare Pages | Six screens and local data: no server of ours runs code |
 | Toolchain | pnpm, Node 24 LTS | Strict `node_modules`: a missing dependency fails immediately |
 | Routing | React Router v7, library mode | Familiar and small; six routes don't need typed routing |
-| State | One React context over pure reducer functions (`src/ui/appDataReducers.ts`) | Reducers are testable without React. Reach for Zustand only when re-renders measurably hurt |
+| State | One React context over pure reducer functions (`src/ui/app/appDataReducers.ts`) | Reducers are testable without React. Reach for Zustand only when re-renders measurably hurt |
 | Styling | Tailwind v4 + shadcn/ui, themed through CSS variables | Accessible dialogs, radios and toggles; the design lives as theme tokens in `src/index.css` |
 | Validation | zod, wherever data crosses a boundary (import file, localStorage, later Supabase rows) | One schema gives the runtime check and the type |
 | Storage | localStorage behind the `Store` interface | The log is small; the interface lets Supabase replace it |
@@ -75,7 +88,7 @@ Later phases:
 
 Before changing anything in `src/ui/`, load the `working-on-ui` skill. It holds the React, component, layout, accessibility and SEO rules.
 
-Build every control and surface from shadcn/ui components in `src/ui/components/ui/` (add the one you need if it's missing). Don't hand-roll a button, badge, card, input or radio, or copy their styles.
+Build every control and surface from shadcn/ui components in `src/ui/primitives/` (add the one you need if it's missing). Don't hand-roll a button, badge, card, input or radio, or copy their styles.
 
 ## Code style
 
@@ -94,7 +107,7 @@ Lint and Prettier (100 columns) enforce what they can. These are the rules they 
 - **Types:** model states as discriminated unions and let the compiler check exhaustiveness. Their names are plain string literals (`state.status === "mastered"`), because the union type already catches typos and narrows; don't wrap them in constants or enums. Parse untrusted data with zod.
 - **Files:**
   - Named exports only, one exported component per file (small components only it uses can live in the same file), no barrel `index.ts` files.
-  - Components are `PascalCase.tsx`; everything else is `camelCase.ts`.
+  - Components are `PascalCase.tsx`; everything else is `camelCase.ts`. The one exception is `src/ui/primitives/`, which keeps shadcn's kebab-case names so `shadcn add` works unchanged. Lint checks file names.
   - Imports use `@/` across folders and relative paths inside one.
 - **Docs and comments:** exported `domain` and `storage` functions get a one- or two-line JSDoc stating what they return and any product rule. Other comments explain *why*, in one line. `TODO`s name an issue: `// TODO(#14): ...`.
 - **Tests:**

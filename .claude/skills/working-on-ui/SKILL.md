@@ -13,18 +13,27 @@ These rules apply on top of AGENTS.md. Before opening the PR, go through every s
 - **`useEffect` is only for real side effects:** saving to storage, window events (`focus`, `visibilitychange`), the timer tick.
 - **Naming:** props that take callbacks are `onSomething`; the component's own handlers are `handleSomething`. Each component has a named `SomethingProps` type next to it.
 - **Size:** when a component passes about 100 lines, stop and raise it in the PR before splitting. Whether and how to split is a design decision.
-- **State changes** go through the `AppData` actions, whose reducers live in `src/ui/appDataReducers.ts`. Components never edit the save file directly.
+- **State changes** go through the `AppData` actions, whose reducers live in `src/ui/app/appDataReducers.ts`. Components never edit the save file directly.
+
+## Where files go
+
+AGENTS.md "Architecture" has the full layout. In short:
+
+- `src/ui/app/`: the shell and state that exist once per app (`App`, `AppRoutes`, `AppLayout`, `AppData`, `appDataReducers`). A new screen is added to `AppRoutes` here.
+- `src/ui/screens/<screen>/`: a new screen gets its own folder, named after its page component without `Page` (`ProblemDetailPage` → `problemDetail/`). Everything only that screen uses lives there, flat, with tests in `__tests__/`.
+- `src/ui/shared/`: pieces used by two or more screens, plus `format.ts` and `strings.ts`. When your screen needs a piece from another screen's folder, `git mv` it here in the same PR; lint rejects imports between screens.
+- `src/ui/primitives/`: shadcn/ui components only, under shadcn's kebab-case names, and `cn.ts`.
 
 ## Components and layout
 
 - **Match the approved design.** Read `design.md` (next to this file) and look at the screen pictures it links before building a screen. It says how each screen and shared piece looks.
 - **Always use a shadcn/ui component when one exists for the job** (button, badge, card, input, textarea, label, radio group, toggle group, switch, dialog, dropdown menu, …). Never hand-roll the element or copy its classes onto a `<span>`/`<div>`/`<input>`.
-  - If it isn't in `src/ui/components/ui/` yet, add it: `pnpm dlx shadcn@latest add <name>`, or, when the registry is blocked, copy its source from ui.shadcn.com into that folder. Its Radix primitive comes from the installed `radix-ui` package.
+  - If it isn't in `src/ui/primitives/` yet, add it: `pnpm dlx shadcn@latest add <name>` (`components.json` points the CLI there), or, when the registry is blocked, copy its source from ui.shadcn.com into that folder and import `cn` from `@/ui/primitives/cn`. Its Radix primitive comes from the installed `radix-ui` package.
   - Adapt it to design.md once, in that file (tokens, no shadow, 44px targets); screens pass only layout classes.
   - Our own shared pieces (`RatingChip`, `ProblemKindBadge`, `SectionLabel`, `Overline`…) are thin wrappers over these components, never a second copy of their styles.
 - Color only with theme tokens (`bg-primary`, `text-muted-foreground`, `--rating-hard`...), never raw colors, so a design change is a token change.
 - Compact layout, max width about 640px, because the app sits next to a NeetCode tab. Check it at 375px (phone) too.
-- Every user-visible string comes from `src/ui/strings.ts`. User-written text (insights, notes) renders as plain React text.
+- Every user-visible string comes from `src/ui/shared/strings.ts`. User-written text (insights, notes) renders as plain React text.
 
 ## Accessibility
 
