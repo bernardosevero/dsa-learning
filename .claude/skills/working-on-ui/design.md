@@ -14,7 +14,9 @@ Once every screen of M4 is built, the code is the reference: delete this file in
 Warm paper, dark ink, one green for the next action. Calm and honest: no red for overdue, no confetti, no streaks.
 
 - **Fonts:** `font-serif` (Newsreader) for screen titles and problem names in focus; `font-sans` (IBM Plex Sans) for everything else; `font-mono` (IBM Plex Mono) for **every** time, date, count and estimate (`12:48`, `Sun, Oct 4`, `~1h 50m`, `3 days overdue`, `2/6`).
-- **Layout:** one column, `max-w-[640px] mx-auto`, `px-5`. Designed at 480px wide; check 375px.
+- **Layout:** one column, `px-5`. Designed at 480px wide; check 375px and a full desktop window.
+  - **Narrow window (below 720px wide):** the column fills the window, as before.
+  - **Wider windows: the app is a sheet.** The column becomes a `720px` sheet centred on a darker "desk": the page background is `--desk` (light `#E9E5DB`, dark `#0E0F0D`; add it to `src/index.css` next to `--background`), and the sheet is `bg-background border rounded-2xl` with `my-8`. The top bar sits inside the sheet with a `border-b`. Same content and order as the narrow column; no second layout.
 - **Surfaces:** page `bg-background`, cards `bg-card border rounded-xl` (12px). 1px borders, no shadows (menus and dialogs are the only exception).
 - **Spacing:** compact. Sections `gap-7`, inside a card `gap-3`/`gap-4`, card padding `p-4`/`p-5`.
 - **Buttons:** primary `bg-primary text-primary-foreground`, outline `border bg-card`, ghost. Touch targets at least 44px tall (`min-h-11`).
@@ -33,6 +35,7 @@ Build these once as small components and reuse them.
 | **Status badge** | New · Scheduled · Due · Mastered | New: outline + `text-muted-foreground`, hollow circle icon. Scheduled: `bg-muted text-muted-foreground`, calendar icon. Due: `bg-status-due-muted text-status-due`, filled dot. Mastered: `bg-status-mastered-muted text-status-mastered`, check-circle icon |
 | **Focus card** (★) | the one obvious next action | `rounded-xl border-[1.5px] border-primary bg-card p-5`. Label `★ FOCUS · MOST AT RISK` in `text-primary` section-label style. Title `font-serif text-2xl font-semibold`. Meta `Hard · 1 day overdue` (the overdue part in mono). Primary **Start** button on the right |
 | **Dimmed row** | the other due reviews | no card: rows split by `border-b`, `pl-5`. Title and meta both `text-muted-foreground` (this is the "dimmed"; don't use opacity, it fails contrast). Outline **Start** in muted text |
+| **Topic bar** | one row of "Progress by topic" | grid `minmax(0,1fr) 200px 44px` (`96px` bar below 480px): topic name; a 6px bar on `bg-muted`, mastered share first in `bg-status-mastered`, then the other started ones in `bg-primary`; `9/9` in mono. Visually hidden text gives the numbers ("3 mastered, 6 started, of 9") so the colours aren't the only signal. The same bar as the S4 topic headers |
 | **Topic progress** | `2/6` with segments | one small bar per problem in the topic (`h-1.5 w-3.5 rounded-sm`), done = `bg-primary`, rest = `bg-border`; count in mono |
 | **Counters strip** | Due · New left · Mastered | one card split in 3 columns by `border-l`; number `font-mono text-2xl`, label `text-xs text-muted-foreground` under it. A `<dl>` |
 | **External link** | `Open on NeetCode ↗` | arrow-up-right icon after the text; visually hidden "(opens in a new tab)" |
@@ -43,16 +46,18 @@ Icons: lucide-react style outline icons, 16–18px. No emoji.
 
 ## Screens
 
-Top bar on every main screen: wordmark `dta-learning` (`font-serif text-xl font-semibold`, links to Today) on the left, nav `Today · Problems · Settings` on the right; the current one is `font-semibold text-foreground` with a 2px `border-primary` underline, others `text-muted-foreground`. On phones (below `sm`) the nav moves to a bottom bar with icon + label (calendar, list, sliders).
+Top bar on every main screen: wordmark `dta-learning` (`font-serif text-xl font-semibold`, links to Today) on the left, nav `Today · Problems · Settings` on the right; the current one is `font-semibold text-foreground` with a 2px `border-primary` underline, others `text-muted-foreground`. A `border-b` separates the top bar from the content. On phones only (below 440px, e.g. `max-[440px]:`), the nav moves to a bottom bar with icon + label (calendar, list, sliders); the narrow window beside NeetCode (440–720px) keeps the top nav.
 
 Page heading row: `h1` `font-serif text-3xl` on the left, today's date in mono on the right (Today only).
 
 ### S1 Today (#12) · pictures: S1 Today (all 7)
 
-Order: heading row → counters strip → Due reviews → New → "Browse all 150 problems" link.
+Order: heading row → counters strip → Due reviews → New → Progress by topic → "Browse all 150 problems" link. Picture for the desktop sheet and Progress by topic: **Desktop · the app as a sheet**.
+
+- **Progress by topic** (owner-approved addition, round 2): section label `PROGRESS BY TOPIC` with a small legend on the right (a mastered swatch + "mastered", a primary swatch + "started"). One card listing topic bars (shared pieces) for every topic with at least one started or mastered problem, plus the next new problem's topic, in NeetCode order; the next new problem's topic is `font-semibold`, and topics with nothing started are `text-muted-foreground`. Under the card, the link "All 18 topics in Problems". Hidden on first run (nothing started yet).
 
 - **Due reviews:** section label with count and `~estimate`. First review = focus card; the rest = dimmed rows.
-- **New:** section label `NEW · <PATTERN>` with topic progress on the right. The row is a small card: title `font-semibold`, `Sliding Window · Medium` under it, outline Start in primary color.
+- **New:** section label `NEW · <PATTERN>` with topic progress on the right. The row is a small card: title `font-semibold`, `Sliding Window · Medium` under it, outline Start with `border-primary text-primary` (not the grey outline of the dimmed rows).
 - **Only new (nothing due):** keep the Due label with `· 0` and a dashed-border box: check icon + "No reviews due today. A good day for something new." The New problem then becomes the focus card with the label `★ UP NEXT`.
 - **Big backlog (many due):** a note box above the list: "Welcome back. Overdue reviews carry no penalty: each one's schedule restarts from the day you do it. Start with the focus, and the order takes care of the rest." Show the focus + 5 dimmed rows, then a dashed full-width button "Show the other N due reviews ⌄" that expands the rest. No red anywhere.
 - **All caught up:** centered card: check-circle icon, `font-serif` "All caught up", "Every problem is started, and nothing is due today.", and a muted box `NEXT REVIEW` / `Thu, Oct 8 · in 11 days` (mono).
@@ -65,6 +70,7 @@ Order: heading row → counters strip → Due reviews → New → "Browse all 15
 - **Header:** meta line (`Hard · last solved Sep 24` on reviews; `Sliding Window · Medium` on new), title `font-serif text-4xl`, summary `text-base`.
 - **Links:** full-width primary "Open on NeetCode ↗" and a text link "LeetCode ↗" beside it.
 - **Timer card:** elapsed `font-mono text-6xl`, `of 45:00` in mono on the right, a 6px progress bar (`bg-primary`), caption "Time box for a Hard problem. It's guidance, not a deadline."
+- **Restart** (round 2, picture: **S2 Solving · restart the timer**): at the right of the caption row, a ghost button with a rotate-ccw icon and "Restart" (`text-muted-foreground text-sm`, 40px tall). It asks inline, inside the timer card: a `bg-muted rounded-lg` row "Restart from 00:00? The 12:48 so far is dropped." with an outline "Keep" and a dark "Restart" (`bg-foreground text-background`). Restart sets the timer's start to now; Keep closes the question. Focus moves to the question when it opens and back to "Restart" when it closes.
 - **Over the time box:** the card border and the overflow part of the bar turn `--rating-medium` (ochre), and a clock-icon line in that color: "4 min past the time box. Keep going, or log it as it is." Calm, never red.
 - **Review tip:** note box with eye-off icon.
 - **Actions, stacked:** "I'm done" (`bg-foreground text-background`, full width), "I looked at the solution" (outline, full width), then a centered muted link "Cancel, don't log anything".
@@ -86,6 +92,7 @@ Order: heading row → counters strip → Due reviews → New → "Browse all 15
 - **Filter:** segmented control (All · Due · New · Mastered, each with its count in mono) in a `bg-muted` track; selected segment `bg-card`.
 - **Topic groups:** one card per topic. Header button (chevron, topic name `font-semibold`, "2 due" in `text-primary` when any are due, a 96px progress bar where mastered = `bg-status-mastered` then started = `bg-primary`, count `9/9` in mono). Expanded topics show a small column header (Problem · Last rating · Next · Status) and rows.
 - **Row:** grid `minmax(0,1fr) 90px 70px 104px 44px`: title (link to detail) with the difficulty under it; last rating as colored text; next date in mono; status badge; a `⋯` menu button. Due rows get `bg-accent` and a bolder title. The next new problem says `Medium · up next`.
+- **Narrow rows** (round 2, picture: **S4 Problems · narrow rows**): below 560px the grid can't fit, so each row becomes two lines. Line 1: the title (link) and the status badge on the right. Line 2 in `text-sm text-muted-foreground`: `Medium · felt Hard · next Sep 29` (the rating word in its rating color and `font-semibold`, the date in mono; `due today` for due rows; `marked as already mastered` or `up next` where they apply). The `⋯` menu stays on the right, and the column header row is hidden.
 - **Row menu:** Start now · Open details · Mark as already mastered…
 - **Confirm dialog:** plum check-circle icon, `font-serif` title "Mark <title> as already mastered?", two short paragraphs (it leaves the rotation; deleting the mark from history brings it back), Cancel (outline) and "Mark as mastered" (`bg-status-mastered text-white`).
 - Grouping by topic shows the pattern of due problems: accepted in #15.
