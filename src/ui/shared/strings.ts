@@ -51,6 +51,37 @@ export const en = {
       importData: "Have an export? Import it in Settings",
     },
   },
+  problems: {
+    summary: (started: number, mastered: number, total: number) =>
+      `${started} started · ${mastered} mastered · ${total} total`,
+    filterLabel: "Filter",
+    filters: { all: "All", due: "Due", new: "New", mastered: "Mastered" },
+    topicDue: (count: number) => `${count} due`,
+    topicMastered: (count: number) => `${count} mastered`,
+    topicProgress: (done: number, total: number) => `${done} of ${total} started or mastered`,
+    columns: { problem: "Problem", lastRating: "Last rating", next: "Next", status: "Status" },
+    actionsColumn: "Actions",
+    statuses: { new: "New", scheduled: "Scheduled", due: "Due", mastered: "Mastered" },
+    upNext: "up next",
+    dueToday: "today",
+    noValue: "—",
+    actionsFor: (title: string) => `Actions for ${title}`,
+    startNow: "Start now",
+    openDetails: "Open details",
+    markMastered: "Mark as already mastered…",
+    confirmTitle: (title: string) => `Mark ${title} as mastered?`,
+    confirmLeaves:
+      "It leaves the rotation and won't appear on Today again. Use this for problems you could already solve before using the app.",
+    confirmUndo:
+      "Changed your mind later? Delete the mark from the problem's history and its schedule comes back exactly as it was.",
+    cancel: "Cancel",
+    confirm: "Mark as mastered",
+    empty: {
+      due: "Nothing is due today.",
+      new: "Every problem is started.",
+      mastered: "Nothing is mastered yet.",
+    },
+  },
   ratings: { hard: "Hard", medium: "Medium", easy: "Easy" },
   solving: {
     backToToday: "‹ Today",

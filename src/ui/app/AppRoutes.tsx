@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router";
 
 import { AppLayout } from "./AppLayout";
 import { LogPage } from "@/ui/screens/log/LogPage";
+import { ProblemsPage } from "@/ui/screens/problems/ProblemsPage";
 import { PlaceholderPage } from "./PlaceholderPage";
 import { SolvingPage } from "@/ui/screens/solving/SolvingPage";
 import { t } from "@/ui/shared/strings";
@@ -13,7 +14,7 @@ export function AppRoutes() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<TodayPage />} />
-        <Route path="problems" element={<PlaceholderPage title={t.pages.problems} />} />
+        <Route path="problems" element={<ProblemsPage />} />
         <Route
           path="problems/:problemId"
           element={<PlaceholderPage title={t.pages.problemDetail} />}

@@ -18,6 +18,8 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        // Confirms "already mastered": the quiet plum of the mastered status.
+        mastered: "bg-status-mastered text-background hover:bg-status-mastered/90",
       },
       size: {
         default: "min-h-11 px-4 py-2 has-[>svg]:px-3",
