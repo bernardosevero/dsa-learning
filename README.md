@@ -64,7 +64,9 @@ The favicon, the Apple touch icon and the link-preview image in `public/` are dr
 
 ## Deploy
 
-The app is a static site on Cloudflare Workers, served from `dist/` as static assets. `wrangler.jsonc` holds that setup: it names the Worker and sends every path that isn't a file (`/problems`, `/settings`) to `index.html`, so reloading a screen keeps it. Nothing runs on the server.
+The app is live at **https://dsa-learning.bernardosevero.dev**.
+
+It's a static site on Cloudflare Workers, served from `dist/` as static assets. `wrangler.jsonc` holds that setup: it names the Worker, attaches the address above as a Custom Domain (Cloudflare creates its DNS record and HTTPS certificate) and sends every path that isn't a file (`/problems`, `/settings`) to `index.html`, so reloading a screen keeps it. Nothing runs on the server.
 
 Workers Builds, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dsa-learning` → Settings → Build), deploys on every push:
 
@@ -73,11 +75,18 @@ Workers Builds, connected to this repository in the Cloudflare dashboard (Worker
 | Build command | `pnpm build` |
 | Deploy command | `npx wrangler deploy`, for pushes to `main` |
 | Preview command | `npx wrangler preview`, for every other branch; each one gets its own Preview URL |
-| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL`, the production URL with no trailing slash |
+| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL=https://dsa-learning.bernardosevero.dev`, the canonical URL with no trailing slash |
 
 The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` turns the link-preview tags in `index.html` (`og:url`, `og:image`) into the absolute URLs that Slack or WhatsApp need. Vite reads it when the site is built, so it's a build variable (not a runtime one), and changing it takes a new build.
 
-Everything a user logs stays in their browser, stored per address: the production URL, each Preview URL and each machine start with an empty log. Move a log between them with Export and Import in Settings.
+The Worker's first address, `https://dsa-learning.bernardoseverosilveira.workers.dev`, still serves the same app. `wrangler.jsonc` keeps it on (`workers_dev: true`) so a log stored there can still be exported; the branch Preview URLs live on `workers.dev` too (`preview_urls: true`). It doesn't redirect, and link previews point to the canonical address.
+
+Everything a user logs stays in their browser, stored per address: the canonical URL, the old `workers.dev` URL, each Preview URL and each machine start with an empty log. To move your progress to the canonical URL:
+
+1. Open the old address, go to Settings and select Export. This downloads your log as a JSON file.
+2. Open https://dsa-learning.bernardosevero.dev, go to Settings, select Import and choose that file.
+
+Import merges the file into the log already there, so it's safe to run after you've logged at the new address too.
 
 ## Research basis
 

@@ -8,6 +8,12 @@
     // Paths that aren't files (/problems, /settings) get index.html, so a reload keeps the route.
     "not_found_handling": "single-page-application",
   },
+  // The canonical address. Cloudflare creates its DNS record and HTTPS certificate.
+  "routes": [{ "pattern": "dsa-learning.bernardosevero.dev", "custom_domain": true }],
+  // Explicit because a route makes Wrangler turn workers.dev off. The old address stays up so a log
+  // stored there can still be exported, and the branch Preview URLs live on workers.dev.
+  "workers_dev": true,
+  "preview_urls": true,
   // Required by `npx wrangler preview` (the preview builds). Empty: previews need no own settings.
   "previews": {},
 }
