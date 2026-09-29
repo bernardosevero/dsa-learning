@@ -51,12 +51,7 @@ export function PrivacyPage() {
             </p>
             <p>{t.privacy.ownSummaries}</p>
             <p>{t.privacy.notAffiliated}</p>
-            <details>
-              <summary className="cursor-pointer font-semibold">{t.privacy.mitTitle}</summary>
-              <pre className="mt-3 whitespace-pre-wrap font-sans text-xs leading-relaxed">
-                {t.privacy.mitNotice}
-              </pre>
-            </details>
+            <ExternalLink href="/NOTICE.md">{t.privacy.mitTitle}</ExternalLink>
           </Card>
         </section>
       </div>

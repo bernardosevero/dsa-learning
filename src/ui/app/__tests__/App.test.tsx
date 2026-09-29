@@ -124,5 +124,8 @@ describe("AppRoutes", () => {
 
     expect(pageHeading()).toBe("Privacy & credits");
     expect(screen.getByText(/Your notes, key insights/)).toBeDefined();
+    expect(screen.getByRole("link", { name: /MIT license notice/ }).getAttribute("href")).toBe(
+      "/NOTICE.md",
+    );
   });
 });
