@@ -5,9 +5,10 @@ import { useAppData } from "@/ui/app/AppData";
 import { Card } from "@/ui/primitives/card";
 import { Input } from "@/ui/primitives/input";
 import { Label } from "@/ui/primitives/label";
-import { Switch } from "@/ui/primitives/switch";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
+
+import { SwitchRow } from "./SwitchRow";
 
 const DIFFICULTIES = ["Easy", "Medium", "Hard"] as const satisfies readonly Difficulty[];
 const MIN_TIME_BOX_MINUTES = 1;
@@ -24,8 +25,6 @@ function parseTimeBox(text: string): number | null {
 export function PracticeSettings() {
   const { file, updateSettings } = useAppData();
   const headingId = useId();
-  const patternLabelId = useId();
-  const patternHintId = useId();
   const errorId = useId();
   const { timeBoxMinutes, showPatternOnReviews } = file.settings;
   // Only an invalid value is kept as typed; a valid one is saved and shown from the settings,
@@ -80,26 +79,12 @@ export function PracticeSettings() {
             </div>
           </fieldset>
         </div>
-        <div className="flex items-center gap-4 p-4">
-          <div className="flex flex-1 flex-col gap-1">
-            <Label
-              id={patternLabelId}
-              htmlFor={`${patternLabelId}-switch`}
-              className="font-semibold"
-            >
-              {t.settings.showPattern}
-            </Label>
-            <p id={patternHintId} className="text-sm text-muted-foreground">
-              {t.settings.showPatternHint}
-            </p>
-          </div>
-          <Switch
-            id={`${patternLabelId}-switch`}
-            checked={showPatternOnReviews}
-            onCheckedChange={handlePatternChange}
-            aria-describedby={patternHintId}
-          />
-        </div>
+        <SwitchRow
+          label={t.settings.showPattern}
+          hint={t.settings.showPatternHint}
+          isChecked={showPatternOnReviews}
+          onCheckedChange={handlePatternChange}
+        />
       </Card>
     </section>
   );

@@ -38,6 +38,7 @@ const markedMasteredSchema = z.object({
 const settingsSchema = z.object({
   timeBoxMinutes: z.record(difficultySchema, z.number().positive()),
   showPatternOnReviews: z.boolean(),
+  shareAnonymousUsage: z.boolean().default(true),
 });
 
 // Annotated with SaveFile so the compiler flags any drift between the schema and the domain type.

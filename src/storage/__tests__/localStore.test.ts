@@ -26,7 +26,11 @@ const SAMPLE_FILE = aSaveFile({
       deletedAt: "2026-10-03T12:05:00.000Z",
     }),
   ],
-  settings: { timeBoxMinutes: { Easy: 10, Medium: 25, Hard: 50 }, showPatternOnReviews: true },
+  settings: {
+    timeBoxMinutes: { Easy: 10, Medium: 25, Hard: 50 },
+    showPatternOnReviews: true,
+    shareAnonymousUsage: true,
+  },
 });
 
 function createMemoryStorage(initialItems: Record<string, string> = {}): Storage {
@@ -237,7 +241,11 @@ describe("exportJson and importJson", () => {
     const incoming = aSaveFile({
       ...SAMPLE_FILE,
       entries: [aMasteredMark({ id: "remote-only" })],
-      settings: { timeBoxMinutes: { Easy: 5, Medium: 5, Hard: 5 }, showPatternOnReviews: false },
+      settings: {
+        timeBoxMinutes: { Easy: 5, Medium: 5, Hard: 5 },
+        showPatternOnReviews: false,
+        shareAnonymousUsage: false,
+      },
     });
 
     const result = importJson(exportJson(incoming), current);

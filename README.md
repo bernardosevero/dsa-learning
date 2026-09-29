@@ -34,7 +34,7 @@ pnpm dev
 
 The app runs at http://localhost:5173.
 
-No environment variables are needed locally. The build warns that `VITE_SITE_URL` isn't defined; it only matters on the deployed site (see [Deploy](#deploy)).
+No environment variables are needed locally. Analytics runs only in production builds, so local development sends no events. The build warns that `VITE_SITE_URL` isn't defined; it only matters on the deployed site (see [Deploy](#deploy)). `.env.example` lists the optional build variables. `VITE_POSTHOG_KEY` is the public project key; `VITE_POSTHOG_HOST` is `https://us.i.posthog.com` for the US cloud project.
 
 | Command | What it does |
 |---|---|
@@ -75,18 +75,22 @@ Workers Builds, connected to this repository in the Cloudflare dashboard (Worker
 | Build command | `pnpm build` |
 | Deploy command | `npx wrangler deploy`, for pushes to `main` |
 | Preview command | `npx wrangler preview`, for every other branch; each one gets its own Preview URL |
-| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL=https://dsa-learning.bernardosevero.dev`, the canonical URL with no trailing slash |
+| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`; `VITE_SITE_URL=https://dsa-learning.bernardosevero.dev`, the canonical URL with no trailing slash; `VITE_POSTHOG_KEY`, the public project key; and `VITE_POSTHOG_HOST=https://us.i.posthog.com` |
 
 The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` turns the link-preview tags in `index.html` (`og:url`, `og:image`) into the absolute URLs that Slack or WhatsApp need. Vite reads it when the site is built, so it's a build variable (not a runtime one), and changing it takes a new build.
 
+Create a PostHog project in the US cloud and enable **Cookieless server hash mode** under Project settings → Web analytics. Set `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` under Workers & Pages → `dsa-learning` → Settings → Build → Variables and secrets. These are build variables, not Worker runtime variables. Without a key, analytics is disabled; without the PostHog project setting, cookieless events are dropped. When enabled, the app sends a pageview on the initial route and each in-app navigation, plus the named product events. The Settings switch controls usage sharing for each browser; the `/privacy` page describes the data and opt-out.
+
+PostHog uses in-memory persistence and writes no analytics cookie or persistent browser identifier. `ip: false` is included in the SDK config but is deprecated and has no effect in the installed SDK. A direct browser request still exposes its IP to PostHog, and cookieless server hashing can process it. The owner should review the project's IP handling and applicable privacy requirements before enabling analytics; these settings alone do not establish legal compliance.
+
 The Worker's first address, `https://dsa-learning.bernardoseverosilveira.workers.dev`, still serves the same app. `wrangler.jsonc` keeps it on (`workers_dev: true`) so a log stored there can still be exported; the branch Preview URLs live on `workers.dev` too (`preview_urls: true`). It doesn't redirect, and link previews point to the canonical address.
 
-Everything a user logs stays in their browser, stored per address: the canonical URL, the old `workers.dev` URL, each Preview URL and each machine start with an empty log. To move your progress to the canonical URL:
+The full practice log stays in the user's browser, stored per address: the canonical URL, the old `workers.dev` URL, each Preview URL and each machine start with an empty log. To move your progress to the canonical URL:
 
 1. Open the old address, go to Settings and select Export. This downloads your log as a JSON file.
 2. Open https://dsa-learning.bernardosevero.dev, go to Settings, select Import and choose that file.
 
-Import merges the file into the log already there, so it's safe to run after you've logged at the new address too.
+When analytics is enabled, the app sends the limited usage events described on `/privacy` to PostHog.
 
 ## Research basis
 

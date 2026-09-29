@@ -1,10 +1,18 @@
 import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { track, trackPageView } from "@/ui/shared/analytics";
 
 import { AppDataProvider } from "../AppData";
 import { AppRoutes } from "../AppRoutes";
+
+vi.mock("@/ui/shared/analytics", () => ({
+  track: vi.fn(),
+  trackPageView: vi.fn(),
+  setAnalyticsEnabled: vi.fn(),
+}));
 
 function renderAt(path: string) {
   render(
@@ -22,6 +30,7 @@ function pageHeading(): string {
 
 afterEach(() => {
   localStorage.clear();
+  vi.clearAllMocks();
 });
 
 describe("AppRoutes", () => {
@@ -29,11 +38,13 @@ describe("AppRoutes", () => {
     ["/", "Today"],
     ["/problems", "Problems"],
     ["/settings", "Settings & data"],
+    ["/privacy", "Privacy & credits"],
   ])("renders %s as the %s screen with its own page title", (path, heading) => {
     renderAt(path);
 
     expect(pageHeading()).toBe(heading);
     expect(document.title).toBe(`${heading} · dsa-learning`);
+    expect(trackPageView).toHaveBeenCalledWith(path);
   });
 
   it("renders /problems/two-sum as the Problem detail screen for that problem", () => {
@@ -68,6 +79,20 @@ describe("AppRoutes", () => {
 
     expect(pageHeading()).toBe("Settings & data");
     expect(nav.querySelector("[aria-current='page']")?.textContent).toBe("Settings");
+    expect(trackPageView).toHaveBeenCalledWith("/problems");
+    expect(trackPageView).toHaveBeenCalledWith("/settings");
+  });
+
+  it("sends no extra pageview when the usage switch changes on the same page", async () => {
+    const user = userEvent.setup();
+    renderAt("/settings");
+    const usageSwitch = screen.getByRole("switch", { name: "Share usage data" });
+
+    await user.click(usageSwitch);
+    await user.click(usageSwitch);
+
+    expect(trackPageView).toHaveBeenCalledOnce();
+    expect(trackPageView).toHaveBeenCalledWith("/settings");
   });
 
   it("drops a problem marked as already mastered in Problems from Today's New section", async () => {
@@ -82,6 +107,7 @@ describe("AppRoutes", () => {
     const newSection = within(screen.getByRole("region", { name: /New/ }));
     expect(newSection.queryByText("Contains Duplicate")).toBeNull();
     expect(newSection.getByText("Valid Anagram", { selector: "p" })).toBeDefined();
+    expect(track).toHaveBeenCalledWith("marked_mastered", { pattern: "Arrays & Hashing" });
   });
 
   it("marks Problems as the current page on a problem's detail page", () => {
@@ -98,5 +124,20 @@ describe("AppRoutes", () => {
     await user.click(screen.getByRole("link", { name: "dsa-learning" }));
 
     expect(pageHeading()).toBe("Today");
+  });
+
+  it("opens the privacy notice from the Settings footer", async () => {
+    const user = userEvent.setup();
+    renderAt("/settings");
+
+    await user.click(
+      within(screen.getByRole("contentinfo")).getByRole("link", { name: "Privacy & credits" }),
+    );
+
+    expect(pageHeading()).toBe("Privacy & credits");
+    expect(screen.getByText(/Your notes, key insights/)).toBeDefined();
+    expect(screen.getByRole("link", { name: /MIT license notice/ }).getAttribute("href")).toBe(
+      "/NOTICE.md",
+    );
   });
 });

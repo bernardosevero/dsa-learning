@@ -14,6 +14,7 @@ export const en = {
     problems: "Problems",
     problemDetail: "Problem",
     settings: "Settings & data",
+    privacy: "Privacy & credits",
   },
   separator: " · ",
   today: {
@@ -145,7 +146,7 @@ export const en = {
     showPatternHint: "Off by default: recognizing the pattern yourself is part of the practice.",
     yourData: "Your data",
     dataIntro:
-      "Everything lives in this browser. Export a backup now and then, or to move to another device.",
+      "Your practice log lives in this browser. Export a backup now and then, or to move to another device.",
     export: "Export",
     exportHint: "Every attempt, mark and setting, as one JSON file.",
     downloadJson: "Download JSON",
@@ -165,6 +166,48 @@ export const en = {
     resetConfirmAfter: "to confirm",
     resetDone: "Progress reset. Every problem is new again.",
     credit: "Problem metadata from neetcode-gh/leetcode (MIT)",
+    privacy: "Privacy",
+    shareAnonymousUsage: "Share usage data",
+    shareAnonymousUsageHint:
+      "Helps us learn which parts of the app are used. No notes or insights are sent.",
+    privacyAndCredits: "Privacy & credits",
+  },
+  privacy: {
+    yourData: "Your data",
+    browserStorage:
+      "Your attempts, notes, insights and settings stay in this browser. There is no account or server copy of your practice log.",
+    exportAndReset:
+      "You can export a backup, import it elsewhere, or reset your progress from Settings.",
+    analytics: "Usage analytics",
+    analyticsPurpose: "We use usage data to learn which parts of the app are used and improve it.",
+    analyticsIntro:
+      "When usage sharing is on, the app sends pageviews and these events to PostHog US cloud:",
+    events: [
+      "Pages viewed in the app, including the problem page address.",
+      "App opened.",
+      "Attempt logged: rating, help used, whether it was a review, days overdue, time in minutes, and topic.",
+      "Problem marked already mastered: topic.",
+      "Data exported.",
+      "Data imported: number of entries added.",
+    ],
+    analyticsDetails:
+      "PostHog receives page addresses without query strings or fragments, browser and device details, and the IP address of each network request. Its cookieless mode uses the IP address, browser details and site hostname to make a visitor hash that changes daily.",
+    analyticsStorage:
+      "PostHog does not put analytics cookies or a persistent visitor ID in this browser. The app still stores your practice log and settings here.",
+    neverCollected:
+      "Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking and session recording are off.",
+    optOutBefore: "Sharing is on by default. Turn it off at any time in",
+    settingsLink: "Settings",
+    optOutAfter:
+      ". Turning sharing off stops future analytics events; it does not delete events already sent.",
+    credits: "Credits",
+    metadataBefore: "Problem titles, topics, difficulties, slugs and video IDs use metadata from",
+    metadataSource: "neetcode-gh/leetcode",
+    metadataAfter: " under its MIT license.",
+    ownSummaries:
+      "The one-line summaries are our own words. Full problem statements live on NeetCode and LeetCode.",
+    notAffiliated: "This app is not affiliated with or endorsed by NeetCode or LeetCode.",
+    mitTitle: "MIT license notice",
   },
   ratings: { hard: "Hard", medium: "Medium", easy: "Easy" },
   solving: {

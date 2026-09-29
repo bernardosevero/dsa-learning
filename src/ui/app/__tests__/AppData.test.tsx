@@ -93,7 +93,11 @@ describe("AppDataProvider", () => {
           date: "2026-10-01",
         },
       ],
-      settings: { timeBoxMinutes: { Easy: 10, Medium: 20, Hard: 30 }, showPatternOnReviews: true },
+      settings: {
+        timeBoxMinutes: { Easy: 10, Medium: 20, Hard: 30 },
+        showPatternOnReviews: true,
+        shareAnonymousUsage: true,
+      },
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
 
@@ -135,7 +139,11 @@ describe("AppDataProvider", () => {
           date: "2026-10-01",
         },
       ],
-      settings: { timeBoxMinutes: { Easy: 15, Medium: 30, Hard: 45 }, showPatternOnReviews: false },
+      settings: {
+        timeBoxMinutes: { Easy: 15, Medium: 30, Hard: 45 },
+        showPatternOnReviews: false,
+        shareAnonymousUsage: true,
+      },
     });
 
     let result: ReturnType<AppDataValue["importText"]> | undefined;
