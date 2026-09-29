@@ -104,3 +104,7 @@ When analytics is enabled, the app sends the limited usage events described on `
 | Interview practice | The NeetCode 150 curriculum. UMPIRE's *Match* step is pattern recognition | [UMPIRE (CodePath)](https://guides.codepath.org/compsci/UMPIRE-Interview-Strategy), [Tech Interview Handbook](https://www.techinterviewhandbook.org/) |
 
 Caveat: spacing helps less on complex tasks ([Donovan & Radosevich 1999](https://www.researchgate.net/publication/232561426_A_Meta-Analytic_Review_of_the_Distribution_of_Practice_Effect_Now_You_See_It_Now_You_Don't)), so every review has to be a full, effortful re-solve. The Research page has the full notes and references.
+
+## License
+
+The code is released under the [MIT License](LICENSE). The problem data has its own sources and terms, listed in [`public/NOTICE.md`](public/NOTICE.md).
