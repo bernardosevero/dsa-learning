@@ -20,9 +20,10 @@ interface AnalyticsEvents {
 const configuredKey: unknown = import.meta.env.VITE_POSTHOG_KEY;
 const projectKey = typeof configuredKey === "string" ? configuredKey : "";
 const configuredHost: unknown = import.meta.env.VITE_POSTHOG_HOST;
-const posthogHost = typeof configuredHost === "string" && configuredHost !== ""
-  ? configuredHost
-  : "https://us.i.posthog.com";
+const posthogHost =
+  typeof configuredHost === "string" && configuredHost !== ""
+    ? configuredHost
+    : "https://us.i.posthog.com";
 const isConfigured = import.meta.env.PROD && Boolean(projectKey);
 let isInitialized = false;
 let hasTrackedOpening = false;
@@ -32,12 +33,14 @@ let shouldShareUsage = false;
 export function setAnalyticsEnabled(isEnabled: boolean): void {
   if (!isConfigured) return;
 
+  const hasInitializedBefore = isInitialized;
+  const hasSharedUsageBefore = shouldShareUsage;
   shouldShareUsage = isEnabled;
   if (!isInitialized) {
     posthog.init(projectKey, {
       api_host: posthogHost,
       autocapture: false,
-      capture_pageview: false,
+      capture_pageview: "history_change",
       disable_session_recording: true,
       person_profiles: "never",
       opt_out_capturing_by_default: !isEnabled,
@@ -50,6 +53,10 @@ export function setAnalyticsEnabled(isEnabled: boolean): void {
     return;
   }
   posthog.opt_in_capturing();
+  // The SDK captures the first page on init; enabling later needs the current page too.
+  if (hasInitializedBefore && !hasSharedUsageBefore) {
+    posthog.capture("$pageview");
+  }
   if (!hasTrackedOpening) {
     hasTrackedOpening = true;
     track("app_opened");

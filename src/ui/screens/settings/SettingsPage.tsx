@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import { ExternalLink } from "@/ui/shared/ExternalLink";
 import { t } from "@/ui/shared/strings";
 
@@ -19,11 +21,14 @@ export function SettingsPage() {
         <DataSettings />
         <PrivacySettings />
         <ResetProgress />
-        <p className="text-center">
+        <footer className="flex flex-col items-center gap-2 text-center text-xs text-muted-foreground">
+          <Link to="/privacy" className="underline-offset-4 hover:underline">
+            {t.settings.privacyAndCredits}
+          </Link>
           <ExternalLink href={METADATA_REPO_URL} className="text-xs text-muted-foreground">
             {t.settings.credit}
           </ExternalLink>
-        </p>
+        </footer>
       </div>
     </>
   );

@@ -2,7 +2,7 @@ import { CircleAlertIcon, CheckIcon, DownloadIcon, UploadIcon } from "lucide-rea
 import { useId, useRef, useState, type ChangeEvent } from "react";
 
 import { downloadExport } from "@/storage/download";
-import { track } from "@/ui/analytics";
+import { track } from "@/ui/shared/analytics";
 import { useAppData } from "@/ui/app/AppData";
 import { Alert, AlertDescription } from "@/ui/primitives/alert";
 import { Button } from "@/ui/primitives/button";

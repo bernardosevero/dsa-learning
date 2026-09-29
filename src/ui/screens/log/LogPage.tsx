@@ -4,7 +4,7 @@ import { useParams, useSearchParams } from "react-router";
 import { lastAttempt } from "@/domain/schedule";
 import { daysBetween } from "@/domain/dates";
 import { useAppData } from "@/ui/app/AppData";
-import { track } from "@/ui/analytics";
+import { track } from "@/ui/shared/analytics";
 import { FocusFrame } from "@/ui/shared/FocusFrame";
 import { Overline } from "@/ui/shared/Overline";
 import { ProblemKindBadge } from "@/ui/shared/ProblemKindBadge";

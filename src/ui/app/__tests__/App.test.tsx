@@ -1,10 +1,14 @@
 import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { track } from "@/ui/shared/analytics";
 
 import { AppDataProvider } from "../AppData";
 import { AppRoutes } from "../AppRoutes";
+
+vi.mock("@/ui/shared/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: vi.fn() }));
 
 function renderAt(path: string) {
   render(
@@ -22,6 +26,7 @@ function pageHeading(): string {
 
 afterEach(() => {
   localStorage.clear();
+  vi.clearAllMocks();
 });
 
 describe("AppRoutes", () => {
@@ -83,6 +88,7 @@ describe("AppRoutes", () => {
     const newSection = within(screen.getByRole("region", { name: /New/ }));
     expect(newSection.queryByText("Contains Duplicate")).toBeNull();
     expect(newSection.getByText("Valid Anagram", { selector: "p" })).toBeDefined();
+    expect(track).toHaveBeenCalledWith("marked_mastered", { pattern: "Arrays & Hashing" });
   });
 
   it("marks Problems as the current page on a problem's detail page", () => {
@@ -101,9 +107,9 @@ describe("AppRoutes", () => {
     expect(pageHeading()).toBe("Today");
   });
 
-  it("opens the privacy notice from the footer", async () => {
+  it("opens the privacy notice from the Settings footer", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    renderAt("/settings");
 
     await user.click(
       within(screen.getByRole("contentinfo")).getByRole("link", { name: "Privacy & credits" }),

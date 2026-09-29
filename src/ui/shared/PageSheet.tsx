@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router";
 
 import { cn } from "@/ui/primitives/cn";
-import { t } from "@/ui/shared/strings";
 
 export interface PageSheetProps {
   /** The top bar: it spans the sheet, with a rule under it. */
@@ -45,14 +43,6 @@ export function PageSheet({
           {children}
         </div>
       </main>
-      <footer className="border-t px-5 py-4 text-center text-xs text-muted-foreground sheet:px-8">
-        <Link
-          to="/privacy"
-          className="rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          {t.settings.privacyAndCredits}
-        </Link>
-      </footer>
     </div>
   );
 }

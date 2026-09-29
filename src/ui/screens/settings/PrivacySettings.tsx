@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { Link } from "react-router";
 
-import { setAnalyticsEnabled } from "@/ui/analytics";
+import { setAnalyticsEnabled } from "@/ui/shared/analytics";
 import { useAppData } from "@/ui/app/AppData";
 import { Card } from "@/ui/primitives/card";
 import { Label } from "@/ui/primitives/label";

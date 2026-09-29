@@ -8,11 +8,13 @@ import { downloadExport } from "@/storage/download";
 import { STORAGE_KEY } from "@/storage/localStore";
 import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
 import { AppDataProvider } from "@/ui/app/AppData";
+import { track } from "@/ui/shared/analytics";
 
 import { SettingsPage } from "../SettingsPage";
 
 // The real export builds a download link with browser APIs jsdom lacks; the call is what matters.
 vi.mock("@/storage/download", () => ({ downloadExport: vi.fn() }));
+vi.mock("@/ui/shared/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: vi.fn() }));
 
 const STORED_ATTEMPT = anAttempt({ id: "stored" });
 
@@ -100,6 +102,7 @@ describe("SettingsPage", () => {
     await userEvent.click(screen.getByRole("button", { name: "Download JSON" }));
 
     expect(downloadExport).toHaveBeenCalledWith(readStoredFile());
+    expect(track).toHaveBeenCalledWith("exported");
   });
 
   it("merges an imported file and shows how many entries it added", async () => {
@@ -111,6 +114,7 @@ describe("SettingsPage", () => {
     await userEvent.upload(fileInput(), aJsonFile(exported));
 
     expect(await screen.findByText("Imported: 2 new entries")).toBeDefined();
+    expect(track).toHaveBeenCalledWith("imported", { added: 2 });
     expect(
       readStoredFile()
         .entries.map((entry) => entry.id)

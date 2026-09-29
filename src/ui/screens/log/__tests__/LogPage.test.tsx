@@ -6,12 +6,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EMPTY_SAVE_FILE, type SaveFile } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
 import { anAttempt, aSaveFile } from "@/test/builders";
-import { track } from "@/ui/analytics";
+import { track } from "@/ui/shared/analytics";
 import { AppDataProvider } from "@/ui/app/AppData";
 
 import { LogPage } from "../LogPage";
 
-vi.mock("@/ui/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: vi.fn() }));
+vi.mock("@/ui/shared/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: vi.fn() }));
 
 // The earlier attempt took 25 minutes, so the time comparison has something to report.
 const PREVIOUS_TIME_MINUTES = 25;

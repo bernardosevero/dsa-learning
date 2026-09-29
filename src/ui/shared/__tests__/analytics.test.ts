@@ -16,6 +16,21 @@ afterEach(() => {
 });
 
 describe("anonymous analytics", () => {
+  it("lets the SDK capture the initial page and later history changes when enabled at startup", async () => {
+    vi.stubEnv("PROD", true);
+    vi.stubEnv("VITE_POSTHOG_KEY", "phc_test");
+    const { setAnalyticsEnabled } = await import("../analytics");
+
+    setAnalyticsEnabled(true);
+
+    expect(posthog.init).toHaveBeenCalledWith(
+      "phc_test",
+      expect.objectContaining({ capture_pageview: "history_change" }),
+    );
+    expect(posthog.capture).toHaveBeenCalledTimes(1);
+    expect(posthog.capture).toHaveBeenCalledWith("app_opened", undefined);
+  });
+
   it("starts opted out and sends only requested events after the user opts in", async () => {
     vi.stubEnv("PROD", true);
     vi.stubEnv("VITE_POSTHOG_KEY", "phc_test");
@@ -33,15 +48,16 @@ describe("anonymous analytics", () => {
       "phc_test",
       expect.objectContaining({
         autocapture: false,
-        capture_pageview: false,
+        capture_pageview: "history_change",
         disable_session_recording: true,
         person_profiles: "never",
         opt_out_capturing_by_default: true,
       }),
     );
-    expect(posthog.capture).toHaveBeenCalledTimes(2);
-    expect(posthog.capture).toHaveBeenNthCalledWith(1, "app_opened", undefined);
-    expect(posthog.capture).toHaveBeenNthCalledWith(2, "imported", { added: 2 });
+    expect(posthog.capture).toHaveBeenCalledTimes(3);
+    expect(posthog.capture).toHaveBeenNthCalledWith(1, "$pageview");
+    expect(posthog.capture).toHaveBeenNthCalledWith(2, "app_opened", undefined);
+    expect(posthog.capture).toHaveBeenNthCalledWith(3, "imported", { added: 2 });
     expect(posthog.opt_out_capturing).toHaveBeenCalledTimes(2);
   });
 

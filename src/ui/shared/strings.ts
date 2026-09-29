@@ -146,7 +146,7 @@ export const en = {
     showPatternHint: "Off by default: recognizing the pattern yourself is part of the practice.",
     yourData: "Your data",
     dataIntro:
-      "Everything lives in this browser. Export a backup now and then, or to move to another device.",
+      "Your practice log lives in this browser. Export a backup now and then, or to move to another device.",
     export: "Export",
     exportHint: "Every attempt, mark and setting, as one JSON file.",
     downloadJson: "Download JSON",
@@ -180,8 +180,9 @@ export const en = {
       "You can export a backup, import it elsewhere, or reset your progress from Settings.",
     analytics: "Anonymous usage data",
     analyticsIntro:
-      "If enabled, the app sends these events to PostHog US cloud under an anonymous ID:",
+      "When enabled, the app sends pageviews and these events to PostHog US cloud under an anonymous browser ID:",
     events: [
+      "Pages viewed in the app, including the problem page address.",
       "App opened.",
       "Attempt logged: rating, help used, whether it was a review, days overdue, time in minutes, and topic.",
       "Problem marked already mastered: topic.",
@@ -189,7 +190,7 @@ export const en = {
       "Data imported: number of entries added.",
     ],
     neverCollected:
-      "Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking, pageviews and session recording are off.",
+      "PostHog also receives browser and device details and the page address. It uses a first-party cookie and browser storage to recognize return visits. Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking and session recording are off.",
     optOutBefore: "Sharing is on by default. Turn it off at any time in",
     settingsLink: "Settings",
     optOutAfter: ".",

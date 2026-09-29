@@ -46,3 +46,14 @@ for (const windowWidth of WINDOW_WIDTHS) {
     }
   });
 }
+
+test("the Settings footer privacy link is reachable above the phone navigation", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 700 });
+  await page.goto("/settings");
+
+  await page.locator("footer").getByRole("link", { name: "Privacy & credits" }).click();
+
+  await expect(page).toHaveURL(/\/privacy$/);
+});

@@ -1,7 +1,7 @@
 import { CircleCheckIcon } from "lucide-react";
 
 import type { Problem } from "@/domain/types";
-import { track } from "@/ui/analytics";
+import { track } from "./analytics";
 import {
   AlertDialog,
   AlertDialogAction,
