@@ -19,9 +19,17 @@ A spaced-repetition trainer for coding interviews. It tells you which problem to
 
 Proposed: Easy twice in a row (the second time after the 30-day gap) marks a problem as mastered, so the daily load shrinks over time.
 
-## Stack (planned)
+## Tech stack
 
-Vite + React + TypeScript, tested with Vitest. Local-first: data stays in the browser with JSON export/import, and the MVP has no backend. Problem data comes from NeetCode's [MIT-licensed problem list](https://github.com/neetcode-gh/leetcode/blob/main/.problemSiteData.json).
+- **Vite + React + TypeScript** → the app
+- **Tailwind + shadcn/ui** → styling
+- **React Router** → routing
+- **zod** → validating data from files and storage
+- **localStorage** → storage: data stays in the browser, with JSON export/import, and there is no backend
+- **Vitest + Testing Library, Playwright** → tests
+- **Cloudflare Workers** → hosting
+- **PostHog** → analytics
+- **NeetCode's [MIT-licensed problem list](https://github.com/neetcode-gh/leetcode/blob/main/.problemSiteData.json)** → problem data
 
 ## Running locally
 
@@ -64,24 +72,14 @@ The favicon, the Apple touch icon and the link-preview image in `public/` are dr
 
 ## Deploy
 
-The app is live at **https://dsa-learning.bernardosevero.dev**.
+Live at **https://dsa-learning.bernardosevero.dev**.
 
-It's a static site on Cloudflare Workers, served from `dist/` as static assets. `wrangler.jsonc` holds that setup: it names the Worker, attaches the address above as a Custom Domain (Cloudflare creates its DNS record and HTTPS certificate) and sends every path that isn't a file (`/problems`, `/settings`) to `index.html`, so reloading a screen keeps it. Nothing runs on the server.
-
-Workers Builds, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dsa-learning` → Settings → Build), deploys on every push:
-
-| Setting | Value |
-|---|---|
-| Build command | `pnpm build` |
-| Deploy command | `npx wrangler deploy`, for pushes to `main` |
-| Preview command | `npx wrangler preview`, for every other branch; each one gets its own Preview URL |
-| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`; `VITE_SITE_URL=https://dsa-learning.bernardosevero.dev`, the canonical URL with no trailing slash; `VITE_POSTHOG_KEY`, the public project key; and `VITE_POSTHOG_HOST=https://us.i.posthog.com` |
-
-The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` turns the link-preview tags in `index.html` (`og:url`, `og:image`) into the absolute URLs that Slack or WhatsApp need. Vite reads it when the site is built, so it's a build variable (not a runtime one), and changing it takes a new build.
-
-Analytics uses PostHog. Create a project in the US cloud and turn on **Cookieless server hash mode** (Project settings → Web analytics), or PostHog drops the app's events. Without `VITE_POSTHOG_KEY`, analytics is off. The `/privacy` page lists what the app sends, and the Settings switch turns it off.
-
-The Worker's first address, `https://dsa-learning.bernardoseverosilveira.workers.dev`, still serves the same app. `wrangler.jsonc` keeps it on (`workers_dev: true`) so a log stored there can still be exported; the branch Preview URLs live on `workers.dev` too (`preview_urls: true`). It doesn't redirect, and link previews point to the canonical address.
+- Static site on Cloudflare Workers, served from `dist/`. Nothing runs on a server.
+- Merging to `main` deploys to production. Every other branch gets its own Preview URL.
+- Workers Builds runs the deploys, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dsa-learning` → Settings → Build). It builds with `pnpm build`, deploys with `npx wrangler deploy` and previews with `npx wrangler preview`, and reads the Node version from `.nvmrc`.
+- Build variables: `PNPM_VERSION=10.33.0`, `VITE_SITE_URL=https://dsa-learning.bernardosevero.dev` (no trailing slash; it makes the link-preview URLs absolute), `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST=https://us.i.posthog.com`. Vite reads them at build time, so changing one takes a new build.
+- `wrangler.jsonc` attaches the custom domain and sends every path that isn't a file to `index.html`, so reloading `/problems` or `/settings` works.
+- The first address, `https://dsa-learning.bernardoseverosilveira.workers.dev`, still serves the app without redirecting, so a log stored there can still be exported.
 
 ## Research basis
 
