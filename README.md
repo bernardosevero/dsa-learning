@@ -1,10 +1,10 @@
-# dsa-learning
+# 🔁 dsa-learning
 
 A spaced-repetition trainer for coding interviews. It tells you which problem to practice next (a review you're about to forget, or a new one from the NeetCode 150) and schedules each re-solve from how hard it felt.
 
 **Status:** the app is scaffolded; the MVP is being built. Planning docs (Notion): [MVP plan](https://app.notion.com/p/3e674cb445b8812cbbd2d4de94bffd7a) · [Research](https://app.notion.com/p/3e674cb445b881078373c4e3c90c9bdb)
 
-## How it works
+## 🧠 How it works
 
 1. **Next up:** one recommended problem. Due reviews come first (the most overdue first), then the next new problem in NeetCode's topic order.
 2. **Solve** it on NeetCode. On reviews, the problem's pattern stays hidden.
@@ -19,7 +19,7 @@ A spaced-repetition trainer for coding interviews. It tells you which problem to
 
 Proposed: Easy twice in a row (the second time after the 30-day gap) marks a problem as mastered, so the daily load shrinks over time.
 
-## Tech stack
+## 🧰 Tech stack
 
 - **Vite + React + TypeScript** → the app
 - **Tailwind + shadcn/ui** → styling
@@ -31,7 +31,7 @@ Proposed: Easy twice in a row (the second time after the 30-day gap) marks a pro
 - **PostHog** → analytics
 - **NeetCode's [MIT-licensed problem list](https://github.com/neetcode-gh/leetcode/blob/main/.problemSiteData.json)** → problem data
 
-## Running locally
+## 💻 Running locally
 
 You need Node 24 (see `.nvmrc`) and pnpm 10. With Corepack, `corepack enable` installs the pnpm version pinned in `package.json`.
 
@@ -59,18 +59,18 @@ CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` on every pul
 
 The end-to-end tests need a Chromium that matches the installed Playwright version. Install it once with `pnpm exec playwright install chromium`. If your machine already has a different Chromium build (some sandboxes preinstall one), point the tests at it instead with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome pnpm test:e2e`.
 
-The problem list in `src/data/problems.json` is committed, so the app needs no network. To regenerate it (this needs network access):
+## 🛠️ Scripts
+
+One-off Node scripts in `scripts/`. The ones marked 🌐 need network access.
 
 | Command | What it does |
 |---|---|
-| `pnpm tsx scripts/snapshot-nc-links.ts` | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
-| `pnpm tsx scripts/build-problems.ts` | Rebuilds `src/data/problems.json` from neetcode-gh/leetcode and the slug snapshot, keeping existing summaries |
+| `pnpm tsx scripts/metrics.ts <export.json>` | Prints the success metrics (on-time reviews, re-solve speed, rating progress, load and habit) from a file exported in the app |
+| `pnpm tsx scripts/build-problems.ts` 🌐 | Rebuilds `src/data/problems.json` from neetcode-gh/leetcode and the slug snapshot, keeping existing summaries. The file is committed, so the app itself needs no network |
+| `pnpm tsx scripts/snapshot-nc-links.ts` 🌐 | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
+| `pnpm tsx scripts/render-link-previews.ts` 🌐 | Redraws the favicon, the Apple touch icon and the link-preview image in `public/`. Run it after changing their design in the script. It needs a Chromium, like the end-to-end tests |
 
-To see the success metrics (on-time reviews, re-solve speed, rating progress, load and habit), export your data from the app and run `pnpm tsx scripts/metrics.ts <export.json>`. It prints a small table.
-
-The favicon, the Apple touch icon and the link-preview image in `public/` are drawn by `pnpm tsx scripts/render-link-previews.ts`. Run it after changing their design in that script. It needs network access to download the fonts from Google Fonts, and a Chromium like the end-to-end tests (`PLAYWRIGHT_CHROMIUM_EXECUTABLE` works here too).
-
-## Deploy
+## 🚀 Deploy
 
 Live at **https://dsa-learning.bernardosevero.dev**.
 
@@ -78,7 +78,7 @@ Live at **https://dsa-learning.bernardosevero.dev**.
 - Merging to `main` deploys to production. Every other branch gets its own Preview URL.
 - `wrangler.jsonc` attaches the custom domain and sends every path that isn't a file to `index.html`.
 
-## Research basis
+## 🔬 Research basis
 
 | Principle | How the app uses it | Sources |
 |---|---|---|
@@ -96,6 +96,6 @@ Live at **https://dsa-learning.bernardosevero.dev**.
 
 Caveat: spacing helps less on complex tasks ([Donovan & Radosevich 1999](https://www.researchgate.net/publication/232561426_A_Meta-Analytic_Review_of_the_Distribution_of_Practice_Effect_Now_You_See_It_Now_You_Don't)), so every review has to be a full, effortful re-solve. The Research page has the full notes and references.
 
-## License
+## 📄 License
 
 The code is released under the [MIT License](LICENSE). The problem data has its own sources and terms, listed in [`public/NOTICE.md`](public/NOTICE.md).
