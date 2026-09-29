@@ -3,12 +3,16 @@ import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { track } from "@/ui/shared/analytics";
+import { track, trackPageView } from "@/ui/shared/analytics";
 
 import { AppDataProvider } from "../AppData";
 import { AppRoutes } from "../AppRoutes";
 
-vi.mock("@/ui/shared/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: vi.fn() }));
+vi.mock("@/ui/shared/analytics", () => ({
+  track: vi.fn(),
+  trackPageView: vi.fn(),
+  setAnalyticsEnabled: vi.fn(),
+}));
 
 function renderAt(path: string) {
   render(
@@ -40,6 +44,7 @@ describe("AppRoutes", () => {
 
     expect(pageHeading()).toBe(heading);
     expect(document.title).toBe(`${heading} · dsa-learning`);
+    expect(trackPageView).toHaveBeenCalledWith(path);
   });
 
   it("renders /problems/two-sum as the Problem detail screen for that problem", () => {
@@ -74,6 +79,8 @@ describe("AppRoutes", () => {
 
     expect(pageHeading()).toBe("Settings & data");
     expect(nav.querySelector("[aria-current='page']")?.textContent).toBe("Settings");
+    expect(trackPageView).toHaveBeenCalledWith("/problems");
+    expect(trackPageView).toHaveBeenCalledWith("/settings");
   });
 
   it("drops a problem marked as already mastered in Problems from Today's New section", async () => {

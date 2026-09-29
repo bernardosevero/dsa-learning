@@ -33,34 +33,38 @@ let shouldShareUsage = false;
 export function setAnalyticsEnabled(isEnabled: boolean): void {
   if (!isConfigured) return;
 
-  const hasInitializedBefore = isInitialized;
-  const hasSharedUsageBefore = shouldShareUsage;
   shouldShareUsage = isEnabled;
-  if (!isInitialized) {
-    posthog.init(projectKey, {
-      api_host: posthogHost,
-      autocapture: false,
-      capture_pageview: "history_change",
-      disable_session_recording: true,
-      person_profiles: "never",
-      opt_out_capturing_by_default: !isEnabled,
-    });
-    isInitialized = true;
-  }
+  if (!isEnabled || isInitialized) return;
 
-  if (!isEnabled) {
-    posthog.opt_out_capturing();
-    return;
-  }
-  posthog.opt_in_capturing();
-  // The SDK captures the first page on init; enabling later needs the current page too.
-  if (hasInitializedBefore && !hasSharedUsageBefore) {
-    posthog.capture("$pageview");
-  }
+  posthog.init(projectKey, {
+    api_host: posthogHost,
+    persistence: "memory",
+    cookieless_mode: "always",
+    // Deprecated upstream: this cannot prevent the server from seeing the request IP.
+    ip: false,
+    autocapture: false,
+    capture_pageview: false,
+    capture_pageleave: false,
+    capture_exceptions: false,
+    disable_session_recording: true,
+    person_profiles: "never",
+    advanced_disable_flags: true,
+    disable_surveys: true,
+    save_campaign_params: false,
+    save_referrer: false,
+    get_current_url: () => window.location.origin + window.location.pathname,
+  });
+  isInitialized = true;
   if (!hasTrackedOpening) {
     hasTrackedOpening = true;
     track("app_opened");
   }
+}
+
+/** Captures the current SPA route without query strings or fragments. */
+export function trackPageView(pathname: string): void {
+  if (!isConfigured || !isInitialized || !shouldShareUsage) return;
+  posthog.capture("$pageview", { $current_url: window.location.origin + pathname });
 }
 
 /** Sends only the listed anonymous product events when analytics is enabled. */

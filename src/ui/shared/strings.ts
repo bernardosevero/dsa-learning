@@ -167,7 +167,7 @@ export const en = {
     resetDone: "Progress reset. Every problem is new again.",
     credit: "Problem metadata from neetcode-gh/leetcode (MIT)",
     privacy: "Privacy",
-    shareAnonymousUsage: "Share anonymous usage data",
+    shareAnonymousUsage: "Share usage data",
     shareAnonymousUsageHint:
       "Helps us learn which parts of the app are used. No notes or insights are sent.",
     privacyAndCredits: "Privacy & credits",
@@ -178,9 +178,8 @@ export const en = {
       "Your attempts, notes, insights and settings stay in this browser. There is no account or server copy of your practice log.",
     exportAndReset:
       "You can export a backup, import it elsewhere, or reset your progress from Settings.",
-    analytics: "Anonymous usage data",
-    analyticsIntro:
-      "When enabled, the app sends pageviews and these events to PostHog US cloud under an anonymous browser ID:",
+    analytics: "Usage analytics",
+    analyticsIntro: "When enabled, the app sends pageviews and these events to PostHog US cloud:",
     events: [
       "Pages viewed in the app, including the problem page address.",
       "App opened.",
@@ -189,8 +188,10 @@ export const en = {
       "Data exported.",
       "Data imported: number of entries added.",
     ],
+    analyticsDetails:
+      "PostHog receives the page address without query strings, browser and device details, and the IP address used for the network request. Its SDK uses memory instead of analytics cookies or browser storage; PostHog's cookieless mode can still process the IP to measure visits.",
     neverCollected:
-      "PostHog also receives browser and device details and the page address. It uses a first-party cookie and browser storage to recognize return visits. Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking and session recording are off.",
+      "Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking and session recording are off.",
     optOutBefore: "Sharing is on by default. Turn it off at any time in",
     settingsLink: "Settings",
     optOutAfter: ".",

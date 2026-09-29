@@ -30,6 +30,7 @@ export function PrivacyPage() {
                 <li key={event}>{event}</li>
               ))}
             </ul>
+            <p>{t.privacy.analyticsDetails}</p>
             <p>{t.privacy.neverCollected}</p>
             <p>
               {t.privacy.optOutBefore}{" "}

@@ -91,7 +91,7 @@ describe("SettingsPage", () => {
   it("saves the anonymous usage opt-out", async () => {
     renderSettings();
 
-    await userEvent.click(screen.getByRole("switch", { name: "Share anonymous usage data" }));
+    await userEvent.click(screen.getByRole("switch", { name: "Share usage data" }));
 
     expect(readStoredFile().settings.shareAnonymousUsage).toBe(false);
   });
