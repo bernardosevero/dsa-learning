@@ -179,7 +179,9 @@ export const en = {
     exportAndReset:
       "You can export a backup, import it elsewhere, or reset your progress from Settings.",
     analytics: "Usage analytics",
-    analyticsIntro: "When enabled, the app sends pageviews and these events to PostHog US cloud:",
+    analyticsPurpose: "We use usage data to learn which parts of the app are used and improve it.",
+    analyticsIntro:
+      "When usage sharing is on, the app sends pageviews and these events to PostHog US cloud:",
     events: [
       "Pages viewed in the app, including the problem page address.",
       "App opened.",
@@ -189,12 +191,15 @@ export const en = {
       "Data imported: number of entries added.",
     ],
     analyticsDetails:
-      "PostHog receives the page address without query strings, browser and device details, and the IP address used for the network request. Its SDK uses memory instead of analytics cookies or browser storage; PostHog's cookieless mode can still process the IP to measure visits.",
+      "PostHog receives page addresses without query strings or fragments, browser and device details, and the IP address of each network request. Its cookieless mode uses the IP address, browser details and site hostname to make a visitor hash that changes daily.",
+    analyticsStorage:
+      "PostHog does not put analytics cookies or a persistent visitor ID in this browser. The app still stores your practice log and settings here.",
     neverCollected:
       "Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking and session recording are off.",
     optOutBefore: "Sharing is on by default. Turn it off at any time in",
     settingsLink: "Settings",
-    optOutAfter: ".",
+    optOutAfter:
+      ". Turning sharing off stops future analytics events; it does not delete events already sent.",
     credits: "Credits",
     metadataBefore: "Problem titles, topics, difficulties, slugs and video IDs use metadata from",
     metadataSource: "neetcode-gh/leetcode",

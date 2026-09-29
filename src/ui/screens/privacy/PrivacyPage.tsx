@@ -7,7 +7,7 @@ import { t } from "@/ui/shared/strings";
 
 const METADATA_REPO_URL = "https://github.com/neetcode-gh/leetcode";
 
-/** Privacy and credits for the anonymous, local-first app. */
+/** Privacy and credits for the local-first app. */
 export function PrivacyPage() {
   return (
     <>
@@ -24,6 +24,7 @@ export function PrivacyPage() {
         <section aria-labelledby="privacy-analytics-heading">
           <SectionLabel id="privacy-analytics-heading">{t.privacy.analytics}</SectionLabel>
           <Card className="space-y-3 p-4 text-sm">
+            <p>{t.privacy.analyticsPurpose}</p>
             <p>{t.privacy.analyticsIntro}</p>
             <ul className="list-disc space-y-1 pl-5">
               {t.privacy.events.map((event) => (
@@ -31,6 +32,7 @@ export function PrivacyPage() {
               ))}
             </ul>
             <p>{t.privacy.analyticsDetails}</p>
+            <p>{t.privacy.analyticsStorage}</p>
             <p>{t.privacy.neverCollected}</p>
             <p>
               {t.privacy.optOutBefore}{" "}
