@@ -76,7 +76,7 @@ Live at **https://dsa-learning.bernardosevero.dev**.
 
 - Static site on Cloudflare Workers, served from `dist/`. Nothing runs on a server.
 - Merging to `main` deploys to production. Every other branch gets its own Preview URL.
-- `wrangler.jsonc` attaches the custom domain and sends every path that isn't a file to `index.html`, so reloading `/problems` or `/settings` works.
+- `wrangler.jsonc` attaches the custom domain and sends every path that isn't a file to `index.html`.
 
 ## Research basis
 
