@@ -64,7 +64,9 @@ The favicon, the Apple touch icon and the link-preview image in `public/` are dr
 
 ## Deploy
 
-The app is a static site on Cloudflare Workers, served from `dist/` as static assets. `wrangler.jsonc` holds that setup: it names the Worker and sends every path that isn't a file (`/problems`, `/settings`) to `index.html`, so reloading a screen keeps it. Nothing runs on the server.
+The app is live at **https://dsa-learning.bernardosevero.dev**.
+
+It's a static site on Cloudflare Workers, served from `dist/` as static assets. `wrangler.jsonc` holds that setup: it names the Worker, attaches the address above as a Custom Domain (Cloudflare creates its DNS record and HTTPS certificate) and sends every path that isn't a file (`/problems`, `/settings`) to `index.html`, so reloading a screen keeps it. Nothing runs on the server.
 
 Workers Builds, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dsa-learning` → Settings → Build), deploys on every push:
 
@@ -73,7 +75,7 @@ Workers Builds, connected to this repository in the Cloudflare dashboard (Worker
 | Build command | `pnpm build` |
 | Deploy command | `npx wrangler deploy`, for pushes to `main` |
 | Preview command | `npx wrangler preview`, for every other branch; each one gets its own Preview URL |
-| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`; `VITE_SITE_URL`, the production URL with no trailing slash; `VITE_POSTHOG_KEY`, the public project key; and `VITE_POSTHOG_HOST=https://us.i.posthog.com` |
+| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`; `VITE_SITE_URL=https://dsa-learning.bernardosevero.dev`, the canonical URL with no trailing slash; `VITE_POSTHOG_KEY`, the public project key; and `VITE_POSTHOG_HOST=https://us.i.posthog.com` |
 
 The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` turns the link-preview tags in `index.html` (`og:url`, `og:image`) into the absolute URLs that Slack or WhatsApp need. Vite reads it when the site is built, so it's a build variable (not a runtime one), and changing it takes a new build.
 
@@ -81,7 +83,9 @@ Create a PostHog project in the US cloud and enable **Cookieless server hash mod
 
 PostHog uses in-memory persistence and writes no analytics cookie or persistent browser identifier. `ip: false` is included in the SDK config but is deprecated and has no effect in the installed SDK. A direct browser request still exposes its IP to PostHog, and cookieless server hashing can process it. The owner should review the project's IP handling and applicable privacy requirements before enabling analytics; these settings alone do not establish legal compliance.
 
-The full practice log stays in the user's browser, stored per address: the production URL, each Preview URL and each machine start with an empty log. Move a log between them with Export and Import in Settings. When analytics is enabled, the app sends the limited usage events described on `/privacy` to PostHog.
+The Worker's first address, `https://dsa-learning.bernardoseverosilveira.workers.dev`, still serves the same app. `wrangler.jsonc` keeps it on (`workers_dev: true`) so a log stored there can still be exported; the branch Preview URLs live on `workers.dev` too (`preview_urls: true`). It doesn't redirect, and link previews point to the canonical address.
+
+When analytics is enabled, the app sends the limited usage events described on `/privacy` to PostHog.
 
 ## Research basis
 
