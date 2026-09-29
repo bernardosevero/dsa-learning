@@ -1,20 +1,17 @@
 import { useId } from "react";
-import { Link } from "react-router";
 
-import { setAnalyticsEnabled } from "@/ui/shared/analytics";
 import { useAppData } from "@/ui/app/AppData";
 import { Card } from "@/ui/primitives/card";
-import { Label } from "@/ui/primitives/label";
-import { Switch } from "@/ui/primitives/switch";
+import { setAnalyticsEnabled } from "@/ui/shared/analytics";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
 
-/** Privacy: the saved anonymous-analytics choice and the full notice. */
+import { SwitchRow } from "./SwitchRow";
+
+/** Privacy: the saved anonymous-analytics choice; the full notice is linked from the page footer. */
 export function PrivacySettings() {
   const { file, updateSettings } = useAppData();
   const headingId = useId();
-  const switchId = useId();
-  const hintId = useId();
 
   function handleUsageChange(isChecked: boolean) {
     setAnalyticsEnabled(isChecked);
@@ -25,27 +22,12 @@ export function PrivacySettings() {
     <section aria-labelledby={headingId}>
       <SectionLabel id={headingId}>{t.settings.privacy}</SectionLabel>
       <Card>
-        <div className="flex items-center gap-4 border-b p-4">
-          <div className="flex flex-1 flex-col gap-1">
-            <Label htmlFor={switchId} className="font-semibold">
-              {t.settings.shareAnonymousUsage}
-            </Label>
-            <p id={hintId} className="text-sm text-muted-foreground">
-              {t.settings.shareAnonymousUsageHint}
-            </p>
-          </div>
-          <Switch
-            id={switchId}
-            checked={file.settings.shareAnonymousUsage}
-            onCheckedChange={handleUsageChange}
-            aria-describedby={hintId}
-          />
-        </div>
-        <div className="p-4">
-          <Link to="/privacy" className="text-sm text-primary underline-offset-4 hover:underline">
-            {t.settings.privacyAndCredits}
-          </Link>
-        </div>
+        <SwitchRow
+          label={t.settings.shareAnonymousUsage}
+          hint={t.settings.shareAnonymousUsageHint}
+          isChecked={file.settings.shareAnonymousUsage}
+          onCheckedChange={handleUsageChange}
+        />
       </Card>
     </section>
   );

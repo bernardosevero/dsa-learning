@@ -83,6 +83,18 @@ describe("AppRoutes", () => {
     expect(trackPageView).toHaveBeenCalledWith("/settings");
   });
 
+  it("sends no extra pageview when the usage switch changes on the same page", async () => {
+    const user = userEvent.setup();
+    renderAt("/settings");
+    const usageSwitch = screen.getByRole("switch", { name: "Share usage data" });
+
+    await user.click(usageSwitch);
+    await user.click(usageSwitch);
+
+    expect(trackPageView).toHaveBeenCalledOnce();
+    expect(trackPageView).toHaveBeenCalledWith("/settings");
+  });
+
   it("drops a problem marked as already mastered in Problems from Today's New section", async () => {
     const user = userEvent.setup();
     renderAt("/problems");

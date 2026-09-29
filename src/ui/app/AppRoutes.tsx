@@ -43,8 +43,12 @@ function AnalyticsRouteTracker() {
 
   useEffect(() => {
     setAnalyticsEnabled(file.settings.shareAnonymousUsage);
+  }, [file.settings.shareAnonymousUsage]);
+
+  // Keyed on the path alone: changing the setting on the same page is not a new pageview.
+  useEffect(() => {
     trackPageView(location.pathname);
-  }, [file.settings.shareAnonymousUsage, location.pathname]);
+  }, [location.pathname]);
 
   return null;
 }
