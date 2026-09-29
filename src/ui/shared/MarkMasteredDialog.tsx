@@ -1,6 +1,7 @@
 import { CircleCheckIcon } from "lucide-react";
 
 import type { Problem } from "@/domain/types";
+import { track } from "./analytics";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +32,7 @@ export function MarkMasteredDialog({ problem, onConfirm, onClose }: MarkMastered
   function handleConfirm() {
     if (problem !== null) {
       onConfirm(problem);
+      track("marked_mastered", { pattern: problem.pattern });
     }
   }
 

@@ -1,8 +1,11 @@
+import { Link } from "react-router";
+
 import { ExternalLink } from "@/ui/shared/ExternalLink";
 import { t } from "@/ui/shared/strings";
 
 import { DataSettings } from "./DataSettings";
 import { PracticeSettings } from "./PracticeSettings";
+import { PrivacySettings } from "./PrivacySettings";
 import { ResetProgress } from "./ResetProgress";
 
 const METADATA_REPO_URL = "https://github.com/neetcode-gh/leetcode";
@@ -16,12 +19,19 @@ export function SettingsPage() {
       <div className="flex flex-col gap-7">
         <PracticeSettings />
         <DataSettings />
+        <PrivacySettings />
         <ResetProgress />
-        <p className="text-center">
+        <footer className="flex flex-col items-center gap-2 text-center text-xs text-muted-foreground">
+          <Link
+            to="/privacy"
+            className="inline-flex min-h-11 items-center px-3 underline-offset-4 hover:underline"
+          >
+            {t.settings.privacyAndCredits}
+          </Link>
           <ExternalLink href={METADATA_REPO_URL} className="text-xs text-muted-foreground">
             {t.settings.credit}
           </ExternalLink>
-        </p>
+        </footer>
       </div>
     </>
   );

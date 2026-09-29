@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useParams, useSearchParams } from "react-router";
 
 import { lastAttempt } from "@/domain/schedule";
+import { daysBetween } from "@/domain/dates";
 import { useAppData } from "@/ui/app/AppData";
+import { track } from "@/ui/shared/analytics";
 import { FocusFrame } from "@/ui/shared/FocusFrame";
 import { Overline } from "@/ui/shared/Overline";
 import { ProblemKindBadge } from "@/ui/shared/ProblemKindBadge";
@@ -46,6 +48,11 @@ export function LogPage() {
     );
   }
   const { id } = problem;
+  const state = states[id];
+  const isReview = state !== undefined && state.status !== "new";
+  const daysOverdue =
+    state?.status === "active" ? Math.max(0, daysBetween(state.dueDate, todayDate)) : 0;
+  const pattern = problem.pattern;
 
   function handleSave(log: ValidLog) {
     const timer = file.activeTimer?.problemId === id ? file.activeTimer : undefined;
@@ -63,6 +70,14 @@ export function LogPage() {
       ...(log.notes === "" ? {} : { notes: log.notes }),
     });
     clearTimer();
+    track("attempt_logged", {
+      help: log.help,
+      isReview,
+      daysOverdue,
+      rating: log.rating,
+      timeMinutes: log.timeMinutes,
+      pattern,
+    });
     setSaved({ log, completedAt, previous });
   }
 
@@ -85,7 +100,6 @@ export function LogPage() {
     return <LoggedView problem={problem} saved={saved} onUndo={() => handleUndo(saved)} />;
   }
 
-  const isReview = (states[id]?.status ?? "new") !== "new";
   // Same rule as Solving: on a review the pattern is hidden unless the user opted in.
   const shouldShowPattern = !isReview || file.settings.showPatternOnReviews;
   return (
