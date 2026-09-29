@@ -85,11 +85,6 @@ PostHog uses in-memory persistence and writes no analytics cookie or persistent 
 
 The Worker's first address, `https://dsa-learning.bernardoseverosilveira.workers.dev`, still serves the same app. `wrangler.jsonc` keeps it on (`workers_dev: true`) so a log stored there can still be exported; the branch Preview URLs live on `workers.dev` too (`preview_urls: true`). It doesn't redirect, and link previews point to the canonical address.
 
-The full practice log stays in the user's browser, stored per address: the canonical URL, the old `workers.dev` URL, each Preview URL and each machine start with an empty log. To move your progress to the canonical URL:
-
-1. Open the old address, go to Settings and select Export. This downloads your log as a JSON file.
-2. Open https://dsa-learning.bernardosevero.dev, go to Settings, select Import and choose that file.
-
 When analytics is enabled, the app sends the limited usage events described on `/privacy` to PostHog.
 
 ## Research basis
