@@ -42,7 +42,7 @@ pnpm dev
 
 The app runs at http://localhost:5173.
 
-No environment variables are needed locally. Analytics runs only in production builds, so local development sends no events. The build warns that `VITE_SITE_URL` isn't defined; it only matters on the deployed site. `.env.example` lists the optional build variables. `VITE_POSTHOG_KEY` is the public project key; `VITE_POSTHOG_HOST` is `https://us.i.posthog.com` for the US cloud project.
+No environment variables are needed locally.
 
 | Command | What it does |
 |---|---|
