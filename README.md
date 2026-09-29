@@ -2,8 +2,6 @@
 
 A spaced-repetition trainer for coding interviews. It tells you which problem to practice next (a review you're about to forget, or a new one from the NeetCode 150) and schedules each re-solve from how hard it felt.
 
-**Status:** the app is scaffolded; the MVP is being built. Planning docs (Notion): [MVP plan](https://app.notion.com/p/3e674cb445b8812cbbd2d4de94bffd7a) · [Research](https://app.notion.com/p/3e674cb445b881078373c4e3c90c9bdb)
-
 ## 🧠 How it works
 
 1. **Next up:** one recommended problem. Due reviews come first (the most overdue first), then the next new problem in NeetCode's topic order.
