@@ -19,6 +19,16 @@ A spaced-repetition trainer for coding interviews. It tells you which problem to
 
 Proposed: Easy twice in a row (the second time after the 30-day gap) marks a problem as mastered, so the daily load shrinks over time.
 
+## 🗺️ Pages
+
+- **Today** (`/`): the reviews due today, most at risk first. The top one is the focus ★ and the rest are dimmed. Below them is the next new problem in NeetCode order, with a time estimate, the Due / New left / Mastered counters and progress by topic. On the first visit it explains the loop instead.
+- **Solving** (`/solve/:id`): links out to NeetCode and LeetCode, with a timer against the time box for the problem's difficulty. On reviews the pattern stays hidden.
+- **Log attempt** (`/log/:id`): how it felt (Hard, Medium or Easy), the time, the help used and a key insight. After saving, it shows the next re-solve date, reveals what was hidden and compares this attempt with the last one. You can undo the log.
+- **Problems** (`/problems`): all 150 problems by topic, filtered by All, Due, New or Mastered. From here you can start any problem or mark it as already mastered.
+- **Problem** (`/problems/:id`): one problem's links, pattern, solution, video and full history. During a due review the spoilers stay hidden until you log it. Deleting an entry recalculates the schedule.
+- **Settings** (`/settings`): time boxes, a switch to show the pattern on reviews, JSON export and import, the usage-sharing switch and reset progress.
+- **Privacy & credits** (`/privacy`): what stays in your browser, what the analytics sends and where the problem data comes from.
+
 ## 🧰 Tech stack
 
 - **Vite + React + TypeScript** → the app
