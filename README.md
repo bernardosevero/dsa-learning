@@ -34,7 +34,7 @@ pnpm dev
 
 The app runs at http://localhost:5173.
 
-No environment variables are needed locally. The build warns that `VITE_SITE_URL` isn't defined; it only matters on the deployed site (see [Deploy](#deploy)).
+No environment variables are needed locally. Analytics runs only in production builds, so local development sends no events. The build warns that `VITE_SITE_URL` isn't defined; it only matters on the deployed site (see [Deploy](#deploy)). `.env.example` lists the optional build variables. `VITE_POSTHOG_KEY` is the public project key; `VITE_POSTHOG_HOST` is `https://us.i.posthog.com` for the US cloud project.
 
 | Command | What it does |
 |---|---|
@@ -73,9 +73,11 @@ Workers Builds, connected to this repository in the Cloudflare dashboard (Worker
 | Build command | `pnpm build` |
 | Deploy command | `npx wrangler deploy`, for pushes to `main` |
 | Preview command | `npx wrangler preview`, for every other branch; each one gets its own Preview URL |
-| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`, and `VITE_SITE_URL`, the production URL with no trailing slash |
+| Build variables | `PNPM_VERSION=10.33.0`, the pnpm version pinned in `package.json`; `VITE_SITE_URL`, the production URL with no trailing slash; `VITE_POSTHOG_KEY`, the public project key; and `VITE_POSTHOG_HOST=https://us.i.posthog.com` |
 
 The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` turns the link-preview tags in `index.html` (`og:url`, `og:image`) into the absolute URLs that Slack or WhatsApp need. Vite reads it when the site is built, so it's a build variable (not a runtime one), and changing it takes a new build.
+
+Create a PostHog project in the US cloud and set `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` under Workers & Pages → `dta-learning` → Settings → Build → Variables and secrets. These are build variables, not Worker runtime variables. Without a key, analytics is disabled. The Settings switch controls anonymous usage sharing for each browser; the `/privacy` page describes the events and opt-out.
 
 Everything a user logs stays in their browser, stored per address: the production URL, each Preview URL and each machine start with an empty log. Move a log between them with Export and Import in Settings.
 

@@ -81,7 +81,7 @@ These are settled decisions. Code that contradicts one is a bug.
 The scripts are in `package.json`.
 
 Later phases:
-- **Public release:** PostHog analytics (`posthog-js`, US cloud) for everyone, with an opt-out toggle in Settings and a `/privacy` page. EU consent comes before marketing in Europe.
+- **Before MVP sharing (M5):** PostHog analytics (`posthog-js`, US cloud) for everyone, with an opt-out toggle in Settings and a `/privacy` page. EU consent comes before marketing in Europe.
 - **Login:** Supabase Auth (Google + GitHub) and a Supabase `entries` table. Every Supabase table has Row Level Security (`user_id = auth.uid()`), because the client key is public. Anything involving payment is decided server-side.
 - **Public pages (second release, with login):** landing, how it works, FAQ. The way they're prerendered is decided then.
 

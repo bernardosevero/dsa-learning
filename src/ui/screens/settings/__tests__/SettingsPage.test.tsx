@@ -86,6 +86,14 @@ describe("SettingsPage", () => {
     expect(readStoredFile().settings.showPatternOnReviews).toBe(true);
   });
 
+  it("saves the anonymous usage opt-out", async () => {
+    renderSettings();
+
+    await userEvent.click(screen.getByRole("switch", { name: "Share anonymous usage data" }));
+
+    expect(readStoredFile().settings.shareAnonymousUsage).toBe(false);
+  });
+
   it("exports the save file", async () => {
     renderSettings();
 

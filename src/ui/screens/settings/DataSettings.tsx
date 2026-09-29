@@ -2,6 +2,7 @@ import { CircleAlertIcon, CheckIcon, DownloadIcon, UploadIcon } from "lucide-rea
 import { useId, useRef, useState, type ChangeEvent } from "react";
 
 import { downloadExport } from "@/storage/download";
+import { track } from "@/ui/analytics";
 import { useAppData } from "@/ui/app/AppData";
 import { Alert, AlertDescription } from "@/ui/primitives/alert";
 import { Button } from "@/ui/primitives/button";
@@ -21,6 +22,7 @@ export function DataSettings() {
 
   function handleExport() {
     downloadExport(file);
+    track("exported");
   }
 
   function handleChooseFile() {
@@ -36,6 +38,9 @@ export function DataSettings() {
       return;
     }
     const result = importText(await chosenFile.text());
+    if (result.ok) {
+      track("imported", { added: result.added });
+    }
     setImportResult(
       result.ok
         ? { status: "imported", added: result.added }

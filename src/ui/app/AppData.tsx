@@ -5,6 +5,7 @@ import { today } from "@/domain/dates";
 import { deriveAllStates } from "@/domain/schedule";
 import type { LocalDate, Problem, ProblemState, SaveFile, Settings } from "@/domain/types";
 import { createLocalStore, importJson } from "@/storage/localStore";
+import { setAnalyticsEnabled } from "@/ui/analytics";
 
 import * as reducers from "./appDataReducers";
 import type { NewAttempt } from "./appDataReducers";
@@ -60,6 +61,10 @@ export function AppDataProvider({ children }: AppDataProviderProps) {
   useEffect(() => {
     store.save(file);
   }, [file]);
+
+  useEffect(() => {
+    setAnalyticsEnabled(file.settings.shareAnonymousUsage);
+  }, [file.settings.shareAnonymousUsage]);
 
   const states = useMemo(() => deriveAllStates(PROBLEM_IDS, file.entries), [file.entries]);
 

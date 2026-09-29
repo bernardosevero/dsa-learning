@@ -29,6 +29,7 @@ describe("AppRoutes", () => {
     ["/", "Today"],
     ["/problems", "Problems"],
     ["/settings", "Settings & data"],
+    ["/privacy", "Privacy & credits"],
   ])("renders %s as the %s screen with its own page title", (path, heading) => {
     renderAt(path);
 
@@ -98,5 +99,17 @@ describe("AppRoutes", () => {
     await user.click(screen.getByRole("link", { name: "dsa-learning" }));
 
     expect(pageHeading()).toBe("Today");
+  });
+
+  it("opens the privacy notice from the footer", async () => {
+    const user = userEvent.setup();
+    renderAt("/");
+
+    await user.click(
+      within(screen.getByRole("contentinfo")).getByRole("link", { name: "Privacy & credits" }),
+    );
+
+    expect(pageHeading()).toBe("Privacy & credits");
+    expect(screen.getByText(/Your notes, key insights/)).toBeDefined();
   });
 });

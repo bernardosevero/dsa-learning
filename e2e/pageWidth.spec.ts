@@ -8,6 +8,7 @@ const SCREENS = [
   "/problems",
   "/problems/two-sum",
   "/settings",
+  "/privacy",
   "/solve/two-sum",
   "/log/two-sum",
 ] as const;

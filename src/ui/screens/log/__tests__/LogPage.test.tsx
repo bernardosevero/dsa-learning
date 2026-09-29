@@ -6,9 +6,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EMPTY_SAVE_FILE, type SaveFile } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
 import { anAttempt, aSaveFile } from "@/test/builders";
+import { track } from "@/ui/analytics";
 import { AppDataProvider } from "@/ui/app/AppData";
 
 import { LogPage } from "../LogPage";
+
+vi.mock("@/ui/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: vi.fn() }));
 
 // The earlier attempt took 25 minutes, so the time comparison has something to report.
 const PREVIOUS_TIME_MINUTES = 25;
@@ -47,6 +50,7 @@ beforeEach(() => {
 afterEach(() => {
   localStorage.clear();
   vi.useRealTimers();
+  vi.clearAllMocks();
 });
 
 describe("LogPage form", () => {
@@ -134,6 +138,31 @@ describe("LogPage form", () => {
 });
 
 describe("LogPage saving", () => {
+  it("tracks only anonymous review details after logging an attempt", async () => {
+    const user = userEvent.setup();
+    renderLog(
+      "/log/two-sum",
+      aSaveFile({
+        entries: [anAttempt({ problemId: "two-sum", date: "2026-09-22", rating: "medium" })],
+      }),
+    );
+    await user.click(ratingRadio("Hard"));
+    await user.click(screen.getByRole("radio", { name: "Hint" }));
+    await user.type(screen.getByRole("spinbutton", { name: "Time" }), "20");
+    await user.type(screen.getByRole("textbox", { name: "Key insight" }), "private insight");
+
+    await user.click(screen.getByRole("button", { name: /Save/ }));
+
+    expect(track).toHaveBeenCalledWith("attempt_logged", {
+      rating: "hard",
+      help: "hint",
+      isReview: true,
+      daysOverdue: 2,
+      timeMinutes: 20,
+      pattern: "Arrays & Hashing",
+    });
+  });
+
   it("saves exactly one attempt with the right fields and clears the timer", async () => {
     const user = userEvent.setup();
     renderLog(

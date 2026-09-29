@@ -3,6 +3,7 @@ import { t } from "@/ui/shared/strings";
 
 import { DataSettings } from "./DataSettings";
 import { PracticeSettings } from "./PracticeSettings";
+import { PrivacySettings } from "./PrivacySettings";
 import { ResetProgress } from "./ResetProgress";
 
 const METADATA_REPO_URL = "https://github.com/neetcode-gh/leetcode";
@@ -16,6 +17,7 @@ export function SettingsPage() {
       <div className="flex flex-col gap-7">
         <PracticeSettings />
         <DataSettings />
+        <PrivacySettings />
         <ResetProgress />
         <p className="text-center">
           <ExternalLink href={METADATA_REPO_URL} className="text-xs text-muted-foreground">

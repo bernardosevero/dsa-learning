@@ -14,6 +14,7 @@ export const en = {
     problems: "Problems",
     problemDetail: "Problem",
     settings: "Settings & data",
+    privacy: "Privacy & credits",
   },
   separator: " · ",
   today: {
@@ -165,6 +166,62 @@ export const en = {
     resetConfirmAfter: "to confirm",
     resetDone: "Progress reset. Every problem is new again.",
     credit: "Problem metadata from neetcode-gh/leetcode (MIT)",
+    privacy: "Privacy",
+    shareAnonymousUsage: "Share anonymous usage data",
+    shareAnonymousUsageHint:
+      "Helps us learn which parts of the app are used. No notes or insights are sent.",
+    privacyAndCredits: "Privacy & credits",
+  },
+  privacy: {
+    yourData: "Your data",
+    browserStorage:
+      "Your attempts, notes, insights and settings stay in this browser. There is no account or server copy of your practice log.",
+    exportAndReset:
+      "You can export a backup, import it elsewhere, or reset your progress from Settings.",
+    analytics: "Anonymous usage data",
+    analyticsIntro:
+      "If enabled, the app sends these events to PostHog US cloud under an anonymous ID:",
+    events: [
+      "App opened.",
+      "Attempt logged: rating, help used, whether it was a review, days overdue, time in minutes, and topic.",
+      "Problem marked already mastered: topic.",
+      "Data exported.",
+      "Data imported: number of entries added.",
+    ],
+    neverCollected:
+      "Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking, pageviews and session recording are off.",
+    optOutBefore: "Sharing is on by default. Turn it off at any time in",
+    settingsLink: "Settings",
+    optOutAfter: ".",
+    credits: "Credits",
+    metadataBefore: "Problem titles, topics, difficulties, slugs and video IDs use metadata from",
+    metadataSource: "neetcode-gh/leetcode",
+    metadataAfter: " under its MIT license.",
+    ownSummaries:
+      "The one-line summaries are our own words. Full problem statements live on NeetCode and LeetCode.",
+    notAffiliated: "This app is not affiliated with or endorsed by NeetCode or LeetCode.",
+    mitTitle: "MIT license notice",
+    mitNotice: `MIT License
+
+Copyright (c) 2022 neetcode-gh
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`,
   },
   ratings: { hard: "Hard", medium: "Medium", easy: "Easy" },
   solving: {
