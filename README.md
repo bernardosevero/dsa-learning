@@ -42,7 +42,7 @@ pnpm dev
 
 The app runs at http://localhost:5173.
 
-No environment variables are needed locally. Analytics runs only in production builds, so local development sends no events. The build warns that `VITE_SITE_URL` isn't defined; it only matters on the deployed site (see [Deploy](#deploy)). `.env.example` lists the optional build variables. `VITE_POSTHOG_KEY` is the public project key; `VITE_POSTHOG_HOST` is `https://us.i.posthog.com` for the US cloud project.
+No environment variables are needed locally. Analytics runs only in production builds, so local development sends no events. The build warns that `VITE_SITE_URL` isn't defined; it only matters on the deployed site. `.env.example` lists the optional build variables. `VITE_POSTHOG_KEY` is the public project key; `VITE_POSTHOG_HOST` is `https://us.i.posthog.com` for the US cloud project.
 
 | Command | What it does |
 |---|---|
@@ -76,10 +76,7 @@ Live at **https://dsa-learning.bernardosevero.dev**.
 
 - Static site on Cloudflare Workers, served from `dist/`. Nothing runs on a server.
 - Merging to `main` deploys to production. Every other branch gets its own Preview URL.
-- Workers Builds runs the deploys, connected to this repository in the Cloudflare dashboard (Workers & Pages → `dsa-learning` → Settings → Build). It builds with `pnpm build`, deploys with `npx wrangler deploy` and previews with `npx wrangler preview`, and reads the Node version from `.nvmrc`.
-- Build variables: `PNPM_VERSION=10.33.0`, `VITE_SITE_URL=https://dsa-learning.bernardosevero.dev` (no trailing slash; it makes the link-preview URLs absolute), `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST=https://us.i.posthog.com`. Vite reads them at build time, so changing one takes a new build.
 - `wrangler.jsonc` attaches the custom domain and sends every path that isn't a file to `index.html`, so reloading `/problems` or `/settings` works.
-- The first address, `https://dsa-learning.bernardoseverosilveira.workers.dev`, still serves the app without redirecting, so a log stored there can still be exported.
 
 ## Research basis
 
