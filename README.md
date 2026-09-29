@@ -77,7 +77,7 @@ Workers Builds, connected to this repository in the Cloudflare dashboard (Worker
 
 The build reads the Node version from `.nvmrc`. `VITE_SITE_URL` turns the link-preview tags in `index.html` (`og:url`, `og:image`) into the absolute URLs that Slack or WhatsApp need. Vite reads it when the site is built, so it's a build variable (not a runtime one), and changing it takes a new build.
 
-Create a PostHog project in the US cloud and set `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` under Workers & Pages → `dta-learning` → Settings → Build → Variables and secrets. These are build variables, not Worker runtime variables. Without a key, analytics is disabled. When enabled, PostHog captures the initial pageview, in-app navigation and the named product events. The Settings switch controls anonymous usage sharing for each browser; the `/privacy` page describes the data and opt-out.
+Create a PostHog project in the US cloud and set `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` under Workers & Pages → `dsa-learning` → Settings → Build → Variables and secrets. These are build variables, not Worker runtime variables. Without a key, analytics is disabled. When enabled, PostHog captures the initial pageview, in-app navigation and the named product events. The Settings switch controls anonymous usage sharing for each browser; the `/privacy` page describes the data and opt-out.
 
 The full practice log stays in the user's browser, stored per address: the production URL, each Preview URL and each machine start with an empty log. Move a log between them with Export and Import in Settings. When analytics is enabled, the app sends the limited usage events described on `/privacy` to PostHog.
 
