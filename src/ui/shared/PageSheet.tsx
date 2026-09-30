@@ -11,8 +11,6 @@ export interface PageSheetProps {
   isReadable?: boolean;
   /** Extra classes for the content, e.g. the gap between sections. */
   contentClassName?: string;
-  /** Extra classes for `<main>`, e.g. room for the phone's bottom nav. */
-  mainClassName?: string;
   children: ReactNode;
 }
 
@@ -20,13 +18,7 @@ export interface PageSheetProps {
  * The frame every screen sits in, the same width on all of them so moving between screens never
  * resizes it: up to 640px in a narrow window, a 720px sheet from `sheet`, 1040px from `wide`.
  */
-export function PageSheet({
-  header,
-  isReadable,
-  contentClassName,
-  mainClassName,
-  children,
-}: PageSheetProps) {
+export function PageSheet({ header, isReadable, contentClassName, children }: PageSheetProps) {
   return (
     <div className="flex min-h-svh flex-col">
       <div
@@ -40,7 +32,7 @@ export function PageSheet({
         <header className="flex items-center justify-between gap-3 border-b px-5 py-4 sheet:px-8">
           {header}
         </header>
-        <main className={cn("flex-1 px-5 pt-4 pb-8 sheet:px-8", mainClassName)}>
+        <main className="flex-1 px-5 pt-4 pb-8 sheet:px-8">
           {/* 656px is the content width of the 720px sheet, so readable screens look the same. */}
           <div className={cn(isReadable && "mx-auto w-full max-w-[656px]", contentClassName)}>
             {children}
