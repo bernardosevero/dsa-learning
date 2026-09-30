@@ -40,7 +40,7 @@ export function ExternalLink({
       >
         {children}
         {!isIconOnly && <ArrowUpRightIcon aria-hidden />}
-        <span className="sr-only"> {t.opensInNewTab}</span>
+        {label === undefined && <span className="sr-only"> {t.opensInNewTab}</span>}
       </a>
     </Button>
   );
