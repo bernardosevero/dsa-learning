@@ -1,6 +1,13 @@
 /** Every user-visible string, so a translation only has to replace this object. */
 export const en = {
   appName: "dsa-learning",
+  footer: {
+    label: "About the creator",
+    credit: "© Bernardo Severo - 2026 | Made with ❤️ in 🇧🇷",
+    accessibleCredit: "© Bernardo Severo - 2026. Made with love in Brazil.",
+    github: "GitHub",
+    linkedin: "LinkedIn",
+  },
   nav: {
     label: "Main",
     today: "Today",

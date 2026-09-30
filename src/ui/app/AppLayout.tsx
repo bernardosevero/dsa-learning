@@ -26,7 +26,6 @@ export function AppLayout({ isReadable }: AppLayoutProps) {
   return (
     <PageSheet
       isReadable={isReadable}
-      mainClassName="pb-24 nav:pb-8"
       header={
         <>
           <Link
