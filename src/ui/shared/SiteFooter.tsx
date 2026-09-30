@@ -1,5 +1,3 @@
-import { HeartIcon } from "lucide-react";
-
 import { ExternalLink } from "./ExternalLink";
 import { t } from "./strings";
 
@@ -21,7 +19,7 @@ export function SiteFooter() {
         <span aria-hidden>|</span>
         <span className="inline-flex items-center gap-1.5">
           {t.footer.madeWith}
-          <HeartIcon aria-hidden className="size-4 fill-current text-footer-heart" />
+          <span aria-hidden>{t.footer.heart}</span>
           <span className="sr-only">{t.footer.love}</span>
           {t.footer.in}
           <span role="img" aria-label={t.footer.brazil}>

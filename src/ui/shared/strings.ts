@@ -8,6 +8,7 @@ export const en = {
     year: "2026",
     madeWith: "Made with",
     love: "love",
+    heart: "❤️",
     in: "in",
     brazil: "Brazil",
     brazilFlag: "🇧🇷",
