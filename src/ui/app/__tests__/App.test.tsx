@@ -46,9 +46,8 @@ describe("AppRoutes", () => {
     renderAt(path);
 
     const footer = within(screen.getByRole("contentinfo", { name: "About the creator" }));
-    expect(footer.getByText(/Bernardo Severo/)).toBeDefined();
-    expect(footer.getByText("2026")).toBeDefined();
-    expect(footer.getByText("love")).toBeDefined();
+    expect(footer.getByText("© Bernardo Severo - 2026 | Made with ❤️ in 🇧🇷")).toBeDefined();
+    expect(footer.getByText("© Bernardo Severo - 2026. Made with love in Brazil.")).toBeDefined();
     const githubLink = footer.getByRole("link", { name: "GitHub (opens in a new tab)" });
     const linkedinLink = footer.getByRole("link", { name: "LinkedIn (opens in a new tab)" });
     expect(githubLink.getAttribute("href")).toBe("https://github.com/bernardosevero");

@@ -11,21 +11,9 @@ export function SiteFooter() {
       aria-label={t.footer.label}
       className="flex flex-col items-center gap-3 px-5 pt-6 pb-24 text-center text-sm text-muted-foreground nav:pb-8 sheet:px-8"
     >
-      <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-        <span>
-          {t.footer.copyright} {t.footer.author} -{" "}
-          <span className="font-mono">{t.footer.year}</span>
-        </span>
-        <span aria-hidden>|</span>
-        <span className="inline-flex items-center gap-1.5">
-          {t.footer.madeWith}
-          <span aria-hidden>{t.footer.heart}</span>
-          <span className="sr-only">{t.footer.love}</span>
-          {t.footer.in}
-          <span role="img" aria-label={t.footer.brazil}>
-            {t.footer.brazilFlag}
-          </span>
-        </span>
+      <p>
+        <span aria-hidden>{t.footer.credit}</span>
+        <span className="sr-only">{t.footer.accessibleCredit}</span>
       </p>
       <div className="flex items-center gap-1">
         <ExternalLink href={GITHUB_URL} variant="ghost" isIconOnly label={t.footer.github}>
