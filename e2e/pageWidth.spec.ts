@@ -44,6 +44,15 @@ for (const windowWidth of WINDOW_WIDTHS) {
       await expect(footer).toBeVisible();
       await expect(githubLink).toBeInViewport();
       await expect(footer.getByRole("link", { name: /LinkedIn/ })).toBeInViewport();
+      const sheet = page.locator("header").locator("..");
+      await expect(sheet.locator("footer")).toHaveCount(0);
+      const sheetBox = await sheet.boundingBox();
+      const footerBox = await footer.boundingBox();
+      expect(sheetBox).not.toBeNull();
+      expect(footerBox).not.toBeNull();
+      expect(footerBox?.y ?? 0).toBeGreaterThanOrEqual(
+        (sheetBox?.y ?? 0) + (sheetBox?.height ?? 0),
+      );
       expect(
         await page
           .locator("html")

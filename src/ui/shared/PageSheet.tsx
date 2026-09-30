@@ -28,23 +28,25 @@ export function PageSheet({
   children,
 }: PageSheetProps) {
   return (
-    <div
-      className={cn(
-        // Below `sheet` the old 640px cap stays, so the window beside NeetCode is unchanged.
-        "mx-auto flex min-h-svh w-full max-w-[640px] flex-col bg-background",
-        "sheet:my-8 sheet:min-h-[calc(100svh-4rem)] sheet:max-w-[720px]",
-        "sheet:rounded-2xl sheet:border wide:max-w-[1040px]",
-      )}
-    >
-      <header className="flex items-center justify-between gap-3 border-b px-5 py-4 sheet:px-8">
-        {header}
-      </header>
-      <main className={cn("flex-1 px-5 pt-4 pb-8 sheet:px-8", mainClassName)}>
-        {/* 656px is the content width of the 720px sheet, so readable screens look the same. */}
-        <div className={cn(isReadable && "mx-auto w-full max-w-[656px]", contentClassName)}>
-          {children}
-        </div>
-      </main>
+    <div className="flex min-h-svh flex-col">
+      <div
+        className={cn(
+          // Below `sheet` the old 640px cap stays, so the window beside NeetCode is unchanged.
+          "mx-auto flex w-full max-w-[640px] flex-1 flex-col bg-background",
+          "sheet:mt-8 sheet:max-w-[720px]",
+          "sheet:rounded-2xl sheet:border wide:max-w-[1040px]",
+        )}
+      >
+        <header className="flex items-center justify-between gap-3 border-b px-5 py-4 sheet:px-8">
+          {header}
+        </header>
+        <main className={cn("flex-1 px-5 pt-4 pb-8 sheet:px-8", mainClassName)}>
+          {/* 656px is the content width of the 720px sheet, so readable screens look the same. */}
+          <div className={cn(isReadable && "mx-auto w-full max-w-[656px]", contentClassName)}>
+            {children}
+          </div>
+        </main>
+      </div>
       <SiteFooter />
     </div>
   );
