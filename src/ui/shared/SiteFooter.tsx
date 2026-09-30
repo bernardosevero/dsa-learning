@@ -16,13 +16,18 @@ export function SiteFooter() {
     >
       <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
         <span>
-          {t.footer.author} - <span className="font-mono">{t.footer.year}</span>
+          {t.footer.copyright} {t.footer.author} -{" "}
+          <span className="font-mono">{t.footer.year}</span>
         </span>
         <span aria-hidden>|</span>
         <span className="inline-flex items-center gap-1.5">
           {t.footer.madeWith}
           <HeartIcon aria-hidden className="size-4 fill-current text-destructive" />
           <span className="sr-only">{t.footer.love}</span>
+          {t.footer.in}
+          <span role="img" aria-label={t.footer.brazil}>
+            {t.footer.brazilFlag}
+          </span>
         </span>
       </p>
       <div className="flex items-center gap-1">
