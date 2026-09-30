@@ -38,6 +38,27 @@ for (const windowWidth of WINDOW_WIDTHS) {
     const sheetOf: Record<string, string> = {};
     for (const path of SCREENS) {
       sheetOf[path] = await measureSheet(page, path);
+      const footer = page.getByRole("contentinfo", { name: "About the creator" });
+      const githubLink = footer.getByRole("link", { name: /GitHub/ });
+      await githubLink.scrollIntoViewIfNeeded();
+      await expect(footer).toBeVisible();
+      await expect(githubLink).toBeInViewport();
+      await expect(footer.getByRole("link", { name: /LinkedIn/ })).toBeInViewport();
+      expect(
+        await page
+          .locator("html")
+          .evaluate((element: { readonly scrollWidth: number }) => element.scrollWidth),
+      ).toBeLessThanOrEqual(windowWidth);
+      if (windowWidth === 390 && !path.startsWith("/solve/") && !path.startsWith("/log/")) {
+        const linkBox = await githubLink.boundingBox();
+        const navBox = await page.getByRole("navigation", { name: "Main" }).boundingBox();
+        expect(linkBox).not.toBeNull();
+        expect(navBox).not.toBeNull();
+        expect((linkBox?.y ?? 0) + (linkBox?.height ?? 0)).toBeLessThanOrEqual(navBox?.y ?? 0);
+      }
+      await page.screenshot({
+        path: `test-results/footer-${windowWidth}-${path.replaceAll("/", "-") || "today"}.png`,
+      });
     }
 
     const todaySheet = sheetOf["/"];
@@ -53,7 +74,10 @@ test("the Settings footer privacy link is reachable above the phone navigation",
   await page.setViewportSize({ width: 390, height: 700 });
   await page.goto("/settings");
 
-  await page.locator("footer").getByRole("link", { name: "Privacy & credits" }).click();
+  await page
+    .getByRole("region", { name: "Privacy & credits" })
+    .getByRole("link", { name: "Privacy & credits" })
+    .click();
 
   await expect(page).toHaveURL(/\/privacy$/);
 });

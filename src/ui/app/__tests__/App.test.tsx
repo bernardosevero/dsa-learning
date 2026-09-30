@@ -35,6 +35,31 @@ afterEach(() => {
 
 describe("AppRoutes", () => {
   it.each([
+    "/",
+    "/problems",
+    "/problems/two-sum",
+    "/settings",
+    "/privacy",
+    "/solve/two-sum",
+    "/log/two-sum",
+  ])("shows the author footer with accessible profile links on %s", (path) => {
+    renderAt(path);
+
+    const footer = within(screen.getByRole("contentinfo", { name: "About the creator" }));
+    expect(footer.getByText(/Bernardo Severo/)).toBeDefined();
+    expect(footer.getByText("2026")).toBeDefined();
+    expect(footer.getByText("love")).toBeDefined();
+    const githubLink = footer.getByRole("link", { name: "GitHub (opens in a new tab)" });
+    const linkedinLink = footer.getByRole("link", { name: "LinkedIn (opens in a new tab)" });
+    expect(githubLink.getAttribute("href")).toBe("https://github.com/bernardosevero");
+    expect(linkedinLink.getAttribute("href")).toBe("https://linkedin.com/in/bernardosevero");
+    for (const link of [githubLink, linkedinLink]) {
+      expect(link.getAttribute("target")).toBe("_blank");
+      expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    }
+  });
+
+  it.each([
     ["/", "Today"],
     ["/problems", "Problems"],
     ["/settings", "Settings & data"],
@@ -131,7 +156,9 @@ describe("AppRoutes", () => {
     renderAt("/settings");
 
     await user.click(
-      within(screen.getByRole("contentinfo")).getByRole("link", { name: "Privacy & credits" }),
+      within(screen.getByRole("region", { name: "Privacy & credits" })).getByRole("link", {
+        name: "Privacy & credits",
+      }),
     );
 
     expect(pageHeading()).toBe("Privacy & credits");

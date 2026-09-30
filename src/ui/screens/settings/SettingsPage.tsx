@@ -21,7 +21,10 @@ export function SettingsPage() {
         <DataSettings />
         <PrivacySettings />
         <ResetProgress />
-        <footer className="flex flex-col items-center gap-2 text-center text-xs text-muted-foreground">
+        <section
+          aria-label={t.settings.privacyAndCredits}
+          className="flex flex-col items-center gap-2 text-center text-xs text-muted-foreground"
+        >
           <Link
             to="/privacy"
             className="inline-flex min-h-11 items-center px-3 underline-offset-4 hover:underline"
@@ -31,7 +34,7 @@ export function SettingsPage() {
           <ExternalLink href={METADATA_REPO_URL} className="text-xs text-muted-foreground">
             {t.settings.credit}
           </ExternalLink>
-        </footer>
+        </section>
       </div>
     </>
   );

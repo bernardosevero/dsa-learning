@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/ui/primitives/cn";
 
+import { SiteFooter } from "./SiteFooter";
+
 export interface PageSheetProps {
   /** The top bar: it spans the sheet, with a rule under it. */
   header: ReactNode;
@@ -43,6 +45,7 @@ export function PageSheet({
           {children}
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }
