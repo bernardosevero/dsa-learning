@@ -1,24 +1,15 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { FIRST_PROBLEM, logFirstProblem } from "./flows";
+
 // Local time, so the app's "today" is Oct 1 in whatever zone the browser runs in.
 const START = new Date("2026-10-01T10:00:00");
 const TWO_DAYS_LATER = new Date("2026-10-03T10:00:00");
-const FIRST_PROBLEM = "Contains Duplicate";
 const SECOND_PROBLEM = "Valid Anagram";
 
 async function openToday(page: Page) {
   await page.clock.install({ time: START });
   await page.goto("/");
-}
-
-// Today → Solving → "I'm done" → Log, rating the attempt and taking 20 minutes.
-async function logFirstProblem(page: Page, rating: "Hard" | "Medium" | "Easy") {
-  await page.getByRole("link", { name: `Start ${FIRST_PROBLEM}` }).click();
-  await expect(page.getByRole("heading", { level: 1, name: FIRST_PROBLEM })).toBeVisible();
-  await page.getByRole("link", { name: "I'm done" }).click();
-  await page.getByRole("radio", { name: rating }).check();
-  await page.getByLabel("Time").fill("20");
-  await page.getByRole("button", { name: /^Save/ }).click();
 }
 
 function newSection(page: Page) {
