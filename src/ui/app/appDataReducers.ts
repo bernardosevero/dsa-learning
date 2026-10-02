@@ -75,3 +75,13 @@ export function clearTimer(file: SaveFile): SaveFile {
 export function resetProgress(file: SaveFile): SaveFile {
   return clearTimer({ ...file, entries: [] });
 }
+
+/**
+ * Returns the file with every entry marked deleted now and no timer, keeping the settings. Used
+ * while signed in: a deletion wins every merge, so the reset reaches every device.
+ */
+export function resetProgressEverywhere(file: SaveFile): SaveFile {
+  const deletedAt = new Date().toISOString();
+  const entries = file.entries.map((entry) => markDeleted(entry, deletedAt));
+  return clearTimer({ ...file, entries });
+}
