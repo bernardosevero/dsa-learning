@@ -13,13 +13,14 @@ These rules apply on top of AGENTS.md. Before opening the PR, go through every s
 - **`useEffect` is only for real side effects:** saving to storage, window events (`focus`, `visibilitychange`), the timer tick.
 - **Naming:** props that take callbacks are `onSomething`; the component's own handlers are `handleSomething`. Each component has a named `SomethingProps` type next to it.
 - **Size:** when a component passes about 100 lines, stop and raise it in the PR before splitting. Whether and how to split is a design decision.
-- **State changes** go through the `AppData` actions, whose reducers live in `src/ui/app/appDataReducers.ts`. Components never edit the save file directly.
+- **Practice state changes** go through the `AppData` actions, whose reducers live in `src/ui/app/appDataReducers.ts`. Components never edit the save file directly. Public pages stay outside `AppData`; their privacy control uses a lightweight bridge over the existing analytics preference without replaying entries, starting auth/sync, or writing an empty practice save.
 
 ## Where files go
 
 AGENTS.md "Architecture" has the full layout. In short:
 
-- `src/ui/app/`: the shell and state that exist once per app (`App`, `AppRoutes`, `AppLayout`, `AppData`, `appDataReducers`). A new screen is added to `AppRoutes` here.
+- Framework entry/config/adaptor files compose routes and public/practice layouts above `ui/app`, following AGENTS.md's narrow filename/default-export exceptions. Ordinary screen implementations keep named exports; dependencies below `app` are unchanged.
+- `src/ui/app/`: the practice shell and state (`App`, `AppLayout`, `AppData`, `appDataReducers`). The framework route configuration owns routes after migration.
 - `src/ui/screens/<screen>/`: a new screen gets its own folder, named after its page component without `Page` (`ProblemDetailPage` → `problemDetail/`). Everything only that screen uses lives there, flat, with tests in `__tests__/`.
 - `src/ui/shared/`: pieces used by two or more screens, plus `format.ts` and `strings.ts`. When your screen needs a piece from another screen's folder, `git mv` it here in the same PR; lint rejects imports between screens.
 - `src/ui/primitives/`: shadcn/ui components only, under shadcn's kebab-case names, and `cn.ts`.
@@ -32,9 +33,9 @@ AGENTS.md "Architecture" has the full layout. In short:
   - Adapt it to design.md once, in that file (tokens, no shadow, 44px targets); screens pass only layout classes.
   - Our own shared pieces (`RatingChip`, `ProblemKindBadge`, `SectionLabel`, `Overline`…) are thin wrappers over these components, never a second copy of their styles.
 - Color only with theme tokens (`bg-primary`, `text-muted-foreground`, `--rating-hard`...), never raw colors, so a design change is a token change.
-- Compact layout, max width about 640px, because the app sits next to a NeetCode tab. Check it at 375px (phone) too.
+- Practice screens keep the compact layout described in `design.md`, because the app sits next to a NeetCode tab. Check it at 375px (phone) too. Public pages use their own consistent responsive layout and navigation, with the same theme tokens, shadcn primitives and English strings, and no practice bottom navigation.
 - **A change to a shared piece is a change to every screen that uses it.** Before touching anything in `src/ui/shared/` or `src/ui/app/` (`PageSheet`, `FocusFrame`, `AppLayout`, `AppRoutes`, a shared component or a theme token), find every screen that renders it (`grep` the name), then open each of those screens in the built app at 390px, 700px, 900px and 1440px. A layout that's right on the screen you changed can still be wrong on the next one.
-  - **The frame stays the same on every screen.** The sheet's width and position never change when the user moves between screens; content adapts inside it. A screen that needs more room uses the room the sheet already has, and never a wider sheet of its own. `e2e/pageWidth.spec.ts` checks this on every screen; a new screen goes into its `SCREENS` list in the same PR.
+  - **The frame stays the same within practice screens.** The sheet's width and position never change when the user moves between practice screens; content adapts inside it. A practice screen that needs more room uses the room the sheet already has, and never a wider sheet of its own. `e2e/pageWidth.spec.ts` checks practice screens; a new practice screen goes into its `SCREENS` list in the same PR. Verify public layouts separately at the same responsive widths.
 - Every user-visible string comes from `src/ui/shared/strings.ts`. User-written text (insights, notes) renders as plain React text.
 
 ## Accessibility
@@ -55,10 +56,12 @@ Any screen that shows a problem under review (not `new`) keeps its **pattern, ea
 - a unique, descriptive `<title>` per route (e.g. "Today · dsa-learning")
 - one `<h1>`, headings in order, and landmarks (`<header>`, `<nav>`, `<main>`)
 
-**Public pages** (landing, how it works, FAQ, guides) come with the second release, and exist so search engines and answer engines (ChatGPT, Claude, Perplexity, Google AI answers) can read and cite them:
-- served as **prerendered HTML**, readable without JavaScript, because most AI crawlers don't run it
-- a unique `<title>` and meta description, a canonical URL, Open Graph and Twitter tags, `lang="en"`
-- JSON-LD structured data: `SoftwareApplication` (landing), `FAQPage` (FAQ), `Article` (guides)
-- `robots.txt` allowing search and AI crawlers, `sitemap.xml`, and `llms.txt` kept up to date
-- content written as direct questions and answers ("How often should I re-solve a problem? …"), in our own words
-- Lighthouse scores of at least 90 for Performance, Accessibility and SEO
+**Public pages** follow AGENTS.md's Public-page release contract: landing `/`, how it works `/how-it-works`, and privacy `/privacy`, independently of login/sync. Today moves to `/today`; other practice paths stay unchanged. React Router framework mode prerenders public HTML at build time for static Cloudflare Workers hosting; practice stays client-rendered.
+
+Before release, verify response HTML without JavaScript for visible content, unique title/description, canonical, OG/Twitter tags and `lang="en"`. Check head updates after client navigation. Production public pages can be indexed when launch indexing is enabled; practice, previews, legacy Workers origins and 404s stay noindex.
+
+Write useful factual content in our own words, with contextual FAQ answers where they help. Keep landing `SoftwareApplication` JSON-LD consistent with visible facts; ratings/reviews must never be invented, and Google software rich-result eligibility is not required. Neither `FAQPage` markup nor universal question-and-answer prose is mandatory. This release has no standalone FAQ route or topic guides.
+
+Check the required `robots.txt` and `sitemap.xml`, allowing public crawling by search and AI search/training crawlers. `llms.txt` is optional and explicitly unproven, outside the launch gate. Mobile Lighthouse Performance, Accessibility and SEO category medians must each be at least 90 for all three public pages; existing practice regression and accessibility checks remain required.
+
+Technical checks establish launch readiness, not rankings, traffic, rich results or AI citations. Record observed SEO/AEO outcomes, fixed-prompt results and case-study notes privately in Notion, outside the repository.

@@ -32,7 +32,7 @@ scripts/              one-off Node scripts, run with `pnpm tsx`
 e2e/                  Playwright tests of the main loop
 ```
 
-`main.tsx` and `index.css` stay at the `src/` root as the Vite entry point.
+The approved public-page migration replaces `src/main.tsx` and the Vite HTML document with React Router framework entry/document ownership. `src/index.css` stays at the root. Framework adapters live at `src/root.tsx`, `src/routes.ts`, `src/entry.client.tsx` (only if needed), `src/framework/*.tsx`, and `react-router.config.ts`; they compose routes and layouts above `ui/app`. Screen implementations stay in their existing folders with named exports. Dependency direction below `app` is unchanged.
 
 Dependencies point inward: `ui` → `storage` → `domain`, and `ui` → `domain`. `src/domain/` is **pure**: plain TypeScript with no React, no storage and no browser APIs, so it is trivially testable and can move to a server. A lint rule enforces this.
 
@@ -68,9 +68,9 @@ These are settled decisions. Code that contradicts one is a bug.
 
 | Concern | Choice | Why |
 |---|---|---|
-| App | Vite + React + TypeScript (strict, `noUncheckedIndexedAccess`), a static single-page app on Cloudflare Workers (static assets) | Six screens and local data: no server of ours runs code |
+| App | React + TypeScript (strict, `noUncheckedIndexedAccess`), built with Vite and React Router framework mode, hosted on Cloudflare Workers static assets | Public HTML is prerendered at build time; the practice subtree renders on the client, with no server runtime |
 | Toolchain | pnpm, Node 24 LTS | Strict `node_modules`: a missing dependency fails immediately |
-| Routing | React Router v7, library mode | Familiar and small; six routes don't need typed routing |
+| Routing | React Router v7, framework mode | Build-time public prerendering and a client-rendered practice subtree |
 | State | One React context over pure reducer functions (`src/ui/app/appDataReducers.ts`) | Reducers are testable without React. Reach for Zustand only when re-renders measurably hurt |
 | Styling | Tailwind v4 + shadcn/ui, themed through CSS variables | Accessible dialogs, radios and toggles; the design lives as theme tokens in `src/index.css` |
 | Validation | zod, wherever data crosses a boundary (import file, localStorage, later Supabase rows) | One schema gives the runtime check and the type |
@@ -83,7 +83,18 @@ The scripts are in `package.json`.
 Later phases:
 - **Before MVP sharing (M5):** PostHog analytics (`posthog-js`, US cloud) for everyone, with an opt-out toggle in Settings and a `/privacy` page. EU consent comes before marketing in Europe.
 - **Login:** Supabase Auth (Google + GitHub) and a Supabase `entries` table. Every Supabase table has Row Level Security (`user_id = auth.uid()`), because the client key is public. Anything involving payment is decided server-side.
-- **Public pages (second release, with login):** landing, how it works, FAQ. The way they're prerendered is decided then.
+- **Public pages:** ship independently of login/sync, following the approved contract below.
+
+### Public-page release contract
+
+- Prerender `/`, `/how-it-works`, and `/privacy` at build time with React Router framework mode; serve static Cloudflare Workers assets. Today moves to `/today` when public routes activate; other practice paths stay unchanged. Contextual FAQ content can live on these pages; this release has no standalone FAQ route or topic guides.
+- Public pages have their own consistent responsive layout and navigation, reusing theme tokens, shadcn primitives and English strings. The same-frame rule and existing width tests apply within practice screens; public pages have no practice bottom navigation.
+- Public rendering stays outside `AppData`: it never replays practice entries, starts auth/sync, or writes an empty practice save to render content. A lightweight bridge over the existing analytics preference supplies the shared privacy control.
+- Response HTML contains visible content, a unique title/description, canonical, OG/Twitter metadata and `lang="en"` without JavaScript. Production public pages can be indexed when the owner enables launch indexing; practice pages, previews, legacy Workers origins and 404s remain noindex.
+- The landing has truthful `SoftwareApplication` JSON-LD matching visible facts, without invented ratings/reviews or a Google software rich-result eligibility requirement. Useful FAQ answers are allowed; `FAQPage` markup and universal question-and-answer prose are optional.
+- `robots.txt` and `sitemap.xml` are launch requirements. Allow public crawling, including AI search and training crawlers. `llms.txt` is an optional, explicitly unproven learning experiment, not a launch gate.
+- Mobile Lighthouse Performance, Accessibility and SEO category medians must each be at least 90 on all three public pages. Retain existing practice regression and accessibility requirements. These technical launch checks do not establish rankings, traffic, rich results or AI citations; those are observed SEO/AEO outcomes.
+- Experiment notes/results, prompt observations and the case-study journal live privately in Notion, outside the repository.
 
 ## Working on UI
 
@@ -107,8 +118,8 @@ Lint and Prettier (100 columns) enforce what they can. These are the rules they 
 - **Expected failures are values:** return `{ ok: true, value } | { ok: false, error }`. Throw only for bugs.
 - **Types:** model states as discriminated unions and let the compiler check exhaustiveness. Their names are plain string literals (`state.status === "mastered"`), because the union type already catches typos and narrows; don't wrap them in constants or enums. Parse untrusted data with zod.
 - **Files:**
-  - Named exports only, one exported component per file (small components only it uses can live in the same file), no barrel `index.ts` files.
-  - Components are `PascalCase.tsx`; everything else is `camelCase.ts`. The one exception is `src/ui/primitives/`, which keeps shadcn's kebab-case names so `shadcn add` works unchanged. Lint checks file names.
+  - Named exports only, one exported component per file (small components only it uses can live in the same file), no barrel `index.ts` files. React Router convention-required default exports are allowed only in the framework entry/config/adaptor files listed under Architecture; ordinary screens, domain and storage keep named exports.
+  - Components are `PascalCase.tsx`; everything else is `camelCase.ts`. `src/ui/primitives/` keeps shadcn's kebab-case names so `shadcn add` works unchanged. Only the listed framework convention/adaptor files may use framework-required lowercase/dotted filenames. Lint checks file names.
   - Imports use `@/` across folders and relative paths inside one.
 - **Docs and comments:** exported `domain` and `storage` functions get a one- or two-line JSDoc stating what they return and any product rule. Other comments explain *why*, in one line. `TODO`s name an issue: `// TODO(#14): ...`.
 - **Tests:**
