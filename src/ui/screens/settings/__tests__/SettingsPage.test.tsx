@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -6,7 +6,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SaveFile } from "@/domain/types";
 import { downloadExport } from "@/storage/download";
 import { STORAGE_KEY } from "@/storage/localStore";
+import type { AccountService } from "@/storage/accountService";
 import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
+import { aFakeSupabase } from "@/test/fakeSupabase";
 import { AppDataProvider } from "@/ui/app/AppData";
 import { track } from "@/ui/shared/analytics";
 
@@ -18,10 +20,13 @@ vi.mock("@/ui/shared/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: v
 
 const STORED_ATTEMPT = anAttempt({ id: "stored" });
 
-function renderSettings(file: SaveFile = aSaveFile({ entries: [STORED_ATTEMPT] })) {
+function renderSettings(
+  file: SaveFile = aSaveFile({ entries: [STORED_ATTEMPT] }),
+  accountService?: AccountService,
+) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(file));
   render(
-    <AppDataProvider>
+    <AppDataProvider accountService={accountService}>
       <MemoryRouter>
         <SettingsPage />
       </MemoryRouter>
@@ -165,5 +170,70 @@ describe("SettingsPage", () => {
     });
 
     expect(credit.getAttribute("href")).toBe("https://github.com/neetcode-gh/leetcode");
+  });
+});
+
+describe("SettingsPage account", () => {
+  it("offers GitHub sign-in when signed out, and says what an account is for", async () => {
+    const fake = aFakeSupabase();
+    renderSettings(undefined, fake.accountService);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Continue with GitHub" }));
+
+    expect(screen.getByText(/syncs your progress across your devices/)).toBeDefined();
+    expect(fake.signInWithOAuth).toHaveBeenCalledWith(
+      expect.objectContaining({ provider: "github" }),
+    );
+  });
+
+  it("shows the signed-in email", async () => {
+    renderSettings(undefined, aFakeSupabase({ email: "ada@example.com" }).accountService);
+
+    expect(await screen.findByText("ada@example.com")).toBeDefined();
+  });
+
+  it("signs out and leaves the local log untouched", async () => {
+    const fake = aFakeSupabase({ email: "ada@example.com" });
+    renderSettings(undefined, fake.accountService);
+    const before = readStoredFile();
+
+    await userEvent.click(await screen.findByRole("button", { name: "Sign out" }));
+
+    expect(fake.signOut).toHaveBeenCalled();
+    expect(await screen.findByRole("button", { name: "Continue with GitHub" })).toBeDefined();
+    expect(readStoredFile()).toEqual(before);
+  });
+
+  it("asks before deleting the account, then deletes it and keeps the local log", async () => {
+    const fake = aFakeSupabase({ email: "ada@example.com" });
+    renderSettings(undefined, fake.accountService);
+    const before = readStoredFile();
+
+    await userEvent.click(await screen.findByRole("button", { name: "Delete account" }));
+    const dialog = screen.getByRole("alertdialog");
+    expect(dialog.textContent).toContain(
+      "Your account and its cloud copy are deleted. This device keeps its progress.",
+    );
+    expect(fake.rpc).not.toHaveBeenCalled();
+    await userEvent.click(within(dialog).getByRole("button", { name: "Delete account" }));
+
+    expect(fake.rpc).toHaveBeenCalledWith("delete_my_account");
+    expect(await screen.findByRole("button", { name: "Continue with GitHub" })).toBeDefined();
+    expect(readStoredFile()).toEqual(before);
+    expect(readStoredFile().entries).toHaveLength(1);
+  });
+
+  it("keeps the account and says so when deleting fails", async () => {
+    const fake = aFakeSupabase({ email: "ada@example.com" });
+    fake.rpc.mockResolvedValueOnce({ data: null, error: { message: "offline" } });
+    renderSettings(undefined, fake.accountService);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Delete account" }));
+    await userEvent.click(
+      within(screen.getByRole("alertdialog")).getByRole("button", { name: "Delete account" }),
+    );
+
+    expect((await screen.findByRole("alert")).textContent).toContain("Something went wrong");
+    expect(screen.getByText("ada@example.com")).toBeDefined();
   });
 });

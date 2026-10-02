@@ -1,0 +1,22 @@
+name: Supabase
+
+# Proves the Row Level Security policies with pgTAP whenever the database changes.
+on:
+  pull_request:
+    paths:
+      - "supabase/**"
+
+jobs:
+  test-db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Only Postgres: the tests need no auth server, API or studio.
+      - run: pnpm supabase db start
+      - run: pnpm supabase test db

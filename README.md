@@ -50,7 +50,21 @@ pnpm dev
 
 The app runs at http://localhost:5173.
 
-No environment variables are needed locally.
+No environment variables are needed locally. Without the Supabase variables below the app runs local-only, with login hidden.
+
+### Accounts and the database (optional)
+
+Login (GitHub) and the `saves` table live in Supabase. You only need this to work on them.
+
+- **Database tests:** with Docker running, `pnpm supabase start` starts a local Supabase stack, and `pnpm supabase test db` runs the pgTAP tests in `supabase/tests/`, which prove each user can only reach their own row. CI runs them on pull requests that touch `supabase/`. `pnpm supabase stop` stops the stack. The local stack has no GitHub login.
+- **Trying sign-in:** create a `.env.local` that points `pnpm dev` at the hosted project (`http://localhost:5173` is an allowed redirect):
+
+  ```sh
+  VITE_SUPABASE_URL=https://fdxfqeqlnvaijlihdplo.supabase.co
+  VITE_SUPABASE_PUBLISHABLE_KEY=<the project's publishable key>
+  ```
+
+  Signed in locally, the app reads and writes your real account.
 
 | Command | What it does |
 |---|---|
@@ -62,6 +76,8 @@ No environment variables are needed locally.
 | `pnpm format` | Formats the code with Prettier |
 | `pnpm build` | Type-checks and builds the static site into `dist/` |
 | `pnpm preview` | Serves the built `dist/` locally |
+| `pnpm supabase start` / `stop` | Starts or stops the local Supabase stack (needs Docker) |
+| `pnpm supabase test db` | Runs the pgTAP tests against the local stack |
 
 CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` on every pull request, so run the same four before opening one. A separate CI job runs `pnpm test:e2e`.
 

@@ -7,7 +7,7 @@ import { t } from "@/ui/shared/strings";
 
 const METADATA_REPO_URL = "https://github.com/neetcode-gh/leetcode";
 
-/** Privacy and credits for the local-first app. */
+/** Privacy and credits for the local-first app, and what an optional account stores. */
 export function PrivacyPage() {
   return (
     <>
@@ -19,6 +19,13 @@ export function PrivacyPage() {
           <Card className="space-y-3 p-4 text-sm">
             <p>{t.privacy.browserStorage}</p>
             <p>{t.privacy.exportAndReset}</p>
+          </Card>
+        </section>
+        <section aria-labelledby="privacy-account-heading">
+          <SectionLabel id="privacy-account-heading">{t.privacy.account}</SectionLabel>
+          <Card className="space-y-3 p-4 text-sm">
+            <p>{t.privacy.accountStorage}</p>
+            <p>{t.privacy.accountDelete}</p>
           </Card>
         </section>
         <section aria-labelledby="privacy-analytics-heading">

@@ -5,11 +5,13 @@ import { today } from "@/domain/dates";
 import { deriveAllStates } from "@/domain/schedule";
 import type { LocalDate, Problem, ProblemState, SaveFile, Settings } from "@/domain/types";
 import { createLocalStore, importJson } from "@/storage/localStore";
+import type { AccountService } from "@/storage/accountService";
 
 import * as reducers from "./appDataReducers";
 import type { NewAttempt } from "./appDataReducers";
+import { useAccount, type AccountValue } from "./useAccount";
 
-export interface AppDataValue {
+export interface AppDataValue extends AccountValue {
   problems: readonly Problem[];
   file: SaveFile;
   /** Derived from the log on every change; never stored. */
@@ -49,13 +51,19 @@ function useTodayDate(): LocalDate {
 }
 
 export interface AppDataProviderProps {
+  /** Signs the user in and out; without it, accounts are unavailable and no login UI shows. */
+  accountService?: AccountService;
   children: ReactNode;
 }
 
-/** Loads the save file, saves it on every change and shares it, its derived states and the actions. */
-export function AppDataProvider({ children }: AppDataProviderProps) {
+/**
+ * Loads the save file, saves it on every change and shares it, its derived states, the account
+ * and the actions.
+ */
+export function AppDataProvider({ accountService, children }: AppDataProviderProps) {
   const [file, setFile] = useState(() => store.load());
   const todayDate = useTodayDate();
+  const accountValue = useAccount(accountService);
 
   useEffect(() => {
     store.save(file);
@@ -65,6 +73,7 @@ export function AppDataProvider({ children }: AppDataProviderProps) {
 
   const value = useMemo<AppDataValue>(
     () => ({
+      ...accountValue,
       problems: PROBLEMS,
       file,
       states,
@@ -85,7 +94,7 @@ export function AppDataProvider({ children }: AppDataProviderProps) {
       },
       resetProgress: () => setFile(reducers.resetProgress),
     }),
-    [file, states, todayDate],
+    [accountValue, file, states, todayDate],
   );
 
   return <AppDataContext value={value}>{children}</AppDataContext>;
