@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { anAttempt, aRemoteSave } from "@/test/builders";
 import { aFakeSupabase } from "@/test/fakeSupabase";
 
-import { createSupabase, deleteMyAccount } from "../supabase";
+import { createSupabase, deleteMyAccount, readSave, writeSave } from "../supabase";
 
 const URL = "https://example.supabase.co";
 const KEY = "sb_publishable_test";
@@ -77,5 +78,79 @@ describe("createSupabaseAccountService", () => {
     await Promise.resolve();
 
     expect(listener).toHaveBeenCalledWith(undefined);
+  });
+});
+
+describe("readSave", () => {
+  it("returns undefined before the account's first sync", async () => {
+    const fake = aFakeSupabase({}, { select: { data: null, error: null } });
+
+    const result = await readSave(fake.client);
+
+    expect(result).toEqual({ ok: true, value: undefined });
+  });
+
+  it("returns the parsed row", async () => {
+    const row = aRemoteSave({ entries: [anAttempt()], version: 3 });
+    const fake = aFakeSupabase({}, { select: { data: row, error: null } });
+
+    const result = await readSave(fake.client);
+
+    expect(result).toEqual({ ok: true, value: row });
+  });
+
+  it("reports an invalid row as invalid", async () => {
+    const fake = aFakeSupabase({}, { select: { data: { entries: 7 }, error: null } });
+
+    const result = await readSave(fake.client);
+
+    expect(result).toMatchObject({ ok: false, reason: "invalid" });
+  });
+
+  it("reports a failed request as unreachable", async () => {
+    const failure = { data: null, error: { message: "Failed to fetch" } };
+    const fake = aFakeSupabase({}, { select: failure });
+
+    const result = await readSave(fake.client);
+
+    expect(result).toEqual({ ok: false, reason: "unreachable", error: "Failed to fetch" });
+  });
+});
+
+describe("writeSave", () => {
+  const save = { entries: [anAttempt()], settings: aRemoteSave().settings };
+
+  it("inserts the row on the account's first sync", async () => {
+    const fake = aFakeSupabase({});
+
+    const result = await writeSave(fake.client, save, undefined);
+
+    expect(result).toEqual({ ok: true, value: "written" });
+    expect(fake.insert).toHaveBeenCalledWith(save);
+  });
+
+  it("returns a conflict when another device inserted the row first", async () => {
+    const fake = aFakeSupabase({}, { insert: { error: { message: "duplicate", code: "23505" } } });
+
+    const result = await writeSave(fake.client, save, undefined);
+
+    expect(result).toEqual({ ok: true, value: "conflict" });
+  });
+
+  it("updates the row at the expected version and bumps it", async () => {
+    const fake = aFakeSupabase({}, { update: { data: [{ version: 3 }], error: null } });
+
+    const result = await writeSave(fake.client, save, 2);
+
+    expect(result).toEqual({ ok: true, value: "written" });
+    expect(fake.update).toHaveBeenCalledWith(expect.objectContaining({ ...save, version: 3 }), 2);
+  });
+
+  it("returns a conflict when the update matched no row", async () => {
+    const fake = aFakeSupabase({}, { update: { data: [], error: null } });
+
+    const result = await writeSave(fake.client, save, 2);
+
+    expect(result).toEqual({ ok: true, value: "conflict" });
   });
 });
