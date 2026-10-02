@@ -2,6 +2,10 @@ import { randomUUID } from "node:crypto";
 
 import { expect, test, type Page } from "@playwright/test";
 
+import { today } from "@/domain/dates";
+import type { SaveFile } from "@/domain/types";
+import { anAttempt, aSaveFile } from "@/test/builders";
+
 import { logFirstProblem } from "../flows";
 import {
   createTestAccount,
@@ -11,42 +15,18 @@ import {
   openSignedIn,
   readLocalFile,
   readSaveRow,
-  userExists,
+  hasAccount,
   type StoredSaveFile,
 } from "./session";
 
-const DEFAULT_SETTINGS = {
-  timeBoxMinutes: { Easy: 15, Medium: 30, Hard: 45 },
-  showPatternOnReviews: false,
-  shareAnonymousUsage: true,
-};
-
-function todayInBrowserZone(): string {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
-}
-
 /** A save file holding one Medium attempt on Contains Duplicate, logged today. */
-function aLocalLogWithOneAttempt(id: string = randomUUID()): StoredSaveFile {
-  const file = {
-    version: 1,
-    entries: [
-      {
-        type: "attempt",
-        id,
-        problemId: "contains-duplicate",
-        completedAt: new Date().toISOString(),
-        date: todayInBrowserZone(),
-        rating: "medium",
-        timeMinutes: 20,
-        help: "none",
-      },
-    ],
-    settings: DEFAULT_SETTINGS,
-  };
-  return file;
+function aLocalLogWithOneAttempt(): SaveFile {
+  const attempt = anAttempt({
+    id: randomUUID(),
+    date: today(),
+    completedAt: new Date().toISOString(),
+  });
+  return aSaveFile({ entries: [attempt] });
 }
 
 function avatarLink(page: Page) {
@@ -197,7 +177,7 @@ test("delete account keeps the local log and removes the account's row", async (
 
   await expect(page.getByRole("button", { name: "Continue with GitHub" })).toBeVisible();
   expect(localEntryIds(await readLocalFile(page))).toEqual(localEntryIds(localLog));
-  expect(await userExists(account.userId)).toBe(false);
+  expect(await hasAccount(account.userId)).toBe(false);
   expect(await readSaveRow(account.userId)).toBeNull();
 });
 

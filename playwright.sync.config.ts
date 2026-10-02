@@ -14,6 +14,8 @@ const { url, publishableKey } = localSupabase();
 /** Sync end-to-end tests: the app built against the local Supabase stack, two devices at a time. */
 export default defineConfig({
   testDir: "e2e/sync",
+  // For the @/ alias: the tests build their data with src/test/builders.ts.
+  tsconfig: "./tsconfig.node.json",
   // Tests share one local stack but each signs in as its own user, so they can run in parallel.
   fullyParallel: true,
   forbidOnly: isCi,
@@ -34,7 +36,7 @@ export default defineConfig({
   ],
   // Its own build and port, so it never mixes with the signed-out build of `pnpm test:e2e`.
   webServer: {
-    command: `npx vite build --outDir dist-sync && npx vite preview --outDir dist-sync --port ${PORT} --strictPort`,
+    command: `pnpm exec vite build --outDir dist-sync && pnpm exec vite preview --outDir dist-sync --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCi,
     timeout: 120_000,

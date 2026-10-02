@@ -114,7 +114,7 @@ export async function readSaveRow(userId: string): Promise<StoredSaveFile | null
 }
 
 /** Returns whether the account's user still exists. */
-export async function userExists(userId: string): Promise<boolean> {
+export async function hasAccount(userId: string): Promise<boolean> {
   const { data } = await admin().auth.admin.getUserById(userId);
   return data.user !== null;
 }

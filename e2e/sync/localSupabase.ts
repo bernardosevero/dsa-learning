@@ -30,6 +30,6 @@ let cached: LocalSupabase | undefined;
 
 /** Returns the running local stack, read once per test worker. */
 export function localSupabase(): LocalSupabase {
-  cached ??= readLocalSupabase(execSync("npx supabase status -o env", { encoding: "utf8" }));
+  cached ??= readLocalSupabase(execSync("pnpm exec supabase status -o env", { encoding: "utf8" }));
   return cached;
 }
