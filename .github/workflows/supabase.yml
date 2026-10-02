@@ -1,10 +1,15 @@
 name: Supabase
 
-# Proves the Row Level Security policies with pgTAP whenever the database changes.
+# Proves the Row Level Security policies with pgTAP, and sync end to end against a local Supabase,
+# whenever the database or the code that syncs with it changes.
 on:
   pull_request:
     paths:
       - "supabase/**"
+      - "src/storage/**"
+      - "src/ui/app/**"
+      - "e2e/sync/**"
+      - "playwright.sync.config.ts"
 
 jobs:
   test-db:
@@ -20,3 +25,26 @@ jobs:
       # Only Postgres: the tests need no auth server, API or studio.
       - run: pnpm supabase db start
       - run: pnpm supabase test db
+
+  e2e-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Postgres, Auth, the REST API and the gateway in front of them; nothing else is used.
+      - run: >-
+          pnpm supabase start
+          -x studio,imgproxy,storage-api,realtime,edge-runtime,logflare,vector,mailpit,postgres-meta,supavisor
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e:sync
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-sync-report
+          path: playwright-report/
+          retention-days: 14

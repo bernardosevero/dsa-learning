@@ -110,7 +110,7 @@ const screenZones = SCREEN_NAMES.map((screenName) => ({
 }));
 
 export default defineConfig(
-  globalIgnores(["dist", "coverage"]),
+  globalIgnores(["dist", "dist-sync", "coverage"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [

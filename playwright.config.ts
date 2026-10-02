@@ -8,6 +8,8 @@ const chromiumExecutable = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE;
 
 export default defineConfig({
   testDir: "e2e",
+  // The sync tests need the local Supabase stack; they run with playwright.sync.config.ts.
+  testIgnore: "sync/**",
   fullyParallel: true,
   forbidOnly: isCi,
   reporter: isCi ? [["html", { open: "never" }], ["list"]] : "list",
