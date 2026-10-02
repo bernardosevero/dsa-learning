@@ -1,0 +1,21 @@
+name: Production smoke check
+
+# Checks daily that production is wired to Supabase: the build's variables, GitHub sign-in, and the
+# saves table and delete_my_account() closed to anyone signed out. A failed run is the alert.
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm tsx scripts/smoke-production.ts
