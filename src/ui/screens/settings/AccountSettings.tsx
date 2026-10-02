@@ -21,6 +21,8 @@ import { Card } from "@/ui/primitives/card";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
 
+import { SyncStatusLine } from "./SyncStatusLine";
+
 const ACCOUNT_HASH = "#account";
 
 /** The account: sign in with GitHub, or sign out and delete it. Both keep the local log. */
@@ -80,6 +82,7 @@ export function AccountSettings() {
               <span className="text-muted-foreground">{t.account.signedInAs}</span>{" "}
               <span className="font-semibold break-all">{account.email}</span>
             </p>
+            <SyncStatusLine />
             <div className="flex flex-wrap gap-2.5">
               <Button variant="outline" disabled={isPending} onClick={handleSignOut}>
                 {t.account.signOut}

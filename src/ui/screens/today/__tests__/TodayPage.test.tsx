@@ -7,6 +7,8 @@ import { PROBLEMS } from "@/data/problems";
 import { EMPTY_SAVE_FILE, type Entry, type SaveFile } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
 import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
+import { aFakeRemote } from "@/test/fakeRemoteStore";
+import { aFakeSupabase } from "@/test/fakeSupabase";
 import { AppDataProvider } from "@/ui/app/AppData";
 
 import { TodayPage } from "../TodayPage";
@@ -199,5 +201,33 @@ describe("TodayPage", () => {
     await user.click(screen.getByRole("link", { name: "Start Contains Duplicate" }));
 
     expect(screen.getByText("Solving contains-duplicate")).toBeDefined();
+  });
+});
+
+describe("TodayPage while signed in", () => {
+  it("shows a skeleton instead of the first run until the account's log arrives", async () => {
+    const remote = aFakeRemote({
+      entries: TWO_DUE_REVIEWS.map((entry, index) => ({ ...entry, id: `remote-${index}` })),
+      settings: EMPTY_SAVE_FILE.settings,
+      version: 1,
+    });
+    const releaseRead = remote.holdNextRead();
+    render(
+      <AppDataProvider
+        accountService={aFakeSupabase({ email: "ada@example.com" }).accountService}
+        remoteStore={remote.remoteStore}
+      >
+        <MemoryRouter>
+          <TodayPage />
+        </MemoryRouter>
+      </AppDataProvider>,
+    );
+
+    expect(await screen.findByText("Loading your progress…")).toBeDefined();
+    expect(screen.queryByText("Re-solve problems right before you forget them.")).toBeNull();
+    releaseRead();
+
+    expect(await screen.findByRole("region", { name: /Due reviews/ })).toBeDefined();
+    expect(screen.queryByText("Loading your progress…")).toBeNull();
   });
 });

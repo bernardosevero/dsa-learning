@@ -16,12 +16,13 @@ import { t } from "@/ui/shared/strings";
 
 import { DueReviews } from "./DueReviews";
 import { FirstRun } from "./FirstRun";
+import { FirstSyncSkeleton } from "./FirstSyncSkeleton";
 import { NextNewProblem } from "./NextNewProblem";
 import { ProgressByTopic } from "./ProgressByTopic";
 
 /** S1: what to re-solve today, most at risk first, plus the next new problem. */
 export function TodayPage() {
-  const { problems, states, file, todayDate } = useAppData();
+  const { problems, states, file, todayDate, isFirstSyncPending } = useAppData();
   // Recomputed from the log only when it or the day changes.
   const view = useMemo(
     () =>
@@ -44,6 +45,9 @@ export function TodayPage() {
   );
   const topicsInProgress = useMemo(() => listTopicsInProgress(topics), [topics]);
   const isFirstRun = counts.newLeft === problems.length;
+  // An empty browser signed into an account: its log is on the way, so this isn't a first run yet.
+  const isWaitingForAccount = isFirstSyncPending && file.entries.length === 0;
+  const firstProblem = isFirstRun && view.kind === "list" ? view.nextNew : null;
   const browseAll = (
     <Button asChild variant="link" className="self-center wide:col-start-1 wide:row-start-3">
       <Link to="/problems">{t.today.browseAll(problems.length)}</Link>
@@ -57,12 +61,14 @@ export function TodayPage() {
         <h1 className="font-serif text-3xl">{t.pages.today}</h1>
         <span className="font-mono text-sm text-muted-foreground">{formatDate(todayDate)}</span>
       </div>
-      {isFirstRun && view.kind === "list" && view.nextNew !== null ? (
+      {isWaitingForAccount && <FirstSyncSkeleton />}
+      {!isWaitingForAccount && firstProblem !== null && (
         <div className="flex flex-col gap-7">
-          <FirstRun firstProblem={view.nextNew} />
+          <FirstRun firstProblem={firstProblem} />
           {browseAll}
         </div>
-      ) : (
+      )}
+      {!isWaitingForAccount && firstProblem === null && (
         // One grid so the counters render once: stacked in a sidebar from `wide`, on top below it.
         <div
           className={cn(
