@@ -1,8 +1,8 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
+
+import type { AccountResult, AccountService, AccountUser } from "./accountService";
 
 export type { SupabaseClient };
-
-export type AccountResult = { ok: true } | { ok: false; error: string };
 
 type SupabaseEnv = Readonly<Record<string, unknown>>;
 
@@ -48,4 +48,32 @@ export async function deleteMyAccount(client: SupabaseClient): Promise<AccountRe
   // The user no longer exists, so only the local session needs clearing.
   const signedOut = await client.auth.signOut({ scope: "local" });
   return signedOut.error === null ? { ok: true } : { ok: false, error: signedOut.error.message };
+}
+
+function toAccountUser(user: User | undefined): AccountUser | undefined {
+  if (user === undefined) {
+    return undefined;
+  }
+  const avatarUrl: unknown = user.user_metadata.avatar_url;
+  return {
+    id: user.id,
+    email: user.email ?? "",
+    ...(typeof avatarUrl === "string" && avatarUrl !== "" && { avatarUrl }),
+  };
+}
+
+/** Returns the AccountService backed by `client`: GitHub sign-in and the saves row's owner. */
+export function createSupabaseAccountService(client: SupabaseClient): AccountService {
+  return {
+    onUserChange(listener) {
+      // Fires once with the stored session, then on every sign-in, sign-out and token refresh.
+      const { data } = client.auth.onAuthStateChange((_event, session) => {
+        listener(toAccountUser(session?.user));
+      });
+      return () => data.subscription.unsubscribe();
+    },
+    signIn: () => signInWithGitHub(client),
+    signOut: () => signOut(client),
+    deleteAccount: () => deleteMyAccount(client),
+  };
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { aFakeSupabase } from "@/test/fakeSupabase";
 
@@ -48,5 +48,34 @@ describe("deleteMyAccount", () => {
 
     expect(result).toEqual({ ok: false, error: "offline" });
     expect(fake.signOut).not.toHaveBeenCalled();
+  });
+});
+
+describe("createSupabaseAccountService", () => {
+  it("reports the signed-in user with their GitHub avatar", async () => {
+    const fake = aFakeSupabase({
+      id: "user-7",
+      email: "ada@example.com",
+      avatarUrl: "https://avatars.example.com/ada",
+    });
+    const listener = vi.fn();
+
+    fake.accountService.onUserChange(listener);
+    await Promise.resolve();
+
+    expect(listener).toHaveBeenCalledWith({
+      id: "user-7",
+      email: "ada@example.com",
+      avatarUrl: "https://avatars.example.com/ada",
+    });
+  });
+
+  it("reports no user when signed out", async () => {
+    const listener = vi.fn();
+
+    aFakeSupabase().accountService.onUserChange(listener);
+    await Promise.resolve();
+
+    expect(listener).toHaveBeenCalledWith(undefined);
   });
 });

@@ -5,7 +5,7 @@ import { today } from "@/domain/dates";
 import { deriveAllStates } from "@/domain/schedule";
 import type { LocalDate, Problem, ProblemState, SaveFile, Settings } from "@/domain/types";
 import { createLocalStore, importJson } from "@/storage/localStore";
-import type { SupabaseClient } from "@/storage/supabase";
+import type { AccountService } from "@/storage/accountService";
 
 import * as reducers from "./appDataReducers";
 import type { NewAttempt } from "./appDataReducers";
@@ -51,8 +51,8 @@ function useTodayDate(): LocalDate {
 }
 
 export interface AppDataProviderProps {
-  /** The account's backend; without it, accounts are unavailable and no login UI shows. */
-  supabase?: SupabaseClient;
+  /** Signs the user in and out; without it, accounts are unavailable and no login UI shows. */
+  accountService?: AccountService;
   children: ReactNode;
 }
 
@@ -60,10 +60,10 @@ export interface AppDataProviderProps {
  * Loads the save file, saves it on every change and shares it, its derived states, the account
  * and the actions.
  */
-export function AppDataProvider({ supabase, children }: AppDataProviderProps) {
+export function AppDataProvider({ accountService, children }: AppDataProviderProps) {
   const [file, setFile] = useState(() => store.load());
   const todayDate = useTodayDate();
-  const accountValue = useAccount(supabase);
+  const accountValue = useAccount(accountService);
 
   useEffect(() => {
     store.save(file);

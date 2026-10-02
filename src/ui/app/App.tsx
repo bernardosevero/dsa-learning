@@ -1,15 +1,15 @@
 import { BrowserRouter } from "react-router";
 
-import { createSupabase } from "@/storage/supabase";
+import { createAccountService } from "@/storage/accountService";
 
 import { AppDataProvider } from "./AppData";
 import { AppRoutes } from "./AppRoutes";
 
-const supabase = createSupabase();
+const accountService = createAccountService();
 
 export function App() {
   return (
-    <AppDataProvider supabase={supabase}>
+    <AppDataProvider accountService={accountService}>
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>

@@ -2,7 +2,7 @@ import { CircleAlertIcon } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { useLocation } from "react-router";
 
-import type { AccountResult } from "@/storage/supabase";
+import type { AccountResult } from "@/storage/accountService";
 import { useAppData } from "@/ui/app/AppData";
 import { Alert, AlertDescription } from "@/ui/primitives/alert";
 import {

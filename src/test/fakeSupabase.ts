@@ -1,7 +1,8 @@
 import type { Session, User } from "@supabase/supabase-js";
 import { vi } from "vitest";
 
-import type { SupabaseClient } from "@/storage/supabase";
+import type { AccountService } from "@/storage/accountService";
+import { createSupabaseAccountService, type SupabaseClient } from "@/storage/supabase";
 
 type AuthListener = (event: string, session: Session | null) => void;
 
@@ -14,6 +15,8 @@ export interface FakeUser {
 /** A Supabase client faking only the auth calls and the RPC the app makes. */
 export interface FakeSupabase {
   client: SupabaseClient;
+  /** The real Supabase AccountService over the fake client, for the app under test. */
+  accountService: AccountService;
   signInWithOAuth: ReturnType<typeof vi.fn>;
   signOut: ReturnType<typeof vi.fn>;
   rpc: ReturnType<typeof vi.fn>;
@@ -59,5 +62,6 @@ export function aFakeSupabase(user?: FakeUser): FakeSupabase {
   };
 
   const client = { auth, rpc } as unknown as SupabaseClient; // safe: covers every call the app makes
-  return { client, signInWithOAuth, signOut, rpc };
+  const accountService = createSupabaseAccountService(client);
+  return { client, accountService, signInWithOAuth, signOut, rpc };
 }

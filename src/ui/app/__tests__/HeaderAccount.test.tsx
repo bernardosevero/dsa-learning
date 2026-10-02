@@ -3,7 +3,7 @@ import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { SupabaseClient } from "@/storage/supabase";
+import type { AccountService } from "@/storage/accountService";
 import { aFakeSupabase } from "@/test/fakeSupabase";
 
 import { AppDataProvider } from "../AppData";
@@ -15,9 +15,9 @@ vi.mock("@/ui/shared/analytics", () => ({
   setAnalyticsEnabled: vi.fn(),
 }));
 
-function renderAt(path: string, supabase?: SupabaseClient) {
+function renderAt(path: string, accountService?: AccountService) {
   render(
-    <AppDataProvider supabase={supabase}>
+    <AppDataProvider accountService={accountService}>
       <MemoryRouter initialEntries={[path]}>
         <AppRoutes />
       </MemoryRouter>
@@ -42,7 +42,7 @@ describe("the header's account control", () => {
 
   it("shows Sign in when signed out, and starts GitHub sign-in from it", async () => {
     const fake = aFakeSupabase();
-    renderAt("/", fake.client);
+    renderAt("/", fake.accountService);
 
     await userEvent.click(await screen.findByRole("button", { name: "Sign in" }));
 
@@ -53,7 +53,7 @@ describe("the header's account control", () => {
 
   it("shows the avatar linking to the account in Settings when signed in", async () => {
     const fake = aFakeSupabase({ email: "ada@example.com" });
-    renderAt("/", fake.client);
+    renderAt("/", fake.accountService);
 
     const avatarLink = await screen.findByRole("link", { name: "Account settings" });
 

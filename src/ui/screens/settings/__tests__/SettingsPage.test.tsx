@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SaveFile } from "@/domain/types";
 import { downloadExport } from "@/storage/download";
 import { STORAGE_KEY } from "@/storage/localStore";
-import type { SupabaseClient } from "@/storage/supabase";
+import type { AccountService } from "@/storage/accountService";
 import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
 import { aFakeSupabase } from "@/test/fakeSupabase";
 import { AppDataProvider } from "@/ui/app/AppData";
@@ -22,11 +22,11 @@ const STORED_ATTEMPT = anAttempt({ id: "stored" });
 
 function renderSettings(
   file: SaveFile = aSaveFile({ entries: [STORED_ATTEMPT] }),
-  supabase?: SupabaseClient,
+  accountService?: AccountService,
 ) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(file));
   render(
-    <AppDataProvider supabase={supabase}>
+    <AppDataProvider accountService={accountService}>
       <MemoryRouter>
         <SettingsPage />
       </MemoryRouter>
@@ -176,7 +176,7 @@ describe("SettingsPage", () => {
 describe("SettingsPage account", () => {
   it("offers GitHub sign-in when signed out, and says what an account is for", async () => {
     const fake = aFakeSupabase();
-    renderSettings(undefined, fake.client);
+    renderSettings(undefined, fake.accountService);
 
     await userEvent.click(await screen.findByRole("button", { name: "Continue with GitHub" }));
 
@@ -187,14 +187,14 @@ describe("SettingsPage account", () => {
   });
 
   it("shows the signed-in email", async () => {
-    renderSettings(undefined, aFakeSupabase({ email: "ada@example.com" }).client);
+    renderSettings(undefined, aFakeSupabase({ email: "ada@example.com" }).accountService);
 
     expect(await screen.findByText("ada@example.com")).toBeDefined();
   });
 
   it("signs out and leaves the local log untouched", async () => {
     const fake = aFakeSupabase({ email: "ada@example.com" });
-    renderSettings(undefined, fake.client);
+    renderSettings(undefined, fake.accountService);
     const before = readStoredFile();
 
     await userEvent.click(await screen.findByRole("button", { name: "Sign out" }));
@@ -206,7 +206,7 @@ describe("SettingsPage account", () => {
 
   it("asks before deleting the account, then deletes it and keeps the local log", async () => {
     const fake = aFakeSupabase({ email: "ada@example.com" });
-    renderSettings(undefined, fake.client);
+    renderSettings(undefined, fake.accountService);
     const before = readStoredFile();
 
     await userEvent.click(await screen.findByRole("button", { name: "Delete account" }));
@@ -226,7 +226,7 @@ describe("SettingsPage account", () => {
   it("keeps the account and says so when deleting fails", async () => {
     const fake = aFakeSupabase({ email: "ada@example.com" });
     fake.rpc.mockResolvedValueOnce({ data: null, error: { message: "offline" } });
-    renderSettings(undefined, fake.client);
+    renderSettings(undefined, fake.accountService);
 
     await userEvent.click(await screen.findByRole("button", { name: "Delete account" }));
     await userEvent.click(
