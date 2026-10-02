@@ -8,10 +8,11 @@ import { t } from "@/ui/shared/strings";
 import { useAppData } from "./AppData";
 import type { SyncStatus } from "./useSync";
 
-type SignedInSyncStatus = Exclude<SyncStatus, { status: "signedOut" }>["status"];
-
 // The dot's color is never the only signal: the link's name says the same in words.
-const SYNC_DOTS: Record<SignedInSyncStatus, { className: string; label: string }> = {
+const SYNC_DOTS: Record<
+  Exclude<SyncStatus["status"], "signedOut">,
+  { className: string; label: string }
+> = {
   syncing: { className: "animate-pulse bg-muted-foreground", label: t.account.sync.syncing },
   synced: { className: "bg-primary", label: t.account.sync.synced },
   offline: { className: "bg-rating-medium", label: t.account.sync.offline },

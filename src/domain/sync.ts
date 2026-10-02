@@ -19,38 +19,24 @@ function isPlainObject(value: unknown): value is Readonly<Record<string, unknown
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-// Keys holding undefined are left out, as JSON (and so the row) leaves them out.
-function definedKeys(record: Readonly<Record<string, unknown>>): string[] {
-  return Object.keys(record).filter((key) => record[key] !== undefined);
+function compareKeys(
+  [firstKey]: readonly [string, unknown],
+  [secondKey]: readonly [string, unknown],
+) {
+  return firstKey < secondKey ? -1 : 1;
 }
 
-function areArraysEqual(first: readonly unknown[], second: readonly unknown[]): boolean {
-  return (
-    first.length === second.length &&
-    first.every((item, index) => isStructurallyEqual(item, second[index]))
+// Keys sorted at every level, so key order doesn't matter, as in Postgres jsonb; undefined drops out.
+function toCanonicalJson(value: unknown): string {
+  return JSON.stringify(value, (_key, nested: unknown) =>
+    isPlainObject(nested)
+      ? Object.fromEntries(Object.entries(nested).toSorted(compareKeys))
+      : nested,
   );
 }
 
-function areObjectsEqual(
-  first: Readonly<Record<string, unknown>>,
-  second: Readonly<Record<string, unknown>>,
-): boolean {
-  const firstKeys = definedKeys(first);
-  return (
-    firstKeys.length === definedKeys(second).length &&
-    firstKeys.every((key) => isStructurallyEqual(first[key], second[key]))
-  );
-}
-
-/** Compares JSON-like values by content; object key order doesn't matter, as in Postgres jsonb. */
 function isStructurallyEqual(first: unknown, second: unknown): boolean {
-  if (Array.isArray(first) && Array.isArray(second)) {
-    return areArraysEqual(first, second);
-  }
-  if (isPlainObject(first) && isPlainObject(second)) {
-    return areObjectsEqual(first, second);
-  }
-  return first === second;
+  return toCanonicalJson(first) === toCanonicalJson(second);
 }
 
 // Three-way: a change made on this device since the last sync wins, otherwise the account's copy.

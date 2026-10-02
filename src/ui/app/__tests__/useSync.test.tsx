@@ -1,30 +1,44 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { Entry, SaveFile } from "@/domain/types";
+import type { Store } from "@/storage/localStore";
+import { parseRemoteSave } from "@/storage/remoteStore";
 import { aMasteredMark, anAttempt, aRemoteSave, aSaveFile } from "@/test/builders";
 import { aFakeRemote, anInMemorySyncMetaStore, type FakeRemote } from "@/test/fakeRemoteStore";
 
 import { resetProgressEverywhere } from "../appDataReducers";
+import { createFileStore } from "../fileStore";
+import { LOCAL_CHANGE_DEBOUNCE_MS } from "../syncEngine";
 import type { Account } from "../useAccount";
-import { LOCAL_CHANGE_DEBOUNCE_MS, useSync } from "../useSync";
+import { useSync } from "../useSync";
 
 const SIGNED_IN: Account = { status: "signedIn", userId: "user-1", email: "ada@example.com" };
 
+function anInMemoryStore(initialFile: SaveFile): Store {
+  let savedFile = initialFile;
+  return {
+    load: () => savedFile,
+    save(file) {
+      savedFile = file;
+    },
+  };
+}
+
 // One browser: its own local file and sync metadata, signed into the shared fake account row.
 function renderDevice(remote: FakeRemote, initialFile: SaveFile = aSaveFile()) {
+  const fileStore = createFileStore(anInMemoryStore(initialFile));
   const syncMetaStore = anInMemorySyncMetaStore();
   return renderHook(() => {
-    const [file, setFile] = useState(initialFile);
+    const file = useSyncExternalStore(fileStore.subscribe, fileStore.getFile);
     const sync = useSync({
       account: SIGNED_IN,
+      fileStore,
       remoteStore: remote.remoteStore,
       syncMetaStore,
-      file,
-      setFile,
     });
-    return { file, setFile, ...sync };
+    return { file, setFile: fileStore.update, ...sync };
   });
 }
 
@@ -33,7 +47,8 @@ function idsOf(entries: readonly Entry[]): string[] {
 }
 
 function rowEntryIds(remote: FakeRemote): string[] {
-  return idsOf(aRemoteSave(remote.row as Partial<ReturnType<typeof aRemoteSave>>).entries); // safe: written by sync
+  const parsed = parseRemoteSave(remote.row);
+  return parsed.ok ? idsOf(parsed.value.entries) : [];
 }
 
 async function waitUntilSynced(device: { current: { syncStatus: { status: string } } }) {

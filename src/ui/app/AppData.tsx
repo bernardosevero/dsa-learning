@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 
 import { PROBLEMS } from "@/data/problems";
 import { today } from "@/domain/dates";
@@ -10,6 +18,7 @@ import type { RemoteStore } from "@/storage/remoteStore";
 import { createSyncMetaStore } from "@/storage/syncMeta";
 
 import * as reducers from "./appDataReducers";
+import { createFileStore } from "./fileStore";
 import type { NewAttempt } from "./appDataReducers";
 import { useAccount, type AccountValue } from "./useAccount";
 import { useSync, type SyncValue } from "./useSync";
@@ -64,19 +73,17 @@ export interface AppDataProviderProps {
 
 /**
  * Loads the save file, saves it on every change and shares it, its derived states, the account
- * and the actions.
+ * and the actions. The file lives in a FileStore, so the sync engine can read and change it too.
  */
 export function AppDataProvider({ accountService, remoteStore, children }: AppDataProviderProps) {
-  const [file, setFile] = useState(() => store.load());
+  // One store per provider, loaded when it mounts.
+  const [fileStore] = useState(() => createFileStore(store));
+  const file = useSyncExternalStore(fileStore.subscribe, fileStore.getFile);
   const todayDate = useTodayDate();
   const accountValue = useAccount(accountService);
   const { account } = accountValue;
-  const syncValue = useSync({ account, remoteStore, syncMetaStore, file, setFile });
+  const syncValue = useSync({ account, fileStore, remoteStore, syncMetaStore });
   const isSignedIn = account.status === "signedIn";
-
-  useEffect(() => {
-    store.save(file);
-  }, [file]);
 
   const states = useMemo(() => deriveAllStates(PROBLEM_IDS, file.entries), [file.entries]);
 
@@ -88,24 +95,29 @@ export function AppDataProvider({ accountService, remoteStore, children }: AppDa
       file,
       states,
       todayDate,
-      addAttempt: (attempt) => setFile((current) => reducers.addAttempt(current, attempt)),
-      markMastered: (problemId) => setFile((current) => reducers.markMastered(current, problemId)),
-      deleteEntry: (entryId) => setFile((current) => reducers.deleteEntry(current, entryId)),
-      updateSettings: (partial) => setFile((current) => reducers.updateSettings(current, partial)),
-      startTimer: (problemId) => setFile((current) => reducers.startTimer(current, problemId)),
-      restartTimer: (problemId) => setFile((current) => reducers.restartTimer(current, problemId)),
-      clearTimer: () => setFile(reducers.clearTimer),
+      addAttempt: (attempt) => fileStore.update((current) => reducers.addAttempt(current, attempt)),
+      markMastered: (problemId) =>
+        fileStore.update((current) => reducers.markMastered(current, problemId)),
+      deleteEntry: (entryId) =>
+        fileStore.update((current) => reducers.deleteEntry(current, entryId)),
+      updateSettings: (partial) =>
+        fileStore.update((current) => reducers.updateSettings(current, partial)),
+      startTimer: (problemId) =>
+        fileStore.update((current) => reducers.startTimer(current, problemId)),
+      restartTimer: (problemId) =>
+        fileStore.update((current) => reducers.restartTimer(current, problemId)),
+      clearTimer: () => fileStore.update(reducers.clearTimer),
       importText: (text) => {
-        const result = importJson(text, file);
+        const result = importJson(text, fileStore.getFile());
         if (result.ok) {
-          setFile(result.file);
+          fileStore.update(() => result.file);
         }
         return result;
       },
       resetProgress: () =>
-        setFile(isSignedIn ? reducers.resetProgressEverywhere : reducers.resetProgress),
+        fileStore.update(isSignedIn ? reducers.resetProgressEverywhere : reducers.resetProgress),
     }),
-    [accountValue, syncValue, isSignedIn, file, states, todayDate],
+    [accountValue, syncValue, isSignedIn, fileStore, file, states, todayDate],
   );
 
   return <AppDataContext value={value}>{children}</AppDataContext>;
