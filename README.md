@@ -57,6 +57,7 @@ No environment variables are needed locally. Without the Supabase variables belo
 Login (GitHub) and the `saves` table live in Supabase. You only need this to work on them.
 
 - **Database tests:** with Docker running, `pnpm supabase start` starts a local Supabase stack, and `pnpm supabase test db` runs the pgTAP tests in `supabase/tests/`, which prove each user can only reach their own row. CI runs them on pull requests that touch `supabase/`. `pnpm supabase stop` stops the stack. The local stack has no GitHub login.
+- **Sync end-to-end tests:** with the stack running, `pnpm test:e2e:sync` builds the app against it and runs the Playwright tests in `e2e/sync/`: two browsers signed into one account, syncing for real. The tests sign in with a password test user instead of GitHub. CI runs them on pull requests that touch `supabase/`, `src/storage/`, `src/ui/app/` or `e2e/sync/`.
 - **Trying sign-in:** create a `.env.local` that points `pnpm dev` at the hosted project (`http://localhost:5173` is an allowed redirect):
 
   ```sh
@@ -71,6 +72,7 @@ Login (GitHub) and the `saves` table live in Supabase. You only need this to wor
 | `pnpm dev` | Starts the dev server with hot reload |
 | `pnpm test` | Runs the tests once (`pnpm test:watch` re-runs them on every change) |
 | `pnpm test:e2e` | Builds the app, serves it and runs the Playwright tests in `e2e/` against it in Chromium |
+| `pnpm test:e2e:sync` | Runs the sync tests in `e2e/sync/` against the local Supabase stack (start it first) |
 | `pnpm lint` | Runs ESLint, including the rule that keeps `src/domain` pure |
 | `pnpm typecheck` | Type-checks the project with TypeScript |
 | `pnpm format` | Formats the code with Prettier |
@@ -92,6 +94,7 @@ One-off Node scripts in `scripts/`. The ones marked 🌐 need network access.
 | `pnpm tsx scripts/metrics.ts <export.json>` | Prints the success metrics (on-time reviews, re-solve speed, rating progress, load and habit) from a file exported in the app |
 | `pnpm tsx scripts/build-problems.ts` 🌐 | Rebuilds `src/data/problems.json` from neetcode-gh/leetcode and the slug snapshot, keeping existing summaries. The file is committed, so the app itself needs no network |
 | `pnpm tsx scripts/snapshot-nc-links.ts` 🌐 | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
+| `pnpm tsx scripts/smoke-production.ts` 🌐 | Checks that production is wired to Supabase without signing in: the build's variables, GitHub sign-in, and the `saves` table and `delete_my_account()` closed to anyone signed out. CI runs it daily |
 | `pnpm tsx scripts/render-link-previews.ts` 🌐 | Redraws the favicon, the Apple touch icon and the link-preview image in `public/`. Run it after changing their design in the script. It needs a Chromium, like the end-to-end tests |
 
 ## 🚀 Deploy

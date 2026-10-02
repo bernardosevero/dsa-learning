@@ -1,4 +1,5 @@
 dist
+dist-sync
 coverage
 pnpm-lock.yaml
 # Docs are formatted by hand.
