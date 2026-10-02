@@ -24,6 +24,22 @@ export const en = {
     privacy: "Privacy & credits",
   },
   separator: " · ",
+  account: {
+    signIn: "Sign in",
+    openAccount: "Account settings",
+    title: "Account",
+    purpose:
+      "An account syncs your progress across your devices. It's optional: the app works fully without one.",
+    continueWithGitHub: "Continue with GitHub",
+    signedInAs: "Signed in as",
+    signOut: "Sign out",
+    deleteAccount: "Delete account",
+    deleteTitle: "Delete your account?",
+    deleteDetail: "Your account and its cloud copy are deleted. This device keeps its progress.",
+    cancel: "Cancel",
+    confirmDelete: "Delete account",
+    failed: "Something went wrong. Your local progress is unchanged; try again.",
+  },
   today: {
     counters: { due: "Due", newLeft: "New left", mastered: "Mastered" },
     dueReviews: "Due reviews",
@@ -182,9 +198,14 @@ export const en = {
   privacy: {
     yourData: "Your data",
     browserStorage:
-      "Your attempts, notes, insights and settings stay in this browser. There is no account or server copy of your practice log.",
+      "Your attempts, notes, insights and settings stay in this browser. Without an account there is no server copy of your practice log.",
     exportAndReset:
       "You can export a backup, import it elsewhere, or reset your progress from Settings.",
+    account: "Account",
+    accountStorage:
+      "Signing in with GitHub is optional. If you sign in, your account stores your email address, your GitHub name and avatar, and a copy of your practice log and settings, in Supabase, hosted in East US (North Virginia), so your devices can sync.",
+    accountDelete:
+      "Delete account in Settings removes your account and that copy. Your progress in this browser stays.",
     analytics: "Usage analytics",
     analyticsPurpose: "We use usage data to learn which parts of the app are used and improve it.",
     analyticsIntro:

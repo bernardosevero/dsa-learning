@@ -4,6 +4,8 @@ import { Link, NavLink, Outlet } from "react-router";
 import { PageSheet } from "@/ui/shared/PageSheet";
 import { t } from "@/ui/shared/strings";
 
+import { HeaderAccount } from "./HeaderAccount";
+
 const NAV_LINKS = [
   { to: "/", label: t.nav.today, Icon: CalendarIcon },
   { to: "/problems", label: t.nav.problems, Icon: ListIcon },
@@ -21,7 +23,7 @@ export interface AppLayoutProps {
   isReadable?: boolean;
 }
 
-/** The frame every main screen sits in: wordmark, nav and the current route below them. */
+/** The frame every main screen sits in: wordmark, nav, account and the current route below. */
 export function AppLayout({ isReadable }: AppLayoutProps) {
   return (
     <PageSheet
@@ -34,18 +36,21 @@ export function AppLayout({ isReadable }: AppLayoutProps) {
           >
             {t.appName}
           </Link>
-          <nav aria-label={t.nav.label} className={NAV_CLASSES}>
-            <ul className="flex nav:gap-5">
-              {NAV_LINKS.map((link) => (
-                <li key={link.to} className="flex flex-1">
-                  <NavLink to={link.to} end={link.to === "/"} className={NAV_LINK_CLASSES}>
-                    <link.Icon aria-hidden className="size-5 nav:hidden" />
-                    {link.label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="flex items-center gap-5">
+            <nav aria-label={t.nav.label} className={NAV_CLASSES}>
+              <ul className="flex nav:gap-5">
+                {NAV_LINKS.map((link) => (
+                  <li key={link.to} className="flex flex-1">
+                    <NavLink to={link.to} end={link.to === "/"} className={NAV_LINK_CLASSES}>
+                      <link.Icon aria-hidden className="size-5 nav:hidden" />
+                      {link.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <HeaderAccount />
+          </div>
         </>
       }
     >
