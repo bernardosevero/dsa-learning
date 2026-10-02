@@ -14,11 +14,11 @@ The approved design from #27, written as build instructions. The tokens are alre
 Warm paper, dark ink, one green for the next action. Calm and honest: no red for overdue, no confetti, no streaks.
 
 - **Fonts:** `font-serif` (Newsreader) for screen titles and problem names in focus; `font-sans` (IBM Plex Sans) for everything else; `font-mono` (IBM Plex Mono) for **every** time, date, count and estimate (`12:48`, `Sun, Oct 4`, `~1h 50m`, `3 days overdue`, `2/6`).
-- **Layout:** one column, `px-5`. Designed at 480px wide; check 375px and a full desktop window.
+- **Practice layout:** one column, `px-5`. Designed at 480px wide; check 375px and a full desktop window. Public pages share these theme tokens and shadcn primitives but have their own consistent responsive layout and public navigation, without practice bottom navigation.
   - **Narrow window (below 720px wide):** the column fills the window, as before.
   - **Wider windows: the app is a sheet.** The column becomes a sheet centred on a darker "desk": the page background is `--desk` (light `#E9E5DB`, dark `#0E0F0D`; add it to `src/index.css` next to `--background`), and the sheet is `bg-background border rounded-2xl` with `my-8`. The top bar sits inside the sheet with a `border-b`. The sheet is `720px` wide, with the same content and order as the narrow column.
   - **Today from 1100px:** its sheet widens to `1040px` and becomes two columns (`grid-cols-[minmax(0,1fr)_300px] gap-x-10`): heading row across both; Due reviews and New on the left; an `<aside>` on the right with the **counters** on top (stacked: one row each for Due · New left · Mastered, label left in `text-sm text-muted-foreground`, number right in `font-mono text-xl`, rows split by `border-t`) and **Progress by topic** under them. Below 1100px the counters strip goes back above Due reviews and Progress by topic sits under New.
-  - **Every screen has the same sheet width** (640px column, 720px sheet, 1040px from 1100px), so moving between screens never resizes or shifts it. From 1100px, Problems uses the full width; Problem detail, Settings, Solving and Log keep their content to a centred `656px` column (`PageSheet`'s `isReadable`), the width it has in the 720px sheet.
+  - **Every practice screen has the same sheet width** (640px column, 720px sheet, 1040px from 1100px), so moving between practice screens never resizes or shifts it. Existing practice width tests remain required. From 1100px, Problems uses the full width; Problem detail, Settings, Solving and Log keep their content to a centred `656px` column (`PageSheet`'s `isReadable`), the width it has in the 720px sheet.
 - **Surfaces:** page `bg-background`, cards `bg-card border rounded-xl` (12px). 1px borders, no shadows (menus and dialogs are the only exception).
 - **Spacing:** compact. Sections `gap-7`, inside a card `gap-3`/`gap-4`, card padding `p-4`/`p-5`.
 - **Buttons:** primary `bg-primary text-primary-foreground`, outline `border bg-card`, ghost. Touch targets at least 44px tall (`min-h-11`).
@@ -48,7 +48,7 @@ Icons: lucide-react style outline icons, 16–18px. No emoji.
 
 ## Screens
 
-Top bar on every main screen: wordmark `dsa-learning` (`font-serif text-xl font-semibold`, links to Today) on the left, nav `Today · Problems · Settings` on the right; the current one is `font-semibold text-foreground` with a 2px `border-primary` underline, others `text-muted-foreground`. A `border-b` separates the top bar from the content. On phones only (below 440px, e.g. `max-[440px]:`), the nav moves to a bottom bar with icon + label (calendar, list, sliders); the narrow window beside NeetCode (440–720px) keeps the top nav.
+Top bar on every main practice screen: wordmark `dsa-learning` (`font-serif text-xl font-semibold`, links to Today) on the left, nav `Today · Problems · Settings` on the right; the current one is `font-semibold text-foreground` with a 2px `border-primary` underline, others `text-muted-foreground`. A `border-b` separates the top bar from the content. On phones only (below 440px, e.g. `max-[440px]:`), the practice nav moves to a bottom bar with icon + label (calendar, list, sliders); the narrow window beside NeetCode (440–720px) keeps the top nav.
 
 Page heading row: `h1` `font-serif text-3xl` on the left, today's date in mono on the right (Today only).
 
