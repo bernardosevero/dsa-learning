@@ -10,7 +10,7 @@ import { t } from "@/ui/shared/strings";
 
 /** The danger zone: resetting progress only works once the user types "reset". */
 export function ResetProgress() {
-  const { resetProgress } = useAppData();
+  const { account, resetProgress } = useAppData();
   const headingId = useId();
   const inputId = useId();
   const [confirmation, setConfirmation] = useState("");
@@ -31,7 +31,9 @@ export function ResetProgress() {
       <Card className="gap-3 border-destructive p-4">
         <div className="flex flex-col gap-1">
           <span className="font-semibold">{t.settings.reset}</span>
-          <p className="text-sm text-muted-foreground">{t.settings.resetHint}</p>
+          <p className="text-sm text-muted-foreground">
+            {account.status === "signedIn" ? t.settings.resetHintSignedIn : t.settings.resetHint}
+          </p>
         </div>
         <div className="flex flex-wrap items-end gap-2.5">
           <div className="flex min-w-40 flex-1 flex-col gap-1.5">

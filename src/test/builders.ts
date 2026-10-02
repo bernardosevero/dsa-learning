@@ -1,4 +1,6 @@
+import type { RemoteSave } from "@/domain/sync";
 import {
+  DEFAULT_SETTINGS,
   EMPTY_SAVE_FILE,
   type Attempt,
   type MarkedMastered,
@@ -56,6 +58,11 @@ export function aMasteredMark(overrides: Partial<MarkedMastered> = {}): MarkedMa
 /** An empty save file with default settings. */
 export function aSaveFile(overrides: Partial<SaveFile> = {}): SaveFile {
   return { ...EMPTY_SAVE_FILE, ...overrides };
+}
+
+/** The account's copy of an empty log with default settings, at version 1. */
+export function aRemoteSave(overrides: Partial<RemoteSave> = {}): RemoteSave {
+  return { entries: [], settings: DEFAULT_SETTINGS, version: 1, ...overrides };
 }
 
 /** An Easy Arrays & Hashing problem; id and order are required because every list needs them. */

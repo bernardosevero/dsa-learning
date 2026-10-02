@@ -45,6 +45,26 @@ export function formatElapsed(milliseconds: number): string {
   return `${hours}:${padTwo(minutes)}:${padTwo(seconds)}`;
 }
 
+const MILLISECONDS_PER_MINUTE = SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+const HOURS_PER_DAY = 24;
+
+/** Formats how long ago an ISO time was: "just now", "2 min ago", "3 h ago" or "2 days ago". */
+export function formatTimeAgo(isoTime: string, now: Date): string {
+  const minutes = Math.floor((now.getTime() - Date.parse(isoTime)) / MILLISECONDS_PER_MINUTE);
+  if (minutes < 1) {
+    return "just now";
+  }
+  if (minutes < MINUTES_PER_HOUR) {
+    return `${minutes} min ago`;
+  }
+  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
+  if (hours < HOURS_PER_DAY) {
+    return `${hours} h ago`;
+  }
+  const days = Math.floor(hours / HOURS_PER_DAY);
+  return days === 1 ? "1 day ago" : `${days} days ago`;
+}
+
 /** Formats a time estimate as "~45m", "~2h" or "~1h 50m". */
 export function formatEstimate(totalMinutes: number): string {
   const hours = Math.floor(totalMinutes / MINUTES_PER_HOUR);

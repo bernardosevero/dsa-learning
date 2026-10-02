@@ -10,6 +10,7 @@ import {
   deleteEntry,
   markMastered,
   resetProgress,
+  resetProgressEverywhere,
   restartTimer,
   startTimer,
   updateSettings,
@@ -191,5 +192,26 @@ describe("resetProgress", () => {
       file: aSaveFile({ entries: [anAttempt({ id: "remote" })], settings: CUSTOM_SETTINGS }),
       added: 1,
     });
+  });
+});
+
+describe("resetProgressEverywhere", () => {
+  it("marks every entry deleted, keeps earlier deletions, drops the timer and keeps the settings", () => {
+    const earlierDeletion = "2026-09-01T09:00:00.000Z";
+    const file = aSaveFile({
+      entries: [
+        anAttempt({ id: "live" }),
+        aMasteredMark({ id: "already-deleted", deletedAt: earlierDeletion }),
+      ],
+      activeTimer: { problemId: "two-sum", startedAt: "2026-10-01T10:00:00.000Z" },
+    });
+
+    const updated = resetProgressEverywhere(file);
+
+    expect(updated.entries.map((entry) => entry.id)).toEqual(["live", "already-deleted"]);
+    expect(updated.entries[0]?.deletedAt).toBeDefined();
+    expect(updated.entries[1]?.deletedAt).toBe(earlierDeletion);
+    expect(updated).not.toHaveProperty("activeTimer");
+    expect(updated.settings).toEqual(file.settings);
   });
 });

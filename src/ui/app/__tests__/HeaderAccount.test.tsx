@@ -4,6 +4,8 @@ import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { AccountService } from "@/storage/accountService";
+import type { RemoteStore } from "@/storage/remoteStore";
+import { aFakeRemote } from "@/test/fakeRemoteStore";
 import { aFakeSupabase } from "@/test/fakeSupabase";
 
 import { AppDataProvider } from "../AppData";
@@ -15,9 +17,9 @@ vi.mock("@/ui/shared/analytics", () => ({
   setAnalyticsEnabled: vi.fn(),
 }));
 
-function renderAt(path: string, accountService?: AccountService) {
+function renderAt(path: string, accountService?: AccountService, remoteStore?: RemoteStore) {
   render(
-    <AppDataProvider accountService={accountService}>
+    <AppDataProvider accountService={accountService} remoteStore={remoteStore}>
       <MemoryRouter initialEntries={[path]}>
         <AppRoutes />
       </MemoryRouter>
@@ -60,5 +62,25 @@ describe("the header's account control", () => {
     expect(avatarLink.getAttribute("href")).toBe("/settings#account");
     expect(avatarLink.textContent).toBe("A");
     expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
+  });
+
+  it("tells the sync status on the avatar, in words as well as the dot", async () => {
+    const fake = aFakeSupabase({ email: "ada@example.com" });
+    renderAt("/", fake.accountService, aFakeRemote().remoteStore);
+
+    const avatarLink = await screen.findByRole("link", { name: "Account settings · Synced" });
+
+    expect(avatarLink.getAttribute("href")).toBe("/settings#account");
+  });
+
+  it("tells when sync is paused on an invalid account copy", async () => {
+    const fake = aFakeSupabase({ email: "ada@example.com" });
+    renderAt("/", fake.accountService, aFakeRemote({ entries: 1 }).remoteStore);
+
+    expect(
+      await screen.findByRole("link", {
+        name: "Account settings · Sync paused — export your data and contact me",
+      }),
+    ).toBeDefined();
   });
 });

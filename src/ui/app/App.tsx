@@ -1,15 +1,15 @@
 import { BrowserRouter } from "react-router";
 
-import { createAccountService } from "@/storage/accountService";
+import { createBackend } from "@/storage/backend";
 
 import { AppDataProvider } from "./AppData";
 import { AppRoutes } from "./AppRoutes";
 
-const accountService = createAccountService();
+const backend = createBackend();
 
 export function App() {
   return (
-    <AppDataProvider accountService={accountService}>
+    <AppDataProvider accountService={backend?.accountService} remoteStore={backend?.remoteStore}>
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>

@@ -39,6 +39,12 @@ export const en = {
     cancel: "Cancel",
     confirmDelete: "Delete account",
     failed: "Something went wrong. Your local progress is unchanged; try again.",
+    sync: {
+      syncing: "Syncing…",
+      synced: "Synced",
+      offline: "Offline — will sync when you're back",
+      error: "Sync paused — export your data and contact me",
+    },
   },
   today: {
     counters: { due: "Due", newLeft: "New left", mastered: "Mastered" },
@@ -77,6 +83,7 @@ export const en = {
       title: "Re-solve problems right before you forget them.",
       summary:
         "Solve a problem once, log how hard it felt, and the app brings it back just before it fades.",
+      loading: "Loading your progress…",
       steps: ["Solve it on NeetCode", "Log it in 30 seconds", "Re-solve it from scratch later"],
       interval: (days: number) => `${days} days`,
       markSolved: "Already solved some? Mark them in Problems",
@@ -187,6 +194,8 @@ export const en = {
     resetConfirmBefore: "Type",
     resetWord: "reset",
     resetConfirmAfter: "to confirm",
+    resetHintSignedIn:
+      "This resets your progress on every device. Importing an older export won't bring it back.",
     resetDone: "Progress reset. Every problem is new again.",
     credit: "Problem metadata from neetcode-gh/leetcode (MIT)",
     privacy: "Privacy",

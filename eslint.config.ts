@@ -151,7 +151,8 @@ export default defineConfig(
   },
   {
     files: ["src/**/*.tsx"],
-    ignores: ["src/main.tsx", "src/ui/primitives/**"],
+    // A hook's tests take the hook's name; they're .tsx only to run in the jsdom project.
+    ignores: ["src/main.tsx", "src/ui/primitives/**", "src/**/__tests__/use*.test.tsx"],
     rules: { "unicorn/filename-case": ["error", { case: "pascalCase", checkDirectories: false }] },
   },
   {

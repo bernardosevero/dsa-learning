@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 
 import { PROBLEMS } from "@/data/problems";
 import { today } from "@/domain/dates";
@@ -6,12 +14,16 @@ import { deriveAllStates } from "@/domain/schedule";
 import type { LocalDate, Problem, ProblemState, SaveFile, Settings } from "@/domain/types";
 import { createLocalStore, importJson } from "@/storage/localStore";
 import type { AccountService } from "@/storage/accountService";
+import type { RemoteStore } from "@/storage/remoteStore";
+import { createSyncMetaStore } from "@/storage/syncMeta";
 
 import * as reducers from "./appDataReducers";
+import { createFileStore } from "./fileStore";
 import type { NewAttempt } from "./appDataReducers";
 import { useAccount, type AccountValue } from "./useAccount";
+import { useSync, type SyncValue } from "./useSync";
 
-export interface AppDataValue extends AccountValue {
+export interface AppDataValue extends AccountValue, SyncValue {
   problems: readonly Problem[];
   file: SaveFile;
   /** Derived from the log on every change; never stored. */
@@ -31,6 +43,7 @@ export interface AppDataValue extends AccountValue {
 const AppDataContext = createContext<AppDataValue | undefined>(undefined);
 
 const store = createLocalStore();
+const syncMetaStore = createSyncMetaStore();
 const PROBLEM_IDS = PROBLEMS.map((problem) => problem.id);
 
 // The app can stay open past midnight, so the day is re-read whenever the user comes back.
@@ -53,48 +66,58 @@ function useTodayDate(): LocalDate {
 export interface AppDataProviderProps {
   /** Signs the user in and out; without it, accounts are unavailable and no login UI shows. */
   accountService?: AccountService;
+  /** The account's copy of the log; with a signed-in account, the local file syncs with it. */
+  remoteStore?: RemoteStore;
   children: ReactNode;
 }
 
 /**
  * Loads the save file, saves it on every change and shares it, its derived states, the account
- * and the actions.
+ * and the actions. The file lives in a FileStore, so the sync engine can read and change it too.
  */
-export function AppDataProvider({ accountService, children }: AppDataProviderProps) {
-  const [file, setFile] = useState(() => store.load());
+export function AppDataProvider({ accountService, remoteStore, children }: AppDataProviderProps) {
+  // One store per provider, loaded when it mounts.
+  const [fileStore] = useState(() => createFileStore(store));
+  const file = useSyncExternalStore(fileStore.subscribe, fileStore.getFile);
   const todayDate = useTodayDate();
   const accountValue = useAccount(accountService);
-
-  useEffect(() => {
-    store.save(file);
-  }, [file]);
+  const { account } = accountValue;
+  const syncValue = useSync({ account, fileStore, remoteStore, syncMetaStore });
+  const isSignedIn = account.status === "signedIn";
 
   const states = useMemo(() => deriveAllStates(PROBLEM_IDS, file.entries), [file.entries]);
 
   const value = useMemo<AppDataValue>(
     () => ({
       ...accountValue,
+      ...syncValue,
       problems: PROBLEMS,
       file,
       states,
       todayDate,
-      addAttempt: (attempt) => setFile((current) => reducers.addAttempt(current, attempt)),
-      markMastered: (problemId) => setFile((current) => reducers.markMastered(current, problemId)),
-      deleteEntry: (entryId) => setFile((current) => reducers.deleteEntry(current, entryId)),
-      updateSettings: (partial) => setFile((current) => reducers.updateSettings(current, partial)),
-      startTimer: (problemId) => setFile((current) => reducers.startTimer(current, problemId)),
-      restartTimer: (problemId) => setFile((current) => reducers.restartTimer(current, problemId)),
-      clearTimer: () => setFile(reducers.clearTimer),
+      addAttempt: (attempt) => fileStore.update((current) => reducers.addAttempt(current, attempt)),
+      markMastered: (problemId) =>
+        fileStore.update((current) => reducers.markMastered(current, problemId)),
+      deleteEntry: (entryId) =>
+        fileStore.update((current) => reducers.deleteEntry(current, entryId)),
+      updateSettings: (partial) =>
+        fileStore.update((current) => reducers.updateSettings(current, partial)),
+      startTimer: (problemId) =>
+        fileStore.update((current) => reducers.startTimer(current, problemId)),
+      restartTimer: (problemId) =>
+        fileStore.update((current) => reducers.restartTimer(current, problemId)),
+      clearTimer: () => fileStore.update(reducers.clearTimer),
       importText: (text) => {
-        const result = importJson(text, file);
+        const result = importJson(text, fileStore.getFile());
         if (result.ok) {
-          setFile(result.file);
+          fileStore.update(() => result.file);
         }
         return result;
       },
-      resetProgress: () => setFile(reducers.resetProgress),
+      resetProgress: () =>
+        fileStore.update(isSignedIn ? reducers.resetProgressEverywhere : reducers.resetProgress),
     }),
-    [accountValue, file, states, todayDate],
+    [accountValue, syncValue, isSignedIn, fileStore, file, states, todayDate],
   );
 
   return <AppDataContext value={value}>{children}</AppDataContext>;

@@ -1,6 +1,14 @@
 import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
 
+import type { Entry, Settings } from "@/domain/types";
+
 import type { AccountResult, AccountService, AccountUser } from "./accountService";
+import {
+  parseRemoteSave,
+  type ReadSaveResult,
+  type RemoteStore,
+  type WriteSaveResult,
+} from "./remoteStore";
 
 export type { SupabaseClient };
 
@@ -75,5 +83,65 @@ export function createSupabaseAccountService(client: SupabaseClient): AccountSer
     signIn: () => signInWithGitHub(client),
     signOut: () => signOut(client),
     deleteAccount: () => deleteMyAccount(client),
+  };
+}
+
+const SAVES_TABLE = "saves";
+// Postgres' unique_violation: the account's row already exists, so another device inserted first.
+const UNIQUE_VIOLATION = "23505";
+
+/**
+ * Returns the signed-in user's saves row, parsed, or undefined before their first sync. Row Level
+ * Security limits the table to that one row.
+ */
+export async function readSave(client: SupabaseClient): Promise<ReadSaveResult> {
+  const { data, error } = await client
+    .from(SAVES_TABLE)
+    .select("entries, settings, version")
+    .maybeSingle();
+  if (error !== null) {
+    return { ok: false, reason: "unreachable", error: error.message };
+  }
+  if (data === null) {
+    return { ok: true, value: undefined };
+  }
+  const parsed = parseRemoteSave(data);
+  return parsed.ok ? parsed : { ok: false, reason: "invalid", error: parsed.error };
+}
+
+/**
+ * Inserts the row when `expectedVersion` is undefined, otherwise updates it only while it is still
+ * at that version, bumping it. Returns "conflict" when another device wrote first.
+ */
+export async function writeSave(
+  client: SupabaseClient,
+  save: { entries: Entry[]; settings: Settings },
+  expectedVersion: number | undefined,
+): Promise<WriteSaveResult> {
+  if (expectedVersion === undefined) {
+    const { error } = await client.from(SAVES_TABLE).insert(save);
+    if (error === null) {
+      return { ok: true, value: "written" };
+    }
+    return error.code === UNIQUE_VIOLATION
+      ? { ok: true, value: "conflict" }
+      : { ok: false, reason: "unreachable", error: error.message };
+  }
+  const { data, error } = await client
+    .from(SAVES_TABLE)
+    .update({ ...save, version: expectedVersion + 1, updated_at: new Date().toISOString() })
+    .eq("version", expectedVersion)
+    .select("version");
+  if (error !== null) {
+    return { ok: false, reason: "unreachable", error: error.message };
+  }
+  return { ok: true, value: data.length === 0 ? "conflict" : "written" };
+}
+
+/** Returns the RemoteStore backed by `client`'s saves table. */
+export function createSupabaseRemoteStore(client: SupabaseClient): RemoteStore {
+  return {
+    read: () => readSave(client),
+    write: (save, expectedVersion) => writeSave(client, save, expectedVersion),
   };
 }

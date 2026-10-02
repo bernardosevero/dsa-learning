@@ -35,16 +35,22 @@ const markedMasteredSchema = z.object({
   date: localDateSchema,
 });
 
-const settingsSchema = z.object({
+/** Settings as saved; shared by the save file and the account's saves row. */
+export const settingsSchema = z.object({
   timeBoxMinutes: z.record(difficultySchema, z.number().positive()),
   showPatternOnReviews: z.boolean(),
   shareAnonymousUsage: z.boolean().default(true),
 });
 
+/** The log as saved; shared by the save file and the account's saves row. */
+export const entriesSchema = z.array(
+  z.discriminatedUnion("type", [attemptSchema, markedMasteredSchema]),
+);
+
 // Annotated with SaveFile so the compiler flags any drift between the schema and the domain type.
 const saveFileSchema: z.ZodType<SaveFile> = z.object({
   version: z.literal(1),
-  entries: z.array(z.discriminatedUnion("type", [attemptSchema, markedMasteredSchema])),
+  entries: entriesSchema,
   settings: settingsSchema,
   activeTimer: z.object({ problemId: z.string().min(1), startedAt: z.string() }).optional(),
 });

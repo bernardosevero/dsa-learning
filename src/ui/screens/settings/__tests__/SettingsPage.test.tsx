@@ -7,7 +7,9 @@ import type { SaveFile } from "@/domain/types";
 import { downloadExport } from "@/storage/download";
 import { STORAGE_KEY } from "@/storage/localStore";
 import type { AccountService } from "@/storage/accountService";
+import type { RemoteStore } from "@/storage/remoteStore";
 import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
+import { aFakeRemote } from "@/test/fakeRemoteStore";
 import { aFakeSupabase } from "@/test/fakeSupabase";
 import { AppDataProvider } from "@/ui/app/AppData";
 import { track } from "@/ui/shared/analytics";
@@ -23,10 +25,11 @@ const STORED_ATTEMPT = anAttempt({ id: "stored" });
 function renderSettings(
   file: SaveFile = aSaveFile({ entries: [STORED_ATTEMPT] }),
   accountService?: AccountService,
+  remoteStore?: RemoteStore,
 ) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(file));
   render(
-    <AppDataProvider accountService={accountService}>
+    <AppDataProvider accountService={accountService} remoteStore={remoteStore}>
       <MemoryRouter>
         <SettingsPage />
       </MemoryRouter>
@@ -235,5 +238,38 @@ describe("SettingsPage account", () => {
 
     expect((await screen.findByRole("alert")).textContent).toContain("Something went wrong");
     expect(screen.getByText("ada@example.com")).toBeDefined();
+  });
+
+  it("says when the account last synced", async () => {
+    const fake = aFakeSupabase({ email: "ada@example.com" });
+    renderSettings(undefined, fake.accountService, aFakeRemote().remoteStore);
+
+    expect(await screen.findByText("just now")).toBeDefined();
+    expect(screen.getByText(/^Synced/)).toBeDefined();
+  });
+
+  it("says sync is offline when the account's copy can't be reached", async () => {
+    const remote = aFakeRemote();
+    remote.setOffline(true);
+    renderSettings(undefined, aFakeSupabase({}).accountService, remote.remoteStore);
+
+    expect(await screen.findByText("Offline — will sync when you're back")).toBeDefined();
+  });
+
+  it("warns that a signed-in reset reaches every device, and resets by deleting every entry", async () => {
+    const fake = aFakeSupabase({ email: "ada@example.com" });
+    renderSettings(undefined, fake.accountService, aFakeRemote().remoteStore);
+    expect(
+      await screen.findByText(
+        "This resets your progress on every device. Importing an older export won't bring it back.",
+      ),
+    ).toBeDefined();
+
+    await userEvent.type(screen.getByLabelText("Type reset to confirm"), "reset");
+    await userEvent.click(screen.getByRole("button", { name: "Reset progress" }));
+
+    const entries = readStoredFile().entries;
+    expect(entries).toHaveLength(1);
+    expect(entries[0]?.deletedAt).toBeDefined();
   });
 });
