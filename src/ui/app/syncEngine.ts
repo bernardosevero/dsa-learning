@@ -150,10 +150,6 @@ export function createSyncEngine({
     }
   }
 
-  function handleFocus() {
-    sync();
-  }
-
   function handleVisibilityChange() {
     if (document.visibilityState === "visible") {
       sync();
@@ -179,7 +175,7 @@ export function createSyncEngine({
       session += 1;
       state = { phase: "idle" };
       unsubscribeFromFile = fileStore.subscribe(handleFileChange);
-      window.addEventListener("focus", handleFocus);
+      window.addEventListener("focus", sync);
       document.addEventListener("visibilitychange", handleVisibilityChange);
       sync();
     },
@@ -188,7 +184,7 @@ export function createSyncEngine({
       state = { phase: "stopped" };
       unsubscribeFromFile?.();
       clearTimeout(debounceTimeout);
-      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("focus", sync);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     },
   };
