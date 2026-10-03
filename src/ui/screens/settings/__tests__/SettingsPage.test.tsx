@@ -181,7 +181,7 @@ describe("SettingsPage account", () => {
     const fake = aFakeSupabase();
     renderSettings(undefined, fake.accountService);
 
-    await userEvent.click(await screen.findByRole("button", { name: "Continue with GitHub" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Sign in with GitHub" }));
 
     expect(screen.getByText(/syncs your progress across your devices/)).toBeDefined();
     expect(fake.signInWithOAuth).toHaveBeenCalledWith(
@@ -203,7 +203,7 @@ describe("SettingsPage account", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Sign out" }));
 
     expect(fake.signOut).toHaveBeenCalled();
-    expect(await screen.findByRole("button", { name: "Continue with GitHub" })).toBeDefined();
+    expect(await screen.findByRole("button", { name: "Sign in with GitHub" })).toBeDefined();
     expect(readStoredFile()).toEqual(before);
   });
 
@@ -221,7 +221,7 @@ describe("SettingsPage account", () => {
     await userEvent.click(within(dialog).getByRole("button", { name: "Delete account" }));
 
     expect(fake.rpc).toHaveBeenCalledWith("delete_my_account");
-    expect(await screen.findByRole("button", { name: "Continue with GitHub" })).toBeDefined();
+    expect(await screen.findByRole("button", { name: "Sign in with GitHub" })).toBeDefined();
     expect(readStoredFile()).toEqual(before);
     expect(readStoredFile().entries).toHaveLength(1);
   });
