@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/ui/primitives/avatar";
-import { Button } from "@/ui/primitives/button";
 import { cn } from "@/ui/primitives/cn";
+import { GitHubSignInButton } from "@/ui/shared/GitHubSignInButton";
 import { t } from "@/ui/shared/strings";
 
 import { useAppData } from "./AppData";
@@ -19,7 +19,7 @@ const SYNC_DOTS: Record<
   error: { className: "bg-destructive", label: t.account.sync.error },
 };
 
-/** The header's account control: Sign in, the avatar linking to Settings, or nothing at all. */
+/** The header's account control: Sign in with GitHub, the avatar linking to Settings, or nothing at all. */
 export function HeaderAccount() {
   const { account, signIn, syncStatus } = useAppData();
 
@@ -32,11 +32,7 @@ export function HeaderAccount() {
     return null;
   }
   if (account.status === "signedOut") {
-    return (
-      <Button variant="outline" onClick={handleSignIn}>
-        {t.account.signIn}
-      </Button>
-    );
+    return <GitHubSignInButton hasShortLabelWhenNarrow onClick={handleSignIn} />;
   }
   const syncDot = syncStatus.status === "signedOut" ? undefined : SYNC_DOTS[syncStatus.status];
   return (

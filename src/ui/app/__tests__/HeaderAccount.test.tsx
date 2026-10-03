@@ -36,17 +36,17 @@ describe("the header's account control", () => {
   it("shows no login UI in the header or Settings when accounts are unavailable", () => {
     renderAt("/settings");
 
-    expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Sign in with GitHub" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Account settings" })).toBeNull();
     expect(screen.queryByRole("heading", { name: "Account" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Continue with GitHub" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Sign in with GitHub" })).toBeNull();
   });
 
-  it("shows Sign in when signed out, and starts GitHub sign-in from it", async () => {
+  it("shows Sign in with GitHub when signed out, and starts GitHub sign-in from it", async () => {
     const fake = aFakeSupabase();
     renderAt("/", fake.accountService);
 
-    await userEvent.click(await screen.findByRole("button", { name: "Sign in" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Sign in with GitHub" }));
 
     expect(fake.signInWithOAuth).toHaveBeenCalledWith(
       expect.objectContaining({ provider: "github" }),
@@ -61,7 +61,7 @@ describe("the header's account control", () => {
 
     expect(avatarLink.getAttribute("href")).toBe("/settings#account");
     expect(avatarLink.textContent).toBe("A");
-    expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Sign in with GitHub" })).toBeNull();
   });
 
   it("tells the sync status on the avatar, in words as well as the dot", async () => {

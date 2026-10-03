@@ -36,7 +36,8 @@ export function AppLayout({ isReadable }: AppLayoutProps) {
           >
             {t.appName}
           </Link>
-          <div className="flex items-center gap-5">
+          {/* Tighter below the sheet width, where the nav and account share a narrow row. */}
+          <div className="flex items-center gap-3 sheet:gap-5">
             <nav aria-label={t.nav.label} className={NAV_CLASSES}>
               <ul className="flex nav:gap-5">
                 {NAV_LINKS.map((link) => (

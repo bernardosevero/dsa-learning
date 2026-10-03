@@ -18,6 +18,7 @@ import {
 } from "@/ui/primitives/alert-dialog";
 import { Button } from "@/ui/primitives/button";
 import { Card } from "@/ui/primitives/card";
+import { GitHubSignInButton } from "@/ui/shared/GitHubSignInButton";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
 
@@ -72,9 +73,11 @@ export function AccountSettings() {
         {account.status === "signedOut" ? (
           <>
             <p className="text-sm text-muted-foreground">{t.account.purpose}</p>
-            <Button className="self-start" disabled={isPending} onClick={handleSignIn}>
-              {t.account.continueWithGitHub}
-            </Button>
+            <GitHubSignInButton
+              className="self-start"
+              isDisabled={isPending}
+              onClick={handleSignIn}
+            />
           </>
         ) : (
           <>

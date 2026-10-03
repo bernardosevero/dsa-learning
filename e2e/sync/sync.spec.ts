@@ -175,13 +175,17 @@ test("delete account keeps the local log and removes the account's row", async (
   await page.getByRole("button", { name: "Delete account" }).click();
   await page.getByRole("alertdialog").getByRole("button", { name: "Delete account" }).click();
 
-  await expect(page.getByRole("button", { name: "Continue with GitHub" })).toBeVisible();
+  await expect(
+    page.getByRole("main").getByRole("button", { name: "Sign in with GitHub" }),
+  ).toBeVisible();
   expect(localEntryIds(await readLocalFile(page))).toEqual(localEntryIds(localLog));
   expect(await hasAccount(account.userId)).toBe(false);
   expect(await readSaveRow(account.userId)).toBeNull();
 });
 
-test("a signed-out app shows Sign in and never calls Supabase's REST API", async ({ browser }) => {
+test("a signed-out app shows Sign in with GitHub and never calls Supabase's REST API", async ({
+  browser,
+}) => {
   const { page } = await newDevice(browser);
   const restRequests: string[] = [];
   page.on("request", (request) => {
@@ -191,10 +195,14 @@ test("a signed-out app shows Sign in and never calls Supabase's REST API", async
   });
 
   await page.goto("/");
-  await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
+  await expect(
+    page.getByRole("banner").getByRole("button", { name: "Sign in with GitHub" }),
+  ).toBeVisible();
   await focusWindow(page);
   await page.goto("/settings");
-  await expect(page.getByRole("button", { name: "Continue with GitHub" })).toBeVisible();
+  await expect(
+    page.getByRole("main").getByRole("button", { name: "Sign in with GitHub" }),
+  ).toBeVisible();
 
   expect(restRequests).toEqual([]);
 });

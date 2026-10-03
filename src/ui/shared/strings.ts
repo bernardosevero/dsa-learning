@@ -26,11 +26,11 @@ export const en = {
   separator: " · ",
   account: {
     signIn: "Sign in",
+    signInWithGitHub: "Sign in with GitHub",
     openAccount: "Account settings",
     title: "Account",
     purpose:
       "An account syncs your progress across your devices. It's optional: the app works fully without one.",
-    continueWithGitHub: "Continue with GitHub",
     signedInAs: "Signed in as",
     signOut: "Sign out",
     deleteAccount: "Delete account",
