@@ -11,6 +11,7 @@ import { aFakeRemote } from "@/test/fakeRemoteStore";
 import { aFakeSupabase } from "@/test/fakeSupabase";
 
 import { AppDataProvider, useAppData, type AppDataValue } from "../AppData";
+import { LOCAL_CHANGE_DEBOUNCE_MS } from "../syncEngine";
 
 const UUID_PATTERN = /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/;
 
@@ -312,5 +313,31 @@ describe("AppDataProvider and the usage-sharing choice", () => {
       expect(readUsageSharing()).toBe(false);
     });
     expect(latestAppData?.file.settings.shareAnonymousUsage).toBe(false);
+  });
+
+  it("syncs a choice made outside it up to the account", async () => {
+    const remote = aFakeRemote(aRemoteSave());
+    render(
+      <AppDataProvider
+        accountService={aFakeSupabase({ email: "ada@example.com" }).accountService}
+        remoteStore={remote.remoteStore}
+      >
+        <AppDataProbe />
+      </AppDataProvider>,
+    );
+    await vi.waitFor(() => {
+      expect(latestAppData?.syncStatus.status).toBe("synced");
+    });
+
+    act(() => {
+      setUsageSharing(false);
+    });
+
+    await vi.waitFor(
+      () => {
+        expect(remote.row).toMatchObject({ settings: { shareAnonymousUsage: false } });
+      },
+      { timeout: LOCAL_CHANGE_DEBOUNCE_MS * 2 },
+    );
   });
 });
