@@ -8,7 +8,7 @@ import { Label } from "@/ui/primitives/label";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
 
-import { SwitchRow } from "./SwitchRow";
+import { SwitchRow } from "@/ui/shared/SwitchRow";
 
 const DIFFICULTIES = ["Easy", "Medium", "Hard"] as const satisfies readonly Difficulty[];
 const MIN_TIME_BOX_MINUTES = 1;

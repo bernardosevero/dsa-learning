@@ -125,6 +125,17 @@ export function createLocalStore(storage?: Storage): Store {
   };
 }
 
+let browserStore: Store | undefined;
+
+/**
+ * Returns the one Store over window.localStorage for this document, created on first call. The
+ * app and the usage-sharing bridge share it, including its in-memory copy when storage is blocked.
+ */
+export function getBrowserStore(): Store {
+  browserStore ??= createLocalStore();
+  return browserStore;
+}
+
 /** Returns the save file as pretty-printed JSON, the format of the export file. */
 export function exportJson(file: SaveFile): string {
   return JSON.stringify(file, null, JSON_INDENT_SPACES);
