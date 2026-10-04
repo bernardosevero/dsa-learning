@@ -13,6 +13,8 @@ import { aFakeRemote } from "@/test/fakeRemoteStore";
 import { aFakeSupabase } from "@/test/fakeSupabase";
 import { AppDataProvider } from "@/ui/app/AppData";
 import { track } from "@/ui/shared/analytics";
+import { UsageSharingControl } from "@/ui/shared/UsageSharingControl";
+import { useUsageSharing } from "@/ui/shared/useUsageSharing";
 
 import { SettingsPage } from "../SettingsPage";
 
@@ -35,6 +37,12 @@ function renderSettings(
       </MemoryRouter>
     </AppDataProvider>,
   );
+}
+
+// What the public Privacy page renders, outside AppData.
+function PublicUsageSharing() {
+  const { isEnabled, setEnabled } = useUsageSharing();
+  return <UsageSharingControl isEnabled={isEnabled} onEnabledChange={setEnabled} />;
 }
 
 function readStoredFile(): SaveFile {
@@ -102,6 +110,21 @@ describe("SettingsPage", () => {
     await userEvent.click(screen.getByRole("switch", { name: "Share usage data" }));
 
     expect(readStoredFile().settings.shareAnonymousUsage).toBe(false);
+  });
+
+  it("agrees with the public privacy switch both ways", async () => {
+    render(<PublicUsageSharing />);
+    renderSettings();
+    const [publicSwitch, settingsSwitch] = screen.getAllByRole("switch", {
+      name: "Share usage data",
+    });
+
+    await userEvent.click(publicSwitch ?? document.body);
+    expect(settingsSwitch?.getAttribute("aria-checked")).toBe("false");
+    await userEvent.click(settingsSwitch ?? document.body);
+
+    expect(publicSwitch?.getAttribute("aria-checked")).toBe("true");
+    expect(readStoredFile().entries).toEqual([STORED_ATTEMPT]);
   });
 
   it("exports the save file", async () => {

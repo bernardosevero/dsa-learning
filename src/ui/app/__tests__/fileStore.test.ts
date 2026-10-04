@@ -33,6 +33,19 @@ describe("createFileStore", () => {
     expect(listener).toHaveBeenCalledWith(fileStore.getFile(), before, "sync");
   });
 
+  it("tells the listeners about a change from storage without saving it again", () => {
+    const store = aStore();
+    const fileStore = createFileStore(store);
+    const listener = vi.fn();
+    fileStore.subscribe(listener);
+    const before = fileStore.getFile();
+
+    fileStore.update((current) => ({ ...current, entries: [anAttempt()] }), "storage");
+
+    expect(store.saved).toEqual([]);
+    expect(listener).toHaveBeenCalledWith(fileStore.getFile(), before, "storage");
+  });
+
   it("treats a change returning the same file as no change", () => {
     const store = aStore();
     const fileStore = createFileStore(store);

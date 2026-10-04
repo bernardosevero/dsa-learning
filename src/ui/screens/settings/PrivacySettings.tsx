@@ -5,8 +5,7 @@ import { Card } from "@/ui/primitives/card";
 import { setAnalyticsEnabled } from "@/ui/shared/analytics";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
-
-import { SwitchRow } from "./SwitchRow";
+import { UsageSharingControl } from "@/ui/shared/UsageSharingControl";
 
 /** Privacy: the saved anonymous-analytics choice; the full notice is linked from the page footer. */
 export function PrivacySettings() {
@@ -22,11 +21,9 @@ export function PrivacySettings() {
     <section aria-labelledby={headingId}>
       <SectionLabel id={headingId}>{t.settings.privacy}</SectionLabel>
       <Card>
-        <SwitchRow
-          label={t.settings.shareAnonymousUsage}
-          hint={t.settings.shareAnonymousUsageHint}
-          isChecked={file.settings.shareAnonymousUsage}
-          onCheckedChange={handleUsageChange}
+        <UsageSharingControl
+          isEnabled={file.settings.shareAnonymousUsage}
+          onEnabledChange={handleUsageChange}
         />
       </Card>
     </section>
