@@ -249,9 +249,15 @@ export const en = {
       "PostHog receives page addresses without query strings or fragments, browser and device details, and the IP address of each network request. Its cookieless mode uses the IP address, browser details and site hostname to make a visitor hash that changes daily.",
     analyticsStorage:
       "PostHog does not put analytics cookies or a persistent visitor ID in this browser. The app still stores your practice log and settings here.",
+    publicPages:
+      "The same choice covers the public pages: the home page, How it works and this page. With sharing on, they send pageviews, and a click on Start practicing sends which page and which of its two buttons was clicked.",
+    funnel:
+      "Within the same visit, a logged attempt also says whether it is the first attempt in this browser's log and whether the visit came through a Start practicing click. Nothing links these events to an account, and nothing follows you across devices.",
     neverCollected:
       "Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking and session recording are off.",
-    optOutBefore: "Sharing is on by default. Turn it off at any time in",
+    switchApplies:
+      "The switch below is one setting in this browser, the same one as in Settings. Turning it off stops these optional analytics on every page, public and practice.",
+    optOutBefore: "Sharing is on by default. Turn it off at any time below or in",
     settingsLink: "Settings",
     optOutAfter:
       ". Turning sharing off stops future analytics events; it does not delete events already sent.",
@@ -264,11 +270,16 @@ export const en = {
     notAffiliated: "This app is not affiliated with or endorsed by NeetCode or LeetCode.",
     mitTitle: "MIT license notice",
   },
+  startPracticing: "Start practicing",
+  intervals: {
+    caption: "How your rating sets the next re-solve",
+    columns: { rating: "How it felt", next: "Next re-solve" },
+    days: (days: number) => `+${days} calendar days`,
+  },
   landing: {
     title: "Spaced repetition for the NeetCode 150",
     summary:
       "Keep previously solved coding problems in your practice routine. dsa-learning shows your due reviews and the next new problem, then schedules each re-solve from how hard it felt.",
-    startPracticing: "Start practicing",
     howItWorks: "How it works",
     noAccount: "Free to use. No dsa-learning account required.",
     previewCaption: "Example practice data",
@@ -291,9 +302,6 @@ export const en = {
       },
     },
     intervalsTitle: "When a problem comes back",
-    intervalsCaption: "How your rating sets the next re-solve",
-    intervalsColumns: { rating: "How it felt", next: "Next re-solve" },
-    intervalDays: (days: number) => `+${days} calendar days`,
     intervalsFixed:
       "The intervals are fixed: a Medium stays at 7 days however often you repeat it. Your time and any help you used are recorded for you to look back on, but they don't change the schedule.",
     intervalsMore: "How mastery works, and more details",
@@ -320,6 +328,90 @@ export const en = {
       "An independent tool following the NeetCode 150 list; not affiliated with NeetCode or LeetCode.",
     privacyAndCredits: "Privacy & credits",
     mitNotice: "MIT license notice",
+  },
+  howItWorks: {
+    title: "How spaced-repetition practice works",
+    intro:
+      "Solve, rate, and re-solve problems from the NeetCode 150. Your rating sets the next review date.",
+    today: {
+      question: "What should I practice today?",
+      reviews:
+        "Due reviews come first, sorted by risk: how far past its due date each review is, measured against its interval, rather than simply the oldest date. The first one is your focus.",
+      newProblem: "After the reviews comes the next new problem, in NeetCode order.",
+      noLimits:
+        "There is no daily cap, no skip action and no list of upcoming reviews. You choose how much to do.",
+    },
+    solving: {
+      question: "Where do I solve the problem?",
+      before: "You read the full statement and solve the problem on",
+      neetCode: "NeetCode",
+      between: "(linked first) or",
+      leetCode: "LeetCode",
+      after:
+        ". dsa-learning records your attempts and schedules your reviews. NeetCode and LeetCode may ask you to create an account of their own.",
+    },
+    intervals: {
+      question: "When does a problem return?",
+      calendarDays:
+        "Each interval counts calendar days in your time zone, starting from the day you actually did the attempt. A Medium stays at 7 days however often you repeat it.",
+      timeAndHelp:
+        "Your time and any help you used are recorded for you to look back on. They don't change the interval.",
+      overdue:
+        "An overdue review stays due until you do it. Re-solving a problem before its due date restarts its interval from that day.",
+    },
+    mastery: {
+      question: "When is a problem mastered?",
+      rule: "An Easy on a review done on or after its due date, following an Easy, marks the problem mastered. An Easy before the due date doesn't count: the 30-day interval simply restarts.",
+      manual:
+        "You can also mark any problem Already mastered from Problems. Rating a mastered problem Medium or Hard later brings it back into rotation.",
+      label:
+        "“Mastered” is the app's scheduling label: the problem leaves the review rotation. It is not a guarantee of how you will do in an interview.",
+    },
+    spoilers: {
+      question: "Why are earlier answers hidden?",
+      retrieval:
+        "Re-solving from a blank editor is retrieval practice: recalling the approach yourself is the exercise.",
+      hidden:
+        "So while a problem is being reviewed, its pattern, your earlier key insights and the solution and video links stay hidden until you log the attempt.",
+      exceptions:
+        "If you turn on “Show the pattern on reviews” in Settings, the pattern stays visible. On a problem's own page, a Reveal (spoilers) button shows the rest when you choose to.",
+    },
+    research: {
+      question: "What is the research behind it?",
+      intro:
+        "Two well-studied ideas shape the app: spacing and retrieval practice. The studies below are about learning in general; the exact rules in this app are our own choices.",
+      spacing: {
+        title: "Spacing",
+        body: "In a study of more than 1,350 people learning facts, a review spread out from the first study session improved recall on a later test, and the best gap grew longer the longer the material had to be remembered.",
+        source: "Cepeda et al. (2008)",
+      },
+      retrieval: {
+        title: "Retrieval practice",
+        body: "Students who practiced recalling a passage remembered more of it two days and a week later than students who reread it, even though rereading did better on a test five minutes later.",
+        source: "Roediger & Karpicke (2006)",
+      },
+      broader: {
+        title: "Broader evidence on study techniques",
+        body: "A review of ten common study techniques rated practice testing and spreading practice over time as the two with high utility, and rereading and highlighting as low.",
+        source: "Dunlosky et al. (2013)",
+      },
+      limits:
+        "The fixed 2, 7 and 30-day intervals are product defaults, not a scientifically established optimum for coding interviews. Re-solving a complex coding problem is also different from recalling a fact or a passage, which is what most of this research measured. This app has not been tested in a study of its own.",
+    },
+    account: {
+      question: "Can I use it without an account, and keep a backup?",
+      local: "Yes. dsa-learning works without an account: your progress is saved in this browser.",
+      backupBefore: "Export it as a JSON file in",
+      settingsLink: "Settings",
+      backupAfter:
+        " to keep a backup or move to another browser, then import it there. Clearing this browser's site data deletes the progress stored here, so export first.",
+      optionalAccount:
+        "Signing in with GitHub is optional: an account syncs your progress across your devices, and the app works fully without one.",
+      privacyBefore: "The",
+      privacyLink: "Privacy page",
+      privacyAfter: " says exactly what is stored, and where.",
+    },
+    backToHome: "Back to the home page",
   },
   ratings: { hard: "Hard", medium: "Medium", easy: "Easy" },
   solving: {

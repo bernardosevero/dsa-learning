@@ -2,13 +2,13 @@ import { Link } from "react-router";
 
 import { Button } from "@/ui/primitives/button";
 import { ExternalLink } from "@/ui/shared/ExternalLink";
+import { IntervalTable } from "@/ui/shared/IntervalTable";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
+import { StartPracticingLink } from "@/ui/shared/StartPracticingLink";
 import { t } from "@/ui/shared/strings";
 
-import { IntervalTable } from "./IntervalTable";
 import { LandingFaq } from "./LandingFaq";
 import { PracticeSteps } from "./PracticeSteps";
-import { StartPracticingLink } from "./StartPracticingLink";
 import { TODAY_PREVIEW_SIZE } from "./todayPreviewSize";
 
 /**
