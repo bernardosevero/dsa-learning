@@ -70,13 +70,14 @@ const codeStyleRules: Linter.RulesRecord = {
   "max-depth": ["warn", 2],
 };
 
-// Files whose names and default exports React Router's framework mode requires.
+// Files whose names and default exports React Router's framework mode requires: the document,
+// the route config and entries, and the route modules in src/routes/.
 const FRAMEWORK_FILES = [
   "src/root.tsx",
   "src/routes.ts",
   "src/entry.client.tsx",
   "src/entry.server.tsx",
-  "src/framework/*.tsx",
+  "src/routes/*.tsx",
 ] as const;
 
 const SCREEN_NAMES = readdirSync(path.join(import.meta.dirname, "src/ui/screens"), {

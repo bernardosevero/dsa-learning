@@ -64,7 +64,7 @@ No environment variables are needed locally. Without the Supabase variables belo
 Login (GitHub) and the `saves` table live in Supabase. You only need this to work on them.
 
 - **Database tests:** with Docker running, `pnpm supabase start` starts a local Supabase stack, and `pnpm supabase test db` runs the pgTAP tests in `supabase/tests/`, which prove each user can only reach their own row. CI runs them on pull requests that touch `supabase/`. `pnpm supabase stop` stops the stack. The local stack has no GitHub login.
-- **Sync end-to-end tests:** with the stack running, `pnpm test:e2e:sync` builds the app against it (into `build-sync/`) and runs the Playwright tests in `e2e/sync/`: two browsers signed into one account, syncing for real. The tests sign in with a password test user instead of GitHub. CI runs them on pull requests that touch `supabase/`, `src/storage/`, `src/ui/app/`, `src/framework/` or `e2e/sync/`.
+- **Sync end-to-end tests:** with the stack running, `pnpm test:e2e:sync` builds the app against it (into `build-sync/`) and runs the Playwright tests in `e2e/sync/`: two browsers signed into one account, syncing for real. The tests sign in with a password test user instead of GitHub. CI runs them on pull requests that touch `supabase/`, `src/storage/`, `src/ui/app/`, `src/routes/` or `e2e/sync/`.
 - **Trying sign-in:** create a `.env.local` that points `pnpm dev` at the hosted project (`http://localhost:5173` is an allowed redirect):
 
   ```sh

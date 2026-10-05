@@ -11,14 +11,14 @@ interface RouteModule {
   handle?: unknown;
 }
 
-// The real route adapters, keyed the way src/routes.ts names them ("framework/today.tsx").
-const ROUTE_MODULES = import.meta.glob<RouteModule>("../framework/*.tsx", { eager: true });
-const APP_STATE_FILE = "framework/appState.tsx";
+// The real route modules, keyed the way src/routes.ts names them ("routes/today.tsx").
+const ROUTE_MODULES = import.meta.glob<RouteModule>("../routes/*.tsx", { eager: true });
+const PRACTICE_APP_FILE = "routes/practiceApp.tsx";
 
 function findRouteModule(file: string): RouteModule {
   const routeModule = ROUTE_MODULES[`../${file}`];
   if (routeModule === undefined) {
-    throw new Error(`src/routes.ts names ${file}, which has no module in src/framework`);
+    throw new Error(`src/routes.ts names ${file}, which has no module in src/routes`);
   }
   return routeModule;
 }
@@ -28,13 +28,13 @@ function findRouteModule(file: string): RouteModule {
  * practice app gets `practiceAppProps` (a fake account, say) in place of the build's backend.
  */
 export function createAppRouter(initialPath: string, practiceAppProps: PracticeAppProps = {}) {
-  function TestAppState() {
+  function TestPracticeApp() {
     return createElement(PracticeApp, practiceAppProps);
   }
 
   function toRouteObject(entry: RouteConfigEntry): RouteObject {
     const routeModule = findRouteModule(entry.file);
-    const Component = entry.file === APP_STATE_FILE ? TestAppState : routeModule.default;
+    const Component = entry.file === PRACTICE_APP_FILE ? TestPracticeApp : routeModule.default;
     const { handle } = routeModule;
     if (entry.index === true) {
       return { index: true, Component, handle };

@@ -1,8 +1,9 @@
 import { useSyncExternalStore } from "react";
 
 import { createBackend, type Backend } from "@/storage/backend";
-import { AppLoading } from "@/ui/app/AppLoading";
-import { PracticeApp } from "@/ui/app/PracticeApp";
+
+import { AppLoading } from "./AppLoading";
+import { PracticeApp } from "./PracticeApp";
 
 let backend: Backend | undefined;
 let isBackendCreated = false;
@@ -29,10 +30,10 @@ function isOnServer(): boolean {
 }
 
 /**
- * Layout route over every practice screen. The save lives in this browser, so the practice app
- * mounts only once the page runs on the client; the build and hydration render the fallback.
+ * The practice app with the build's backend, mounted only once the page runs in the browser: the
+ * save lives there, so the build and hydration render the loading fallback instead.
  */
-export default function AppState() {
+export function ClientPracticeApp() {
   const isHydrated = useSyncExternalStore(subscribeToNothing, isOnClient, isOnServer);
   if (!isHydrated) {
     return <AppLoading />;
