@@ -1,7 +1,8 @@
 import { Link } from "react-router";
 
 import { Button } from "@/ui/primitives/button";
-import { t } from "@/ui/shared/strings";
+
+import { t } from "./strings";
 
 export interface StartPracticingLinkProps {
   /** Where on the page the link sits, so the funnel analytics can tell the two apart. */
@@ -13,7 +14,7 @@ export function StartPracticingLink({ placement }: StartPracticingLinkProps) {
   return (
     <Button asChild className="px-5">
       <Link to="/today" data-placement={placement}>
-        {t.landing.startPracticing}
+        {t.startPracticing}
       </Link>
     </Button>
   );

@@ -45,6 +45,8 @@ export function PrivacyPage() {
                 <li key={event}>{event}</li>
               ))}
             </ul>
+            <p>{t.privacy.publicPages}</p>
+            <p>{t.privacy.funnel}</p>
             <p>{t.privacy.analyticsDetails}</p>
             <p>{t.privacy.analyticsStorage}</p>
             <p>{t.privacy.neverCollected}</p>
@@ -56,6 +58,7 @@ export function PrivacyPage() {
               {t.privacy.optOutAfter}
             </p>
           </Card>
+          <p className="mt-3 text-sm text-muted-foreground">{t.privacy.switchApplies}</p>
           <Card className="mt-3">
             <UsageSharingControl isEnabled={isEnabled} onEnabledChange={setEnabled} />
           </Card>
