@@ -16,7 +16,7 @@ function renderAt(path: string) {
   render(<RouterProvider router={createAppRouter(path)} />);
 }
 
-// PageSheet's readable column, which Problem detail and Settings ask for through a route handle.
+// PageSheet's readable column, which Problem detail and Settings sit in.
 const READABLE_COLUMN_CLASS = "max-w-[656px]";
 
 function pageHeading(): string {
@@ -120,12 +120,13 @@ describe("the app's routes", () => {
   it("moves between Today, Problems and Settings from the nav and marks the current one", async () => {
     const user = userEvent.setup();
     renderAt("/");
-    const nav = screen.getByRole("navigation", { name: "Main" });
 
     await user.click(screen.getByRole("link", { name: "Problems" }));
     expect(pageHeading()).toBe("Problems");
     await user.click(screen.getByRole("link", { name: "Settings" }));
 
+    // Settings has its own layout route (the readable column), so its header is a new element.
+    const nav = screen.getByRole("navigation", { name: "Main" });
     expect(pageHeading()).toBe("Settings & data");
     expect(nav.querySelector("[aria-current='page']")?.textContent).toBe("Settings");
     expect(trackPageView).toHaveBeenCalledWith("/problems");

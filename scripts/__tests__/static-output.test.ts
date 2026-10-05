@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildRedirects, listPracticePaths } from "../static-output.ts";
+import { buildRedirects, listPracticePaths, removeScripts } from "../static-output.ts";
 
 describe("listPracticePaths", () => {
   it("lists the fixed practice addresses and each problem's detail, Solving and Log address", () => {
@@ -27,6 +27,12 @@ describe("buildRedirects", () => {
     expect(redirects.split("\n")).toContain("/solve/two-sum/ /solve/two-sum 301");
   });
 
+  it("sends /404 to an address with no file, so it answers with a real 404", () => {
+    const redirects = buildRedirects(["two-sum"]);
+
+    expect(redirects.split("\n")[0]).toBe("/404 /not-found 301");
+  });
+
   it("never names /privacy or a public page, so they keep their prerendered HTML", () => {
     const redirects = buildRedirects(["two-sum"]);
 
@@ -41,5 +47,24 @@ describe("buildRedirects", () => {
 
     expect(redirects.endsWith("\n")).toBe(true);
     expect(redirects.trimEnd().split("\n").length).toBeLessThanOrEqual(2000);
+  });
+});
+
+describe("removeScripts", () => {
+  it("drops inline and module scripts and their preloads, keeping content and styles", () => {
+    const html = [
+      '<head><link rel="stylesheet" href="/assets/index.css"/>',
+      '<link rel="modulepreload" href="/assets/root.js"/></head>',
+      '<body><h1>Page not found</h1><a href="/">Go to the app</a>',
+      "<script>window.__reactRouterContext = {};</script>",
+      '<script type="module" async="">import "/assets/root.js";</script></body>',
+    ].join("");
+
+    const page = removeScripts(html);
+
+    expect(page).toBe(
+      '<head><link rel="stylesheet" href="/assets/index.css"/></head>' +
+        '<body><h1>Page not found</h1><a href="/">Go to the app</a></body>',
+    );
   });
 });

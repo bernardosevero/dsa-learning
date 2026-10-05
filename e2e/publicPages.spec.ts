@@ -118,15 +118,26 @@ test("an unknown address gets the 404 page with a 404 status", async ({ page }) 
   expect(errors).toEqual([]);
 });
 
-test("an unknown problem gets a 404 status, then the app says it isn't in the list", async ({
+test("an unknown problem gets the static 404 page with a 404 status and no scripts", async ({
   page,
 }) => {
+  const errors = collectErrors(page);
+
   for (const path of ["/problems/not-a-problem", "/solve/not-a-problem", "/log/not-a-problem"]) {
     const response = await page.goto(path);
 
     expect(response?.status(), path).toBe(404);
-    await expect(page.getByText(/isn't in the list|Page not found/).first(), path).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Page not found" })).toBeVisible();
+    await expect(page.locator("script")).toHaveCount(0);
   }
+  expect(errors).toEqual([]);
+});
+
+test("/404 answers with a real 404 status", async ({ page }) => {
+  const response = await page.goto("/404");
+
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole("heading", { level: 1, name: "Page not found" })).toBeVisible();
 });
 
 test("pages are noindex, and assets keep their types", async ({ page, request }) => {

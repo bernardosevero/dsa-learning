@@ -7,8 +7,6 @@ import { PracticeApp, type PracticeAppProps } from "@/ui/app/PracticeApp";
 
 interface RouteModule {
   default: ComponentType;
-  /** What the build passes on as `match.handle`, such as a screen asking for the readable column. */
-  handle?: unknown;
 }
 
 // The real route modules, keyed the way src/routes.ts names them ("routes/today.tsx").
@@ -35,11 +33,10 @@ export function createAppRouter(initialPath: string, practiceAppProps: PracticeA
   function toRouteObject(entry: RouteConfigEntry): RouteObject {
     const routeModule = findRouteModule(entry.file);
     const Component = entry.file === PRACTICE_APP_FILE ? TestPracticeApp : routeModule.default;
-    const { handle } = routeModule;
     if (entry.index === true) {
-      return { index: true, Component, handle };
+      return { index: true, Component };
     }
-    return { path: entry.path, Component, handle, children: entry.children?.map(toRouteObject) };
+    return { path: entry.path, Component, children: entry.children?.map(toRouteObject) };
   }
 
   return createMemoryRouter(routes.map(toRouteObject), { initialEntries: [initialPath] });

@@ -6,7 +6,6 @@ import { t } from "@/ui/shared/strings";
 import { Wordmark } from "@/ui/shared/Wordmark";
 
 import { HeaderAccount } from "./HeaderAccount";
-import { useIsReadableRoute } from "./readableRoute";
 
 const NAV_LINKS = [
   { to: "/", label: t.nav.today, Icon: CalendarIcon },
@@ -20,13 +19,13 @@ const NAV_CLASSES =
 const NAV_LINK_CLASSES =
   "flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 border-transparent py-1.5 text-xs text-muted-foreground nav:flex-row nav:border-b-2 nav:py-0 nav:text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[current=page]:font-semibold aria-[current=page]:text-foreground nav:flex-none nav:aria-[current=page]:border-primary";
 
-/**
- * The frame every main screen sits in: wordmark, nav, account and the current route below. A
- * screen of text and forms keeps to a readable column when its route asks for it.
- */
-export function AppLayout() {
-  const isReadable = useIsReadableRoute();
+export interface AppLayoutProps {
+  /** Keeps a wide window's content to a readable column, for screens of text and forms. */
+  isReadable?: boolean;
+}
 
+/** The frame every main screen sits in: wordmark, nav, account and the current route below. */
+export function AppLayout({ isReadable }: AppLayoutProps) {
   return (
     <PageSheet
       isReadable={isReadable}
