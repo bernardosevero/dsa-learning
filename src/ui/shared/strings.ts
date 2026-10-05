@@ -250,7 +250,7 @@ export const en = {
     analyticsStorage:
       "PostHog does not put analytics cookies or a persistent visitor ID in this browser. The app still stores your practice log and settings here.",
     publicPages:
-      "The same choice covers the public pages: the home page, How it works and this page. With sharing on, they send pageviews, and a click on Start practicing sends which page and which of its two buttons was clicked.",
+      "The same choice covers the public pages: the home page, How it works and this page. With sharing on, they send pageviews, and a click on Start practicing sends which page it was on and where on that page the button sits.",
     funnel:
       "Within the same visit, a logged attempt also says whether it is the first attempt in this browser's log and whether the visit came through a Start practicing click. Nothing links these events to an account, and nothing follows you across devices.",
     neverCollected:

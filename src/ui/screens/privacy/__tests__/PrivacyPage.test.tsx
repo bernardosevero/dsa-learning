@@ -42,7 +42,7 @@ describe("PrivacyPage", () => {
     container.innerHTML = renderToString(privacyElement());
 
     expect(container.textContent).toContain("The same choice covers the public pages");
-    expect(container.textContent).toContain("which page and which of its two buttons");
+    expect(container.textContent).toContain("where on that page the button sits");
     expect(container.textContent).toContain("Nothing links these events to an account");
     expect(container.textContent).toContain("on every page, public and practice");
     expect(container.textContent).toContain("Your notes, key insights");
