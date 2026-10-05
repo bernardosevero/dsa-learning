@@ -103,6 +103,7 @@ One-off Node scripts in `scripts/`. The ones marked 🌐 need network access.
 | `pnpm tsx scripts/snapshot-nc-links.ts` 🌐 | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
 | `pnpm tsx scripts/smoke-production.ts` 🌐 | Checks that production is wired to Supabase without signing in: the build's variables, GitHub sign-in, and the `saves` table and `delete_my_account()` closed to anyone signed out. CI runs it daily |
 | `pnpm tsx scripts/render-link-previews.ts` 🌐 | Redraws the favicon, the Apple touch icon and the link-preview image in `public/`. Run it after changing their design in the script. It needs a Chromium, like the end-to-end tests |
+| `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/` 🌐 | Redraws `public/today-preview.png`, the landing page's picture of Today, from synthetic practice data on a fixed date. Serve a local build first (`pnpm build && pnpm preview --port 4173`); it refuses any non-local address and uses a fresh browser context, so it never touches anyone's progress. It needs a Chromium, like the end-to-end tests |
 
 ## 🚀 Deploy
 
