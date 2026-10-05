@@ -264,6 +264,63 @@ export const en = {
     notAffiliated: "This app is not affiliated with or endorsed by NeetCode or LeetCode.",
     mitTitle: "MIT license notice",
   },
+  landing: {
+    title: "Spaced repetition for the NeetCode 150",
+    summary:
+      "Keep previously solved coding problems in your practice routine. dsa-learning shows your due reviews and the next new problem, then schedules each re-solve from how hard it felt.",
+    startPracticing: "Start practicing",
+    howItWorks: "How it works",
+    noAccount: "Free to use. No dsa-learning account required.",
+    previewCaption: "Example practice data",
+    previewAlt:
+      "The Today screen with example data: three due reviews, the most at-risk one, Contains Duplicate, shown as the focus with a Start button, and Top K Frequent Elements as the next new problem.",
+    stepsTitle: "The practice loop",
+    steps: {
+      due: {
+        title: "See what is due",
+        body: "Today lists your due reviews, most at risk first, plus the next new problem.",
+      },
+      solve: {
+        title: "Solve and log",
+        body: "Solve it on NeetCode or LeetCode, then rate how it felt and record the attempt here.",
+      },
+      resolve: {
+        title: "Return for a re-solve",
+        body: (hard: number, medium: number, easy: number) =>
+          `Hard comes back in ${hard} calendar days, Medium in ${medium} and Easy in ${easy}.`,
+      },
+    },
+    intervalsTitle: "When a problem comes back",
+    intervalsCaption: "How your rating sets the next re-solve",
+    intervalsColumns: { rating: "How it felt", next: "Next re-solve" },
+    intervalDays: (days: number) => `+${days} calendar days`,
+    intervalsFixed:
+      "The intervals are fixed: a Medium stays at 7 days however often you repeat it. Your time and any help you used are recorded for you to look back on, but they don't change the schedule.",
+    intervalsMore: "How mastery works, and more details",
+    faqTitle: "Questions",
+    faqs: {
+      platform: {
+        question: "Is this a coding platform?",
+        answer:
+          "No. dsa-learning tracks your practice. You read the full problem statement and solve it on NeetCode or LeetCode, which may ask for an account of their own.",
+      },
+      account: {
+        question: "Do I need an account?",
+        answer: "No. You don't need a dsa-learning account to practice.",
+      },
+      storage: {
+        question: "Where is my progress saved?",
+        answerBefore:
+          "In this browser: it works without an account, and you can export it as a JSON file and import it again. The",
+        privacyLink: "Privacy page",
+        answerAfter: " says exactly what is stored, and where.",
+      },
+    },
+    notAffiliated:
+      "An independent tool following the NeetCode 150 list; not affiliated with NeetCode or LeetCode.",
+    privacyAndCredits: "Privacy & credits",
+    mitNotice: "MIT license notice",
+  },
   ratings: { hard: "Hard", medium: "Medium", easy: "Easy" },
   solving: {
     backToToday: "‹ Today",
