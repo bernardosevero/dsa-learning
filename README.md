@@ -55,9 +55,12 @@ pnpm build
 pnpm preview
 ```
 
-`pnpm preview` serves `build/client/` with Wrangler's local copy of Cloudflare's static hosting at http://localhost:8787, the way production serves it: `/privacy` gets its prerendered page, practice addresses get the app shell, and anything else gets `404.html` with a 404 status. It runs offline and needs no Cloudflare account.
+`pnpm preview` serves `build/client/` with Wrangler's local copy of Cloudflare's static hosting at http://localhost:8787, the way production serves it: the public pages (`/`, `/how-it-works`, `/privacy`) get their prerendered HTML, practice addresses (`/today`, `/problems`, …) get the app shell, and anything else gets `404.html` with a 404 status. It runs offline and needs no Cloudflare account.
 
-No environment variables are needed locally. Without the Supabase variables below the app runs local-only, with login hidden.
+No environment variables are needed locally. Without the Supabase variables below the app runs local-only, with login hidden. Two build variables shape the public pages' head tags, `robots.txt` and `sitemap.xml` (see `.env.example`):
+
+- `VITE_SITE_URL`: the canonical origin for canonical, Open Graph and sitemap URLs. Defaults to `https://dsa-learning.bernardosevero.dev`.
+- `VITE_PUBLIC_INDEXING_ENABLED`: only the exact value `true` lets search engines index the public pages and fills the sitemap. Anything else, including unset, keeps every page `noindex` with an empty sitemap. Production stays unset until the launch checklist is done. Practice pages are always `noindex`.
 
 ### Accounts and the database (optional)
 
@@ -65,7 +68,7 @@ Login (GitHub) and the `saves` table live in Supabase. You only need this to wor
 
 - **Database tests:** with Docker running, `pnpm supabase start` starts a local Supabase stack, and `pnpm supabase test db` runs the pgTAP tests in `supabase/tests/`, which prove each user can only reach their own row. CI runs them on pull requests that touch `supabase/`. `pnpm supabase stop` stops the stack. The local stack has no GitHub login.
 - **Sync end-to-end tests:** with the stack running, `pnpm test:e2e:sync` builds the app against it (into `build-sync/`) and runs the Playwright tests in `e2e/sync/`: two browsers signed into one account, syncing for real. The tests sign in with a password test user instead of GitHub. CI runs them on pull requests that touch `supabase/`, `src/storage/`, `src/ui/app/`, `src/routes/` or `e2e/sync/`.
-- **Trying sign-in:** create a `.env.local` that points `pnpm dev` at the hosted project (`http://localhost:5173` is an allowed redirect):
+- **Trying sign-in:** create a `.env.local` that points `pnpm dev` at the hosted project. Sign-in returns to `/today`, so the project's Redirect URLs (Supabase dashboard, Authentication → URL Configuration) must allow `http://localhost:5173/today`:
 
   ```sh
   VITE_SUPABASE_URL=https://fdxfqeqlnvaijlihdplo.supabase.co
@@ -83,7 +86,7 @@ Login (GitHub) and the `saves` table live in Supabase. You only need this to wor
 | `pnpm lint` | Runs ESLint, including the rule that keeps `src/domain` pure |
 | `pnpm typecheck` | Generates React Router's route types (into `.react-router/`), then type-checks the project with TypeScript |
 | `pnpm format` | Formats the code with Prettier |
-| `pnpm build` | Type-checks, builds the static site into `build/client/` (prerendering the public pages), then writes its `404.html` and `_redirects` with `scripts/static-output.ts` |
+| `pnpm build` | Type-checks, builds the static site into `build/client/` (prerendering the public pages), then writes its `404.html`, `_redirects`, `_headers`, `robots.txt` and `sitemap.xml` with `scripts/static-output.ts` |
 | `pnpm preview` | Serves the built `build/client/` locally with Wrangler, at http://localhost:8787 |
 | `pnpm supabase start` / `stop` | Starts or stops the local Supabase stack (needs Docker) |
 | `pnpm supabase test db` | Runs the pgTAP tests against the local stack |
@@ -103,7 +106,7 @@ One-off Node scripts in `scripts/`. The ones marked 🌐 need network access.
 | `pnpm tsx scripts/snapshot-nc-links.ts` 🌐 | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
 | `pnpm tsx scripts/smoke-production.ts` 🌐 | Checks that production is wired to Supabase without signing in: the build's variables, GitHub sign-in, and the `saves` table and `delete_my_account()` closed to anyone signed out. CI runs it daily |
 | `pnpm tsx scripts/render-link-previews.ts` 🌐 | Redraws the favicon, the Apple touch icon and the link-preview image in `public/`. Run it after changing their design in the script. It needs a Chromium, like the end-to-end tests |
-| `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/` 🌐 | Redraws `public/today-preview.png`, the landing page's picture of Today, from synthetic practice data on a fixed date. Serve a local build first (`pnpm build && pnpm preview --port 4173`); it refuses any non-local address and uses a fresh browser context, so it never touches anyone's progress. It needs a Chromium, like the end-to-end tests |
+| `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/today` 🌐 | Redraws `public/today-preview.png`, the landing page's picture of Today, from synthetic practice data on a fixed date. Serve a local build first (`pnpm build && pnpm preview --port 4173`); it refuses any non-local address and uses a fresh browser context, so it never touches anyone's progress. It needs a Chromium, like the end-to-end tests |
 
 ## 🚀 Deploy
 
@@ -111,7 +114,7 @@ Live at **https://dsa-learning.bernardosevero.dev**.
 
 - Static site on Cloudflare Workers, served from `build/client/`. Nothing runs on a server: React Router prerenders the public pages at build time, and the practice screens render in the browser.
 - Merging to `main` deploys to production. Every other branch gets its own Preview URL.
-- `wrangler.jsonc` attaches the custom domain. The build's `_redirects` serves the app shell (`index.html`) at each practice address, and every other address with no file gets `404.html` with a 404 status.
+- `wrangler.jsonc` attaches the custom domain. The build's `_redirects` serves the app shell (`__spa-fallback.html`) at each known practice address, with no catch-all, and every other address with no file gets `404.html` with a 404 status. Its `_headers` keeps every `*.workers.dev` host (Preview URLs and the old address) and the app shell's own address `noindex`.
 
 ## 🔬 Research basis
 

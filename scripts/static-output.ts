@@ -2,8 +2,11 @@
 // - build/client/404.html, the page served (with a 404 status) for any address with no file, as
 //   plain HTML without scripts: it has only text and links, and hydrating it at an address that
 //   matches a practice route (an unknown problem ID) would briefly blank the page;
-// - build/client/_redirects, serving the app shell (index.html) at every known practice address.
-// Unknown addresses, including unknown problem IDs, fall through to the 404 page.
+// - build/client/_redirects, serving the app shell (__spa-fallback.html) at every known practice
+//   address. There is no catch-all: unknown addresses, including unknown problem IDs, get the 404;
+// - build/client/_headers, keeping workers.dev hosts (previews, the old address) and the app shell
+//   itself out of search results;
+// - build/client/robots.txt and sitemap.xml, from VITE_SITE_URL and VITE_PUBLIC_INDEXING_ENABLED.
 // Run by `pnpm build`; it takes the build directory as an optional argument (default: build).
 
 import { readFile, rm, writeFile } from "node:fs/promises";
@@ -11,12 +14,26 @@ import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 
+import { loadEnv } from "vite";
+
 import type { Problem } from "../src/domain/types.ts";
+import {
+  buildCanonicalUrl,
+  isPublicIndexingEnabled,
+  listPublicPagePaths,
+  readSiteUrl,
+  type SiteEnv,
+} from "../src/ui/shared/publicPageMetadata.ts";
 
 const PROBLEMS_FILE_URL = new URL("../src/data/problems.json", import.meta.url);
 const DEFAULT_BUILD_DIRECTORY = "build";
-/** The app shell React Router writes for every address it didn't prerender. */
-const APP_SHELL_PATH = "/";
+/**
+ * The app shell React Router writes (__spa-fallback.html) when / is a prerendered page of its own,
+ * without the extension: the host would answer the .html address with a redirect, not the page.
+ */
+const APP_SHELL_PATH = "/__spa-fallback";
+/** Both addresses of the app shell's file. */
+const APP_SHELL_FILE_PATHS = `${APP_SHELL_PATH}*`;
 const PROXY_STATUS = 200;
 const PERMANENT_REDIRECT_STATUS = 301;
 /** Cloudflare would serve 404.html at /404 with a 200; this nonexistent address gets a real 404. */
@@ -30,8 +47,8 @@ export function removeScripts(html: string): string {
   return html.replaceAll(SCRIPT_PATTERN, "").replaceAll(MODULE_PRELOAD_PATTERN, "");
 }
 
-/** Practice addresses that don't depend on a problem. "/" is the app shell itself. */
-const FIXED_PRACTICE_PATHS = ["/problems", "/settings"] as const;
+/** Practice addresses that don't depend on a problem. */
+const FIXED_PRACTICE_PATHS = ["/today", "/problems", "/settings"] as const;
 /** Practice addresses that end in a problem ID. */
 const PROBLEM_PATH_PREFIXES = ["/problems/", "/solve/", "/log/"] as const;
 
@@ -57,6 +74,45 @@ export function buildRedirects(problemIds: readonly string[]): string {
   return `${rules.join("\n")}\n`;
 }
 
+// Cloudflare's documented pattern for every *.workers.dev host: <version or alias>.<account>.
+const WORKERS_DEV_HOSTS = "https://:version.:subdomain.workers.dev/*";
+const NOINDEX_HEADER = "  X-Robots-Tag: noindex";
+
+/**
+ * Returns the _headers file: workers.dev hosts (branch previews and the old address, kept for
+ * exports) and the app shell's own address are never indexed, whatever the build's flag.
+ */
+export function buildHeaders(): string {
+  const rules = [WORKERS_DEV_HOSTS, NOINDEX_HEADER, APP_SHELL_FILE_PATHS, NOINDEX_HEADER];
+  return `${rules.join("\n")}\n`;
+}
+
+/** Returns robots.txt: every crawler may read everything, and the sitemap is at the canonical origin. */
+export function buildRobotsTxt(env: SiteEnv): string {
+  return ["User-agent: *", "Allow: /", "", `Sitemap: ${readSiteUrl(env)}/sitemap.xml`, ""].join(
+    "\n",
+  );
+}
+
+/**
+ * Returns sitemap.xml: the three canonical public URLs when indexing is enabled, and no entries
+ * when it is not. No lastmod, since no page records when its content changed.
+ */
+export function buildSitemap(env: SiteEnv): string {
+  const urls = isPublicIndexingEnabled(env)
+    ? listPublicPagePaths().map(
+        (pagePath) => `  <url><loc>${buildCanonicalUrl(env, pagePath)}</loc></url>`,
+      )
+    : [];
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls,
+    "</urlset>",
+    "",
+  ].join("\n");
+}
+
 async function readProblemIds(): Promise<string[]> {
   const problems = JSON.parse(await readFile(PROBLEMS_FILE_URL, "utf8")) as Problem[]; // safe: problems.test.ts checks the file
   return problems.map((problem) => problem.id);
@@ -72,7 +128,14 @@ async function writeStaticOutput(buildDirectory: string): Promise<void> {
 
   const redirects = buildRedirects(await readProblemIds());
   await writeFile(path.join(clientDirectory, "_redirects"), redirects);
-  console.error(`Wrote 404.html and _redirects in ${clientDirectory}`);
+  await writeFile(path.join(clientDirectory, "_headers"), buildHeaders());
+  // The same variables the app's build read: .env files for production, then the environment.
+  const env = loadEnv("production", process.cwd(), "VITE_");
+  await writeFile(path.join(clientDirectory, "robots.txt"), buildRobotsTxt(env));
+  await writeFile(path.join(clientDirectory, "sitemap.xml"), buildSitemap(env));
+  console.error(
+    `Wrote 404.html, _redirects, _headers, robots.txt and sitemap.xml in ${clientDirectory}`,
+  );
 }
 
 const isRunDirectly = import.meta.url === pathToFileURL(process.argv[1] ?? "").href;

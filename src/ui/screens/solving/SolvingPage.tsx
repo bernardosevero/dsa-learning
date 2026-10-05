@@ -85,7 +85,7 @@ export function SolvingPage() {
 
   function handleCancel() {
     clearTimer();
-    void navigate("/");
+    void navigate("/today");
   }
 
   return (

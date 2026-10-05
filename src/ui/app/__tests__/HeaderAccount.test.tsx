@@ -36,18 +36,19 @@ describe("the header's account control", () => {
 
   it("shows Sign in with GitHub when signed out, and starts GitHub sign-in from it", async () => {
     const fake = aFakeSupabase();
-    renderAt("/", fake.accountService);
+    renderAt("/today", fake.accountService);
 
     await userEvent.click(await screen.findByRole("button", { name: "Sign in with GitHub" }));
 
-    expect(fake.signInWithOAuth).toHaveBeenCalledWith(
-      expect.objectContaining({ provider: "github" }),
-    );
+    expect(fake.signInWithOAuth).toHaveBeenCalledWith({
+      provider: "github",
+      options: { redirectTo: `${window.location.origin}/today` },
+    });
   });
 
   it("shows the avatar linking to the account in Settings when signed in", async () => {
     const fake = aFakeSupabase({ email: "ada@example.com" });
-    renderAt("/", fake.accountService);
+    renderAt("/today", fake.accountService);
 
     const avatarLink = await screen.findByRole("link", { name: "Account settings" });
 
@@ -58,7 +59,7 @@ describe("the header's account control", () => {
 
   it("tells the sync status on the avatar, in words as well as the dot", async () => {
     const fake = aFakeSupabase({ email: "ada@example.com" });
-    renderAt("/", fake.accountService, aFakeRemote().remoteStore);
+    renderAt("/today", fake.accountService, aFakeRemote().remoteStore);
 
     const avatarLink = await screen.findByRole("link", { name: "Account settings · Synced" });
 
@@ -67,7 +68,7 @@ describe("the header's account control", () => {
 
   it("tells when sync is paused on an invalid account copy", async () => {
     const fake = aFakeSupabase({ email: "ada@example.com" });
-    renderAt("/", fake.accountService, aFakeRemote({ entries: 1 }).remoteStore);
+    renderAt("/today", fake.accountService, aFakeRemote({ entries: 1 }).remoteStore);
 
     expect(
       await screen.findByRole("link", {

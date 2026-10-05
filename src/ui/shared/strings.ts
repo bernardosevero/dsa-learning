@@ -7,6 +7,25 @@ export const en = {
       "A spaced-repetition trainer for the NeetCode 150. It tells you which problem to re-solve today and schedules the next one from how hard it felt.",
     imageAlt:
       "dsa-learning: Re-solve interview problems right before you forget them. Hard: again in 2 days. Medium: 7 days. Easy: 30 days.",
+    publicPages: {
+      landing: {
+        title: "Spaced repetition for NeetCode 150 | dsa-learning",
+        description:
+          "Keep solved NeetCode 150 problems in your routine: see your due reviews and the next new problem, then re-solve each one 2, 7 or 30 days later, from how hard it felt.",
+      },
+      howItWorks: {
+        title: "How spaced-repetition practice works | dsa-learning",
+        description:
+          "How dsa-learning picks what to practice, when a problem returns (Hard 2, Medium 7, Easy 30 days), when it counts as mastered, and the research behind it.",
+      },
+      privacy: {
+        title: "Privacy and credits | dsa-learning",
+        description:
+          "What dsa-learning stores in your browser and in an optional account, which usage analytics it sends and how to turn them off, and the credits for its problem data.",
+      },
+    },
+    applicationDescription:
+      "A free spaced-repetition trainer for the NeetCode 150: it shows your due reviews and the next new problem, and schedules each re-solve from how hard it felt.",
   },
   footer: {
     label: "About the creator",
@@ -35,6 +54,7 @@ export const en = {
   shell: {
     loading: "Loading…",
     openApp: "Open app",
+    howItWorks: "How it works",
     publicNav: "Site",
   },
   notFound: {

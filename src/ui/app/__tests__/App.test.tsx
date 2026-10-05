@@ -31,6 +31,8 @@ afterEach(() => {
 describe("the app's routes", () => {
   it.each([
     "/",
+    "/how-it-works",
+    "/today",
     "/problems",
     "/problems/two-sum",
     "/settings",
@@ -54,7 +56,7 @@ describe("the app's routes", () => {
   });
 
   it.each([
-    ["/", "Today"],
+    ["/today", "Today"],
     ["/problems", "Problems"],
     ["/settings", "Settings & data"],
   ])("renders %s as the %s screen with its own page title", (path, heading) => {
@@ -65,14 +67,38 @@ describe("the app's routes", () => {
     expect(trackPageView).toHaveBeenCalledWith(path);
   });
 
-  it("renders /privacy as a public page, without the practice app or its pageviews", () => {
-    renderAt("/privacy");
+  // Public titles come from each route's meta, which the static build writes into the HTML.
+  it.each([
+    ["/", "Spaced repetition for the NeetCode 150"],
+    ["/how-it-works", "How spaced-repetition practice works"],
+    ["/privacy", "Privacy & credits"],
+  ])("renders %s as a public page, without the practice app or its pageviews", (path, heading) => {
+    renderAt(path);
 
-    expect(pageHeading()).toBe("Privacy & credits");
-    expect(document.title).toBe("Privacy & credits · dsa-learning");
-    expect(screen.getByRole("link", { name: "Open app" }).getAttribute("href")).toBe("/");
+    expect(pageHeading()).toBe(heading);
     expect(screen.queryByRole("navigation", { name: "Main" })).toBeNull();
     expect(trackPageView).not.toHaveBeenCalled();
+  });
+
+  it("gives public pages their own header: the name home, How it works and Open app", () => {
+    renderAt("/privacy");
+
+    const header = within(screen.getByRole("banner"));
+
+    expect(header.getByRole("link", { name: "dsa-learning" }).getAttribute("href")).toBe("/");
+    expect(header.getByRole("link", { name: "How it works" }).getAttribute("href")).toBe(
+      "/how-it-works",
+    );
+    expect(header.getByRole("link", { name: "Open app" }).getAttribute("href")).toBe("/today");
+  });
+
+  it("points the practice wordmark and Today tab at /today", () => {
+    renderAt("/problems");
+
+    const header = within(screen.getByRole("banner"));
+
+    expect(header.getByRole("link", { name: "dsa-learning" }).getAttribute("href")).toBe("/today");
+    expect(header.getByRole("link", { name: "Today" }).getAttribute("href")).toBe("/today");
   });
 
   it("renders an unknown address as the not-found page", () => {
@@ -84,7 +110,7 @@ describe("the app's routes", () => {
   });
 
   it.each([
-    ["/", false],
+    ["/today", false],
     ["/problems", false],
     ["/problems/two-sum", true],
     ["/settings", true],
@@ -119,7 +145,7 @@ describe("the app's routes", () => {
 
   it("moves between Today, Problems and Settings from the nav and marks the current one", async () => {
     const user = userEvent.setup();
-    renderAt("/");
+    renderAt("/today");
 
     await user.click(screen.getByRole("link", { name: "Problems" }));
     expect(pageHeading()).toBe("Problems");

@@ -175,7 +175,7 @@ describe("SolvingPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
-    expect(screen.getByText("At /")).toBeDefined();
+    expect(screen.getByText("At /today")).toBeDefined();
     expect(readStoredFile()).not.toHaveProperty("activeTimer");
   });
 

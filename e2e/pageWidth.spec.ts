@@ -5,7 +5,7 @@ const TODAY = new Date("2026-10-01T10:00:00");
 // Every practice screen, in an order that works on a fresh browser: Solving starts the timer Log
 // needs. Public pages have their own layout; e2e/publicPages.spec.ts checks it.
 const SCREENS = [
-  "/",
+  "/today",
   "/problems",
   "/problems/two-sum",
   "/settings",
@@ -66,11 +66,11 @@ for (const windowWidth of WINDOW_WIDTHS) {
         expect((linkBox?.y ?? 0) + (linkBox?.height ?? 0)).toBeLessThanOrEqual(navBox?.y ?? 0);
       }
       await page.screenshot({
-        path: `test-results/footer-${windowWidth}-${path.replaceAll("/", "-") || "today"}.png`,
+        path: `test-results/footer-${windowWidth}-${path.replaceAll("/", "-")}.png`,
       });
     }
 
-    const todaySheet = sheetOf["/"];
+    const todaySheet = sheetOf["/today"];
     for (const path of SCREENS) {
       expect(sheetOf[path], `${path} at ${windowWidth}px`).toBe(todaySheet);
     }

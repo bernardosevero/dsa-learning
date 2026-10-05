@@ -68,7 +68,7 @@ export async function openSignedIn(
   account: TestAccount,
   localFile?: StoredSaveFile,
 ): Promise<void> {
-  await page.goto("/");
+  await page.goto("/today");
   await page.evaluate(
     ([sessionKey, session, saveFileKey, saveFile]) => {
       localStorage.setItem(sessionKey, session);

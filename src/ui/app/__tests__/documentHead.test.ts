@@ -1,15 +1,15 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import appleTouchIconDataUrl from "../../../../public/apple-touch-icon.png?inline";
 import faviconSvg from "../../../../public/favicon.svg?raw";
 import ogImageDataUrl from "../../../../public/og-image.png?inline";
 import themeCss from "../../../index.css?raw";
+import { buildPrivatePageMeta } from "@/ui/shared/publicPageMetadata";
+
 import { DocumentHead } from "../DocumentHead";
 
-const SITE_URL = "https://dsa-learning.example.dev";
-const PRODUCTION_URL = "https://dsa-learning.bernardosevero.dev";
 // Unfurlers read the head as the build writes it into every page's HTML.
 const documentHeadHtml = renderToStaticMarkup(createElement(DocumentHead));
 
@@ -40,14 +40,6 @@ function parseHeadTags(html: string): HeadTag[] {
 
 const headTags = parseHeadTags(documentHeadHtml);
 
-/** Open Graph tags use `property`, the others `name`. */
-function readMetaContent(key: string, tags: readonly HeadTag[] = headTags): string | undefined {
-  const tag = tags.find(
-    (headTag) => headTag.get("name") === key || headTag.get("property") === key,
-  );
-  return tag?.get("content");
-}
-
 function findLink(rel: string): HeadTag | undefined {
   return headTags.find((tag) => tag.get("rel") === rel);
 }
@@ -67,67 +59,12 @@ function readBackgroundToken(selector: string): string | undefined {
   return /--background:\s*(#[\da-f]{6});/i.exec(block)?.[1];
 }
 
-async function renderHeadWithSiteUrl(siteUrl: string): Promise<HeadTag[]> {
-  vi.stubEnv("VITE_SITE_URL", siteUrl);
-  vi.resetModules();
-  const headModule = await import("../DocumentHead");
-  return parseHeadTags(renderToStaticMarkup(createElement(headModule.DocumentHead)));
-}
+describe("DocumentHead", () => {
+  it("leaves robots and link-preview tags to the routes' meta", () => {
+    const names = headTags.map((tag) => tag.get("name") ?? tag.get("property"));
 
-afterEach(() => {
-  vi.unstubAllEnvs();
-});
-
-describe("DocumentHead link preview tags", () => {
-  it.each([
-    "description",
-    "og:type",
-    "og:site_name",
-    "og:title",
-    "og:description",
-    "og:url",
-    "og:image",
-    "og:image:width",
-    "og:image:height",
-    "og:image:alt",
-    "twitter:card",
-    "twitter:title",
-    "twitter:description",
-    "twitter:image",
-  ])("has a non-empty %s", (key) => {
-    const content = readMetaContent(key);
-
-    expect(content?.trim()).toBeTruthy();
-  });
-
-  it("builds the page and image URLs as absolute URLs from VITE_SITE_URL", async () => {
-    const tags = await renderHeadWithSiteUrl(SITE_URL);
-
-    const urls = ["og:url", "og:image", "twitter:image"].map((key) => readMetaContent(key, tags));
-
-    expect(urls).toEqual([`${SITE_URL}/`, `${SITE_URL}/og-image.png`, `${SITE_URL}/og-image.png`]);
-  });
-
-  it("falls back to the production address when VITE_SITE_URL is not set", async () => {
-    const tags = await renderHeadWithSiteUrl("");
-
-    const pageUrl = readMetaContent("og:url", tags);
-
-    expect(pageUrl).toBe(`${PRODUCTION_URL}/`);
-  });
-
-  it("asks for a large image card on a website", () => {
-    const ogType = readMetaContent("og:type");
-    const twitterCard = readMetaContent("twitter:card");
-
-    expect(ogType).toBe("website");
-    expect(twitterCard).toBe("summary_large_image");
-  });
-
-  it("keeps the app out of search results", () => {
-    const robots = readMetaContent("robots");
-
-    expect(robots).toBe("noindex");
+    expect(names).not.toContain("robots");
+    expect(names).not.toContain("og:title");
   });
 
   it("links an SVG favicon and an Apple touch icon", () => {
@@ -163,12 +100,19 @@ describe("DocumentHead link preview tags", () => {
 describe("public/og-image.png", () => {
   it("is 1200×630, as its og:image size tags say, and under 300 kB", () => {
     const ogImage = decodeDataUrl(ogImageDataUrl);
+    const previewTags = buildPrivatePageMeta({});
 
     const size = readPngSize(ogImage);
 
     expect(size).toEqual({ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT });
-    expect(readMetaContent("og:image:width")).toBe(String(OG_IMAGE_WIDTH));
-    expect(readMetaContent("og:image:height")).toBe(String(OG_IMAGE_HEIGHT));
+    expect(previewTags).toContainEqual({
+      property: "og:image:width",
+      content: String(OG_IMAGE_WIDTH),
+    });
+    expect(previewTags).toContainEqual({
+      property: "og:image:height",
+      content: String(OG_IMAGE_HEIGHT),
+    });
     expect(ogImage.byteLength).toBeLessThan(MAX_OG_IMAGE_BYTES);
   });
 });
