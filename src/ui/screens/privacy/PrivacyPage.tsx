@@ -4,11 +4,18 @@ import { Card } from "@/ui/primitives/card";
 import { ExternalLink } from "@/ui/shared/ExternalLink";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
+import { UsageSharingControl } from "@/ui/shared/UsageSharingControl";
+import { useUsageSharing } from "@/ui/shared/useUsageSharing";
 
 const METADATA_REPO_URL = "https://github.com/neetcode-gh/leetcode";
 
-/** Privacy and credits for the local-first app, and what an optional account stores. */
+/**
+ * Privacy and credits for the local-first app, what an optional account stores, and the
+ * anonymous-usage switch. Public: it renders outside the practice app, and its text is in the HTML.
+ */
 export function PrivacyPage() {
+  const { isEnabled, setEnabled } = useUsageSharing();
+
   return (
     <>
       <title>{t.documentTitle(t.pages.privacy)}</title>
@@ -48,6 +55,9 @@ export function PrivacyPage() {
               </Link>
               {t.privacy.optOutAfter}
             </p>
+          </Card>
+          <Card className="mt-3">
+            <UsageSharingControl isEnabled={isEnabled} onEnabledChange={setEnabled} />
           </Card>
         </section>
         <section aria-labelledby="privacy-credits-heading">

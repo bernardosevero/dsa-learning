@@ -1,12 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { createAppRouter } from "@/test/appRouter";
 import { track, trackPageView } from "@/ui/shared/analytics";
-
-import { AppDataProvider } from "../AppData";
-import { AppRoutes } from "../AppRoutes";
 
 vi.mock("@/ui/shared/analytics", () => ({
   track: vi.fn(),
@@ -15,14 +13,11 @@ vi.mock("@/ui/shared/analytics", () => ({
 }));
 
 function renderAt(path: string) {
-  render(
-    <AppDataProvider>
-      <MemoryRouter initialEntries={[path]}>
-        <AppRoutes />
-      </MemoryRouter>
-    </AppDataProvider>,
-  );
+  render(<RouterProvider router={createAppRouter(path)} />);
 }
+
+// PageSheet's readable column, which Problem detail and Settings sit in.
+const READABLE_COLUMN_CLASS = "max-w-[656px]";
 
 function pageHeading(): string {
   return screen.getByRole("heading", { level: 1 }).textContent;
@@ -33,7 +28,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("AppRoutes", () => {
+describe("the app's routes", () => {
   it.each([
     "/",
     "/problems",
@@ -62,13 +57,43 @@ describe("AppRoutes", () => {
     ["/", "Today"],
     ["/problems", "Problems"],
     ["/settings", "Settings & data"],
-    ["/privacy", "Privacy & credits"],
   ])("renders %s as the %s screen with its own page title", (path, heading) => {
     renderAt(path);
 
     expect(pageHeading()).toBe(heading);
     expect(document.title).toBe(`${heading} · dsa-learning`);
     expect(trackPageView).toHaveBeenCalledWith(path);
+  });
+
+  it("renders /privacy as a public page, without the practice app or its pageviews", () => {
+    renderAt("/privacy");
+
+    expect(pageHeading()).toBe("Privacy & credits");
+    expect(document.title).toBe("Privacy & credits · dsa-learning");
+    expect(screen.getByRole("link", { name: "Open app" }).getAttribute("href")).toBe("/");
+    expect(screen.queryByRole("navigation", { name: "Main" })).toBeNull();
+    expect(trackPageView).not.toHaveBeenCalled();
+  });
+
+  it("renders an unknown address as the not-found page", () => {
+    renderAt("/does-not-exist");
+
+    expect(pageHeading()).toBe("Page not found");
+    expect(document.title).toBe("Page not found · dsa-learning");
+    expect(trackPageView).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["/", false],
+    ["/problems", false],
+    ["/problems/two-sum", true],
+    ["/settings", true],
+  ])("keeps %s to the readable column: %s", (path, isReadable) => {
+    renderAt(path);
+
+    const content = screen.getByRole("main").firstElementChild;
+
+    expect(content?.classList.contains(READABLE_COLUMN_CLASS)).toBe(isReadable);
   });
 
   it("renders /problems/two-sum as the Problem detail screen for that problem", () => {
@@ -95,12 +120,13 @@ describe("AppRoutes", () => {
   it("moves between Today, Problems and Settings from the nav and marks the current one", async () => {
     const user = userEvent.setup();
     renderAt("/");
-    const nav = screen.getByRole("navigation", { name: "Main" });
 
     await user.click(screen.getByRole("link", { name: "Problems" }));
     expect(pageHeading()).toBe("Problems");
     await user.click(screen.getByRole("link", { name: "Settings" }));
 
+    // Settings has its own layout route (the readable column), so its header is a new element.
+    const nav = screen.getByRole("navigation", { name: "Main" });
     expect(pageHeading()).toBe("Settings & data");
     expect(nav.querySelector("[aria-current='page']")?.textContent).toBe("Settings");
     expect(trackPageView).toHaveBeenCalledWith("/problems");

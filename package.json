@@ -9,18 +9,19 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
+    "dev": "react-router dev",
+    "build": "pnpm typecheck && react-router build && tsx scripts/static-output.ts",
+    "preview": "wrangler dev --local",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:sync": "playwright test -c playwright.sync.config.ts",
     "lint": "eslint .",
-    "typecheck": "tsc -b",
+    "typecheck": "react-router typegen && tsc -b",
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@react-router/node": "7.18.4",
     "@supabase/supabase-js": "^2.117.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
+    "@react-router/dev": "7.18.4",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
@@ -60,7 +62,8 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.1",
     "vite": "^8.3.1",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.2",
+    "wrangler": "^4.147.0"
   },
   "pnpm": {
     "peerDependencyRules": {
@@ -71,7 +74,8 @@
     "ignoredBuiltDependencies": [
       "core-js",
       "esbuild",
-      "unrs-resolver"
+      "unrs-resolver",
+      "workerd"
     ],
     "onlyBuiltDependencies": [
       "supabase"

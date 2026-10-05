@@ -8,6 +8,7 @@ on:
       - "supabase/**"
       - "src/storage/**"
       - "src/ui/app/**"
+      - "src/routes/**"
       - "e2e/sync/**"
       - "playwright.sync.config.ts"
 

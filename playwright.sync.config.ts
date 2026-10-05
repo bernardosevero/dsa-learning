@@ -3,6 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 import { localSupabase } from "./e2e/sync/localSupabase";
 
 const PORT = 4174;
+const BUILD_DIRECTORY = "build-sync";
 const isCi = Boolean(process.env.CI);
 
 // For machines with a preinstalled Chromium that doesn't match this Playwright version.
@@ -36,7 +37,7 @@ export default defineConfig({
   ],
   // Its own build and port, so it never mixes with the signed-out build of `pnpm test:e2e`.
   webServer: {
-    command: `pnpm exec vite build --outDir dist-sync && pnpm exec vite preview --outDir dist-sync --port ${PORT} --strictPort`,
+    command: `pnpm exec react-router build && pnpm exec tsx scripts/static-output.ts ${BUILD_DIRECTORY} && pnpm exec wrangler dev --local --assets ${BUILD_DIRECTORY}/client --port ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCi,
     timeout: 120_000,
@@ -44,6 +45,8 @@ export default defineConfig({
     env: {
       VITE_SUPABASE_URL: url,
       VITE_SUPABASE_PUBLISHABLE_KEY: publishableKey,
+      BUILD_DIRECTORY,
+      WRANGLER_SEND_METRICS: "false",
     },
   },
 });

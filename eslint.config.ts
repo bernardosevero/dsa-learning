@@ -70,6 +70,16 @@ const codeStyleRules: Linter.RulesRecord = {
   "max-depth": ["warn", 2],
 };
 
+// Files whose names and default exports React Router's framework mode requires: the document,
+// the route config and entries, and the route modules in src/routes/.
+const FRAMEWORK_FILES = [
+  "src/root.tsx",
+  "src/routes.ts",
+  "src/entry.client.tsx",
+  "src/entry.server.tsx",
+  "src/routes/*.tsx",
+] as const;
+
 const SCREEN_NAMES = readdirSync(path.join(import.meta.dirname, "src/ui/screens"), {
   withFileTypes: true,
 })
@@ -110,7 +120,15 @@ const screenZones = SCREEN_NAMES.map((screenName) => ({
 }));
 
 export default defineConfig(
-  globalIgnores(["dist", "dist-sync", "coverage"]),
+  globalIgnores([
+    "dist",
+    "dist-sync",
+    "build",
+    "build-sync",
+    ".react-router",
+    ".wrangler",
+    "coverage",
+  ]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
@@ -144,6 +162,11 @@ export default defineConfig(
     rules: { "import-x/no-default-export": "off" },
   },
   {
+    // React Router's convention files and route adapters are the only default exports in src.
+    files: [...FRAMEWORK_FILES],
+    rules: { "import-x/no-default-export": "off" },
+  },
+  {
     files: ["src/**/*.{ts,tsx}"],
     rules: {
       "import-x/no-restricted-paths": ["error", { zones: [...layerZones, ...screenZones] }],
@@ -152,12 +175,12 @@ export default defineConfig(
   {
     files: ["src/**/*.tsx"],
     // A hook's tests take the hook's name; they're .tsx only to run in the jsdom project.
-    ignores: ["src/main.tsx", "src/ui/primitives/**", "src/**/__tests__/use*.test.tsx"],
+    ignores: [...FRAMEWORK_FILES, "src/ui/primitives/**", "src/**/__tests__/use*.test.tsx"],
     rules: { "unicorn/filename-case": ["error", { case: "pascalCase", checkDirectories: false }] },
   },
   {
     files: ["src/**/*.ts"],
-    ignores: ["src/ui/primitives/**"],
+    ignores: [...FRAMEWORK_FILES, "src/ui/primitives/**"],
     rules: { "unicorn/filename-case": ["error", { case: "camelCase", checkDirectories: false }] },
   },
   {

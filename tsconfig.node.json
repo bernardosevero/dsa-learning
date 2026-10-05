@@ -29,6 +29,8 @@
   },
   "include": [
     "vite.config.ts",
+    "vitest.config.ts",
+    "react-router.config.ts",
     "eslint.config.ts",
     "playwright.config.ts",
     "playwright.sync.config.ts",
