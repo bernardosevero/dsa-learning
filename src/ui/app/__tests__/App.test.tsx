@@ -16,6 +16,9 @@ function renderAt(path: string) {
   render(<RouterProvider router={createAppRouter(path)} />);
 }
 
+// PageSheet's readable column, which Problem detail and Settings ask for through a route handle.
+const READABLE_COLUMN_CLASS = "max-w-[656px]";
+
 function pageHeading(): string {
   return screen.getByRole("heading", { level: 1 }).textContent;
 }
@@ -78,6 +81,19 @@ describe("the app's routes", () => {
     expect(pageHeading()).toBe("Page not found");
     expect(document.title).toBe("Page not found · dsa-learning");
     expect(trackPageView).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["/", false],
+    ["/problems", false],
+    ["/problems/two-sum", true],
+    ["/settings", true],
+  ])("keeps %s to the readable column: %s", (path, isReadable) => {
+    renderAt(path);
+
+    const content = screen.getByRole("main").firstElementChild;
+
+    expect(content?.classList.contains(READABLE_COLUMN_CLASS)).toBe(isReadable);
   });
 
   it("renders /problems/two-sum as the Problem detail screen for that problem", () => {

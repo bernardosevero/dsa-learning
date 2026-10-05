@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { Button } from "@/ui/primitives/button";
 import { PageSheet } from "@/ui/shared/PageSheet";
 import { t } from "@/ui/shared/strings";
+import { Wordmark } from "@/ui/shared/Wordmark";
 
 export interface PublicLayoutProps {
   children: ReactNode;
@@ -19,12 +20,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       isReadable
       header={
         <>
-          <Link
-            to="/"
-            className="rounded-sm font-serif text-xl font-semibold outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            {t.appName}
-          </Link>
+          <Wordmark />
           <nav aria-label={t.shell.publicNav}>
             <Button asChild variant="outline">
               <Link to="/">{t.shell.openApp}</Link>

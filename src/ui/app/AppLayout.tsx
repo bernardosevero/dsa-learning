@@ -1,8 +1,9 @@
 import { CalendarIcon, ListIcon, SlidersHorizontalIcon } from "lucide-react";
-import { Link, NavLink, Outlet } from "react-router";
+import { NavLink, Outlet } from "react-router";
 
 import { PageSheet } from "@/ui/shared/PageSheet";
 import { t } from "@/ui/shared/strings";
+import { Wordmark } from "@/ui/shared/Wordmark";
 
 import { HeaderAccount } from "./HeaderAccount";
 
@@ -30,12 +31,7 @@ export function AppLayout({ isReadable }: AppLayoutProps) {
       isReadable={isReadable}
       header={
         <>
-          <Link
-            to="/"
-            className="rounded-sm font-serif text-xl font-semibold outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            {t.appName}
-          </Link>
+          <Wordmark />
           {/* Tighter below the sheet width, where the nav and account share a narrow row. */}
           <div className="flex items-center gap-3 sheet:gap-5">
             <nav aria-label={t.nav.label} className={NAV_CLASSES}>
