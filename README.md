@@ -48,7 +48,14 @@ pnpm install
 pnpm dev
 ```
 
-The app runs at http://localhost:5173.
+The app runs at http://localhost:5173. The dev server renders every page in the browser; to see the HTML the build prerenders (the public pages, the 404 page and the routing rules), build and preview it:
+
+```sh
+pnpm build
+pnpm preview
+```
+
+`pnpm preview` serves `build/client/` with Wrangler's local copy of Cloudflare's static hosting at http://localhost:8787, the way production serves it: `/privacy` gets its prerendered page, practice addresses get the app shell, and anything else gets `404.html` with a 404 status. It runs offline and needs no Cloudflare account.
 
 No environment variables are needed locally. Without the Supabase variables below the app runs local-only, with login hidden.
 
@@ -57,7 +64,7 @@ No environment variables are needed locally. Without the Supabase variables belo
 Login (GitHub) and the `saves` table live in Supabase. You only need this to work on them.
 
 - **Database tests:** with Docker running, `pnpm supabase start` starts a local Supabase stack, and `pnpm supabase test db` runs the pgTAP tests in `supabase/tests/`, which prove each user can only reach their own row. CI runs them on pull requests that touch `supabase/`. `pnpm supabase stop` stops the stack. The local stack has no GitHub login.
-- **Sync end-to-end tests:** with the stack running, `pnpm test:e2e:sync` builds the app against it and runs the Playwright tests in `e2e/sync/`: two browsers signed into one account, syncing for real. The tests sign in with a password test user instead of GitHub. CI runs them on pull requests that touch `supabase/`, `src/storage/`, `src/ui/app/` or `e2e/sync/`.
+- **Sync end-to-end tests:** with the stack running, `pnpm test:e2e:sync` builds the app against it (into `build-sync/`) and runs the Playwright tests in `e2e/sync/`: two browsers signed into one account, syncing for real. The tests sign in with a password test user instead of GitHub. CI runs them on pull requests that touch `supabase/`, `src/storage/`, `src/ui/app/`, `src/framework/` or `e2e/sync/`.
 - **Trying sign-in:** create a `.env.local` that points `pnpm dev` at the hosted project (`http://localhost:5173` is an allowed redirect):
 
   ```sh
@@ -71,13 +78,13 @@ Login (GitHub) and the `saves` table live in Supabase. You only need this to wor
 |---|---|
 | `pnpm dev` | Starts the dev server with hot reload |
 | `pnpm test` | Runs the tests once (`pnpm test:watch` re-runs them on every change) |
-| `pnpm test:e2e` | Builds the app, serves it and runs the Playwright tests in `e2e/` against it in Chromium |
+| `pnpm test:e2e` | Builds the app, serves it with `pnpm preview` and runs the Playwright tests in `e2e/` against it in Chromium |
 | `pnpm test:e2e:sync` | Runs the sync tests in `e2e/sync/` against the local Supabase stack (start it first) |
 | `pnpm lint` | Runs ESLint, including the rule that keeps `src/domain` pure |
-| `pnpm typecheck` | Type-checks the project with TypeScript |
+| `pnpm typecheck` | Generates React Router's route types (into `.react-router/`), then type-checks the project with TypeScript |
 | `pnpm format` | Formats the code with Prettier |
-| `pnpm build` | Type-checks and builds the static site into `dist/` |
-| `pnpm preview` | Serves the built `dist/` locally |
+| `pnpm build` | Type-checks, builds the static site into `build/client/` (prerendering the public pages), then writes its `404.html` and `_redirects` with `scripts/static-output.ts` |
+| `pnpm preview` | Serves the built `build/client/` locally with Wrangler, at http://localhost:8787 |
 | `pnpm supabase start` / `stop` | Starts or stops the local Supabase stack (needs Docker) |
 | `pnpm supabase test db` | Runs the pgTAP tests against the local stack |
 
@@ -101,9 +108,9 @@ One-off Node scripts in `scripts/`. The ones marked 🌐 need network access.
 
 Live at **https://dsa-learning.bernardosevero.dev**.
 
-- Static site on Cloudflare Workers, served from `dist/`. Nothing runs on a server.
+- Static site on Cloudflare Workers, served from `build/client/`. Nothing runs on a server: React Router prerenders the public pages at build time, and the practice screens render in the browser.
 - Merging to `main` deploys to production. Every other branch gets its own Preview URL.
-- `wrangler.jsonc` attaches the custom domain and sends every path that isn't a file to `index.html`.
+- `wrangler.jsonc` attaches the custom domain. The build's `_redirects` serves the app shell (`index.html`) at each practice address, and every other address with no file gets `404.html` with a 404 status.
 
 ## 🔬 Research basis
 

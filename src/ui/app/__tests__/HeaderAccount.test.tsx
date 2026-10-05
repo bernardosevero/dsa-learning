@@ -1,15 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { AccountService } from "@/storage/accountService";
 import type { RemoteStore } from "@/storage/remoteStore";
+import { createAppRouter } from "@/test/appRouter";
 import { aFakeRemote } from "@/test/fakeRemoteStore";
 import { aFakeSupabase } from "@/test/fakeSupabase";
-
-import { AppDataProvider } from "../AppData";
-import { AppRoutes } from "../AppRoutes";
 
 vi.mock("@/ui/shared/analytics", () => ({
   track: vi.fn(),
@@ -18,13 +16,7 @@ vi.mock("@/ui/shared/analytics", () => ({
 }));
 
 function renderAt(path: string, accountService?: AccountService, remoteStore?: RemoteStore) {
-  render(
-    <AppDataProvider accountService={accountService} remoteStore={remoteStore}>
-      <MemoryRouter initialEntries={[path]}>
-        <AppRoutes />
-      </MemoryRouter>
-    </AppDataProvider>,
-  );
+  render(<RouterProvider router={createAppRouter(path, { accountService, remoteStore })} />);
 }
 
 afterEach(() => {

@@ -1,6 +1,13 @@
 /** Every user-visible string, so a translation only has to replace this object. */
 export const en = {
   appName: "dsa-learning",
+  meta: {
+    title: "dsa-learning: re-solve interview problems right before you forget them",
+    description:
+      "A spaced-repetition trainer for the NeetCode 150. It tells you which problem to re-solve today and schedules the next one from how hard it felt.",
+    imageAlt:
+      "dsa-learning: Re-solve interview problems right before you forget them. Hard: again in 2 days. Medium: 7 days. Easy: 30 days.",
+  },
   footer: {
     label: "About the creator",
     credit: "© Bernardo Severo - 2026 | Made with ❤️ in 🇧🇷",
@@ -22,8 +29,19 @@ export const en = {
     problemDetail: "Problem",
     settings: "Settings & data",
     privacy: "Privacy & credits",
+    notFound: "Page not found",
   },
   separator: " · ",
+  shell: {
+    loading: "Loading…",
+    openApp: "Open app",
+    publicNav: "Site",
+  },
+  notFound: {
+    title: "Page not found",
+    body: "There's nothing at this address. It may have moved, or the link may be mistyped.",
+    home: "Go to the app",
+  },
   account: {
     signIn: "Sign in",
     signInWithGitHub: "Sign in with GitHub",

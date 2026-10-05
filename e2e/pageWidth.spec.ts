@@ -2,13 +2,13 @@ import { expect, test, type Page } from "@playwright/test";
 
 const TODAY = new Date("2026-10-01T10:00:00");
 
-// Every screen, in an order that works on a fresh browser: Solving starts the timer Log needs.
+// Every practice screen, in an order that works on a fresh browser: Solving starts the timer Log
+// needs. Public pages have their own layout; e2e/publicPages.spec.ts checks it.
 const SCREENS = [
   "/",
   "/problems",
   "/problems/two-sum",
   "/settings",
-  "/privacy",
   "/solve/two-sum",
   "/log/two-sum",
 ] as const;

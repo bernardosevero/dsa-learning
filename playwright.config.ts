@@ -27,11 +27,13 @@ export default defineConfig({
       },
     },
   ],
-  // The production build, as it ships: the tests catch what only the bundle gets wrong.
+  // The production build served the way Cloudflare serves it (Wrangler's local static assets), so
+  // the tests catch what only the bundle, the 404 page or the _redirects rules get wrong.
   webServer: {
-    command: `pnpm build && pnpm preview --port ${PORT} --strictPort`,
+    command: `pnpm build && pnpm preview --port ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCi,
     timeout: 120_000,
+    env: { WRANGLER_SEND_METRICS: "false" },
   },
 });

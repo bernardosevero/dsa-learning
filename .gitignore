@@ -10,6 +10,11 @@ lerna-debug.log*
 node_modules
 dist
 dist-sync
+
+# React Router: the build output and its generated route types
+build
+build-sync
+.react-router
 dist-ssr
 *.local
 

@@ -1,14 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import indexHtmlSource from "../../index.html?raw";
-import appleTouchIconDataUrl from "../../public/apple-touch-icon.png?inline";
-import faviconSvg from "../../public/favicon.svg?raw";
-import ogImageDataUrl from "../../public/og-image.png?inline";
-import themeCss from "../index.css?raw";
+import appleTouchIconDataUrl from "../../../../public/apple-touch-icon.png?inline";
+import faviconSvg from "../../../../public/favicon.svg?raw";
+import ogImageDataUrl from "../../../../public/og-image.png?inline";
+import themeCss from "../../../index.css?raw";
+import { DocumentHead } from "../DocumentHead";
 
-// Unfurlers read index.html as served, after Vite fills in %VITE_SITE_URL% from the environment.
 const SITE_URL = "https://dsa-learning.example.dev";
-const indexHtml = indexHtmlSource.replaceAll("%VITE_SITE_URL%", SITE_URL);
+const PRODUCTION_URL = "https://dsa-learning.bernardosevero.dev";
+// Unfurlers read the head as the build writes it into every page's HTML.
+const documentHeadHtml = renderToStaticMarkup(createElement(DocumentHead));
 
 const OG_IMAGE_WIDTH = 1200;
 const OG_IMAGE_HEIGHT = 630;
@@ -35,11 +38,11 @@ function parseHeadTags(html: string): HeadTag[] {
   return tags;
 }
 
-const headTags = parseHeadTags(indexHtml);
+const headTags = parseHeadTags(documentHeadHtml);
 
 /** Open Graph tags use `property`, the others `name`. */
-function readMetaContent(key: string): string | undefined {
-  const tag = headTags.find(
+function readMetaContent(key: string, tags: readonly HeadTag[] = headTags): string | undefined {
+  const tag = tags.find(
     (headTag) => headTag.get("name") === key || headTag.get("property") === key,
   );
   return tag?.get("content");
@@ -64,7 +67,18 @@ function readBackgroundToken(selector: string): string | undefined {
   return /--background:\s*(#[\da-f]{6});/i.exec(block)?.[1];
 }
 
-describe("index.html link preview tags", () => {
+async function renderHeadWithSiteUrl(siteUrl: string): Promise<HeadTag[]> {
+  vi.stubEnv("VITE_SITE_URL", siteUrl);
+  vi.resetModules();
+  const headModule = await import("../DocumentHead");
+  return parseHeadTags(renderToStaticMarkup(createElement(headModule.DocumentHead)));
+}
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
+describe("DocumentHead link preview tags", () => {
   it.each([
     "description",
     "og:type",
@@ -86,10 +100,20 @@ describe("index.html link preview tags", () => {
     expect(content?.trim()).toBeTruthy();
   });
 
-  it("builds the page and image URLs as absolute URLs from VITE_SITE_URL", () => {
-    const urls = ["og:url", "og:image", "twitter:image"].map(readMetaContent);
+  it("builds the page and image URLs as absolute URLs from VITE_SITE_URL", async () => {
+    const tags = await renderHeadWithSiteUrl(SITE_URL);
+
+    const urls = ["og:url", "og:image", "twitter:image"].map((key) => readMetaContent(key, tags));
 
     expect(urls).toEqual([`${SITE_URL}/`, `${SITE_URL}/og-image.png`, `${SITE_URL}/og-image.png`]);
+  });
+
+  it("falls back to the production address when VITE_SITE_URL is not set", async () => {
+    const tags = await renderHeadWithSiteUrl("");
+
+    const pageUrl = readMetaContent("og:url", tags);
+
+    expect(pageUrl).toBe(`${PRODUCTION_URL}/`);
   });
 
   it("asks for a large image card on a website", () => {

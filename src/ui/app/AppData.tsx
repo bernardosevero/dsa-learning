@@ -15,7 +15,7 @@ import type { LocalDate, Problem, ProblemState, SaveFile, Settings } from "@/dom
 import { getBrowserStore, importJson, type Store } from "@/storage/localStore";
 import type { AccountService } from "@/storage/accountService";
 import type { RemoteStore } from "@/storage/remoteStore";
-import { createSyncMetaStore } from "@/storage/syncMeta";
+import { createSyncMetaStore, type SyncMetaStore } from "@/storage/syncMeta";
 import {
   saveWithCurrentUsageSharing,
   setUsageSharing,
@@ -53,8 +53,14 @@ const appStore: Store = {
   load: () => getBrowserStore().load(),
   save: saveWithCurrentUsageSharing,
 };
-const syncMetaStore = createSyncMetaStore();
+let syncMetaStore: SyncMetaStore | undefined;
 const PROBLEM_IDS = PROBLEMS.map((problem) => problem.id);
+
+// Created on first use in the browser, not when the module loads during the build.
+function getSyncMetaStore(): SyncMetaStore {
+  syncMetaStore ??= createSyncMetaStore();
+  return syncMetaStore;
+}
 
 // The app can stay open past midnight, so the day is re-read whenever the user comes back.
 function useTodayDate(): LocalDate {
@@ -121,7 +127,12 @@ export function AppDataProvider({ accountService, remoteStore, children }: AppDa
   const todayDate = useTodayDate();
   const accountValue = useAccount(accountService);
   const { account } = accountValue;
-  const syncValue = useSync({ account, fileStore, remoteStore, syncMetaStore });
+  const syncValue = useSync({
+    account,
+    fileStore,
+    remoteStore,
+    syncMetaStore: getSyncMetaStore(),
+  });
   const isSignedIn = account.status === "signedIn";
   useUsageSharingFromStorage(fileStore);
   useUsageSharingFromSync(fileStore);

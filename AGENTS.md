@@ -24,7 +24,7 @@ src/data/             static problem list (problems.json), generated once by scr
 src/domain/           pure logic: types, dates, schedule, today, merge, metrics
 src/storage/          persistence behind the Store interface (localStorage now, Supabase later)
 src/test/             shared test code: setup.ts and the builders in builders.ts
-src/ui/app/           what exists once per app: App, AppRoutes, AppLayout, AppData and its reducers
+src/ui/app/           what exists once per app: PracticeApp, AppLayout, PublicLayout, AppData and its reducers
 src/ui/screens/<s>/   one folder per screen, named after its page component: today/ holds TodayPage
 src/ui/shared/        our pieces used by two or more screens, format.ts, strings.ts
 src/ui/primitives/    shadcn/ui components, under shadcn's kebab-case names, and cn.ts
@@ -32,7 +32,7 @@ scripts/              one-off Node scripts, run with `pnpm tsx`
 e2e/                  Playwright tests of the main loop
 ```
 
-The approved public-page migration replaces `src/main.tsx` and the Vite HTML document with React Router framework entry/document ownership. `src/index.css` stays at the root. Framework adapters live at `src/root.tsx`, `src/routes.ts`, `src/entry.client.tsx` (only if needed), `src/framework/*.tsx`, and `react-router.config.ts`; they compose routes and layouts above `ui/app`. Screen implementations stay in their existing folders with named exports. Dependency direction below `app` is unchanged.
+The approved public-page migration replaces `src/main.tsx` and the Vite HTML document with React Router framework entry/document ownership. `src/index.css` stays at the root. Framework adapters live at `src/root.tsx`, `src/routes.ts`, `src/entry.client.tsx` and `src/entry.server.tsx` (only if needed), `src/framework/*.tsx`, and `react-router.config.ts`; they compose routes and layouts above `ui/app`. Screen implementations stay in their existing folders with named exports. Dependency direction below `app` is unchanged.
 
 Dependencies point inward: `ui` → `storage` → `domain`, and `ui` → `domain`. `src/domain/` is **pure**: plain TypeScript with no React, no storage and no browser APIs, so it is trivially testable and can move to a server. A lint rule enforces this.
 
