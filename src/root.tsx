@@ -3,11 +3,15 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 import { AppLoading } from "@/ui/app/AppLoading";
 import { DocumentHead } from "@/ui/app/DocumentHead";
+import { buildPrivatePageMeta } from "@/ui/shared/publicPageMetadata";
 
 import stylesheetUrl from "./index.css?url";
 import type { Route } from "./+types/root";
 
 export const links: Route.LinksFunction = () => [{ rel: "stylesheet", href: stylesheetUrl }];
+
+// Practice screens, the app shell and 404 are never indexed; public routes replace these tags.
+export const meta: Route.MetaFunction = () => buildPrivatePageMeta(import.meta.env);
 
 /** The HTML document around every page, prerendered or client-rendered. */
 export function Layout({ children }: { children: ReactNode }) {

@@ -18,7 +18,6 @@ export function PrivacyPage() {
 
   return (
     <>
-      <title>{t.documentTitle(t.pages.privacy)}</title>
       <h1 className="mb-6 font-serif text-3xl">{t.pages.privacy}</h1>
       <div className="flex flex-col gap-7">
         <section aria-labelledby="privacy-data-heading">

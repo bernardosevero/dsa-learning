@@ -1,6 +1,6 @@
 // Draws public/today-preview.png, the landing page's picture of the Today screen, from synthetic
 // practice data. Run it against a local build, e.g. `pnpm build && pnpm preview --port 4173`, then
-// `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/`. It refuses any other host,
+// `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/today`. It refuses any other host,
 // so it never seeds data into a real site, and its browser context is fresh, so no user's save is
 // read or written. The web fonts come from Google Fonts, so it needs network access.
 
@@ -57,7 +57,7 @@ type Result<T> = { ok: true; value: T } | { ok: false; error: string };
 function readLocalUrl(): Result<URL> {
   const { values } = parseArgs({ options: { url: { type: "string" } } });
   if (values.url === undefined) {
-    return { ok: false, error: "Pass the local Today address: --url http://localhost:4173/" };
+    return { ok: false, error: "Pass the local Today address: --url http://localhost:4173/today" };
   }
   if (!URL.canParse(values.url)) {
     return { ok: false, error: `${values.url} is not a URL` };

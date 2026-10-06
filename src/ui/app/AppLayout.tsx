@@ -8,7 +8,7 @@ import { Wordmark } from "@/ui/shared/Wordmark";
 import { HeaderAccount } from "./HeaderAccount";
 
 const NAV_LINKS = [
-  { to: "/", label: t.nav.today, Icon: CalendarIcon },
+  { to: "/today", label: t.nav.today, Icon: CalendarIcon },
   { to: "/problems", label: t.nav.problems, Icon: ListIcon },
   { to: "/settings", label: t.nav.settings, Icon: SlidersHorizontalIcon },
 ] as const;
@@ -31,14 +31,14 @@ export function AppLayout({ isReadable }: AppLayoutProps) {
       isReadable={isReadable}
       header={
         <>
-          <Wordmark />
+          <Wordmark to="/today" />
           {/* Tighter below the sheet width, where the nav and account share a narrow row. */}
           <div className="flex items-center gap-3 sheet:gap-5">
             <nav aria-label={t.nav.label} className={NAV_CLASSES}>
               <ul className="flex nav:gap-5">
                 {NAV_LINKS.map((link) => (
                   <li key={link.to} className="flex flex-1">
-                    <NavLink to={link.to} end={link.to === "/"} className={NAV_LINK_CLASSES}>
+                    <NavLink to={link.to} end={link.to === "/today"} className={NAV_LINK_CLASSES}>
                       <link.Icon aria-hidden className="size-5 nav:hidden" />
                       {link.label}
                     </NavLink>

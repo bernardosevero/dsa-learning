@@ -32,11 +32,12 @@ export function createSupabase(env: SupabaseEnv = import.meta.env): SupabaseClie
   return createClient(url, publishableKey, { auth: { flowType: "pkce" } });
 }
 
-/** Starts GitHub sign-in (OAuth with PKCE), which leaves the page and comes back to this origin. */
+/** Starts GitHub sign-in (OAuth with PKCE), which leaves the page and comes back to Today. */
 export async function signInWithGitHub(client: SupabaseClient): Promise<AccountResult> {
   const { error } = await client.auth.signInWithOAuth({
     provider: "github",
-    options: { redirectTo: window.location.origin },
+    // Today, not "/", which is the public home page; Supabase reads the code from the query.
+    options: { redirectTo: `${window.location.origin}/today` },
   });
   return error === null ? { ok: true } : { ok: false, error: error.message };
 }

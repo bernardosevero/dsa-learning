@@ -16,7 +16,7 @@ export interface FocusFrameProps {
 
 /** Solving and Log replace the top bar with one way back, to keep the user on the problem. */
 export function FocusFrame({ back, badge, children }: FocusFrameProps) {
-  const link = back ?? { to: "/", label: t.solving.backToToday };
+  const link = back ?? { to: "/today", label: t.solving.backToToday };
   return (
     <PageSheet
       isReadable

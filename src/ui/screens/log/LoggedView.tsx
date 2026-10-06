@@ -75,7 +75,7 @@ export function LoggedView({ problem, saved, onUndo }: LoggedViewProps) {
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button asChild className="flex-1">
-          <Link to="/">{t.log.backToToday}</Link>
+          <Link to="/today">{t.log.backToToday}</Link>
         </Button>
         <Button type="button" variant="outline" onClick={onUndo}>
           {t.log.undo}

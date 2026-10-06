@@ -158,7 +158,7 @@ test("a signed-in reset stays reset on the other device", async ({ browser }) =>
   await expect
     .poll(async () => (await readLocalFile(phone.page)).entries.every((entry) => entry.deletedAt))
     .toBe(true);
-  await phone.page.goto("/");
+  await phone.page.goto("/today");
   await expect(
     phone.page.getByText("Re-solve problems right before you forget them."),
   ).toBeVisible();
@@ -194,7 +194,7 @@ test("a signed-out app shows Sign in with GitHub and never calls Supabase's REST
     }
   });
 
-  await page.goto("/");
+  await page.goto("/today");
   await expect(
     page.getByRole("banner").getByRole("button", { name: "Sign in with GitHub" }),
   ).toBeVisible();

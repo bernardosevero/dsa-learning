@@ -9,7 +9,7 @@ const SECOND_PROBLEM = "Valid Anagram";
 
 async function openToday(page: Page) {
   await page.clock.install({ time: START });
-  await page.goto("/");
+  await page.goto("/today");
 }
 
 function newSection(page: Page) {
@@ -38,7 +38,7 @@ test("a Hard attempt comes back two days later as the focus, without its pattern
   await expect(page.getByText("Next re-solve: 2026-10-03")).toBeVisible();
 
   await page.clock.setSystemTime(TWO_DAYS_LATER);
-  await page.goto("/");
+  await page.goto("/today");
 
   const dueReviews = page.getByRole("region", { name: /^Due reviews/ });
   await expect(dueReviews.getByRole("link", { name: `Start ${FIRST_PROBLEM}` })).toBeVisible();
@@ -71,7 +71,7 @@ test("an exported file imported into a fresh browser shows the same Today", asyn
 }) => {
   await openToday(page);
   await logFirstProblem(page, "Medium");
-  await page.goto("/");
+  await page.goto("/today");
   const todayBefore = (await page.getByRole("main").textContent()) ?? "";
   await page.goto("/settings");
   const downloadEvent = page.waitForEvent("download");
@@ -84,7 +84,7 @@ test("an exported file imported into a fresh browser shows the same Today", asyn
   await freshPage.goto("/settings");
   await freshPage.locator("input[type='file']").setInputFiles(exportPath);
   await expect(freshPage.getByText("Imported: 1 new entry")).toBeVisible();
-  await freshPage.goto("/");
+  await freshPage.goto("/today");
 
   await expect(freshPage.getByRole("main")).toHaveText(todayBefore);
   await freshContext.close();
@@ -93,7 +93,7 @@ test("an exported file imported into a fresh browser shows the same Today", asyn
 test("an export imported after Reset progress brings Today back", async ({ page }) => {
   await openToday(page);
   await logFirstProblem(page, "Medium");
-  await page.goto("/");
+  await page.goto("/today");
   const todayBefore = (await page.getByRole("main").textContent()) ?? "";
   await page.goto("/settings");
   const downloadEvent = page.waitForEvent("download");
@@ -105,7 +105,7 @@ test("an export imported after Reset progress brings Today back", async ({ page 
   await expect(page.getByText("Progress reset. Every problem is new again.")).toBeVisible();
   await page.locator("input[type='file']").setInputFiles(exportPath);
   await expect(page.getByText("Imported: 1 new entry")).toBeVisible();
-  await page.goto("/");
+  await page.goto("/today");
 
   await expect(page.getByRole("main")).toHaveText(todayBefore);
 });

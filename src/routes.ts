@@ -2,10 +2,16 @@ import { index, layout, route, type RouteConfig } from "@react-router/dev/routes
 
 // Practice screens share the client-only practice app; public pages and 404 render without it.
 export default [
+  // Public pages share their own layout, prerendered at build time.
+  layout("routes/publicLayout.tsx", [
+    index("routes/landing.tsx"),
+    route("how-it-works", "routes/howItWorks.tsx"),
+    route("privacy", "routes/privacy.tsx"),
+  ]),
   layout("routes/practiceApp.tsx", [
     // Every sheet is the same width; Today's sidebar and the Problems table use all of it.
     layout("routes/appLayout.tsx", [
-      index("routes/today.tsx"),
+      route("today", "routes/today.tsx"),
       route("problems", "routes/problems.tsx"),
     ]),
     // Screens of text and forms keep to a readable column inside the same sheet.
@@ -17,6 +23,5 @@ export default [
     route("solve/:problemId", "routes/solving.tsx"),
     route("log/:problemId", "routes/log.tsx"),
   ]),
-  route("privacy", "routes/privacy.tsx"),
   route("*", "routes/notFound.tsx"),
 ] satisfies RouteConfig;

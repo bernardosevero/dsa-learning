@@ -11,8 +11,8 @@ export interface PublicLayoutProps {
 }
 
 /**
- * The frame of public pages, which render without the practice app: the wordmark and a link into
- * the app instead of the practice nav, so nothing here reads this browser's save.
+ * The frame of public pages, which render without the practice app: the wordmark home, How it
+ * works and a link into the app instead of the practice nav, so nothing here reads the save.
  */
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
@@ -20,10 +20,16 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       isReadable
       header={
         <>
-          <Wordmark />
-          <nav aria-label={t.shell.publicNav}>
+          <Wordmark to="/" />
+          <nav
+            aria-label={t.shell.publicNav}
+            className="flex flex-wrap items-center justify-end gap-0.5 nav:gap-3"
+          >
+            <Button asChild variant="ghost" className="px-2 nav:px-3">
+              <Link to="/how-it-works">{t.shell.howItWorks}</Link>
+            </Button>
             <Button asChild variant="outline">
-              <Link to="/">{t.shell.openApp}</Link>
+              <Link to="/today">{t.shell.openApp}</Link>
             </Button>
           </nav>
         </>
