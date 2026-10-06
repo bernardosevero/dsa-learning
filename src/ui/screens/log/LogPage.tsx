@@ -3,8 +3,9 @@ import { useParams, useSearchParams } from "react-router";
 
 import { lastAttempt } from "@/domain/schedule";
 import { daysBetween } from "@/domain/dates";
+import type { Entry } from "@/domain/types";
 import { useAppData } from "@/ui/app/AppData";
-import { track } from "@/ui/shared/analytics";
+import { trackAttemptLogged } from "@/ui/shared/analytics";
 import { FocusFrame } from "@/ui/shared/FocusFrame";
 import { Overline } from "@/ui/shared/Overline";
 import { ProblemKindBadge } from "@/ui/shared/ProblemKindBadge";
@@ -19,6 +20,11 @@ import {
   type SavedLog,
   type ValidLog,
 } from "./logValues";
+
+/** First in the log available here: no attempt at all yet, counting deleted ones; marks don't count. */
+function isFirstRecordedAttempt(entries: readonly Entry[]): boolean {
+  return !entries.some((entry) => entry.type === "attempt");
+}
 
 /** S3: log an attempt, then see what comes next and what was hidden. Undo goes back to the form. */
 export function LogPage() {
@@ -57,6 +63,7 @@ export function LogPage() {
   function handleSave(log: ValidLog) {
     const timer = file.activeTimer?.problemId === id ? file.activeTimer : undefined;
     const previous = lastAttempt(file.entries, id) ?? null;
+    const isFirstAttempt = isFirstRecordedAttempt(file.entries);
     const completedAt = new Date().toISOString();
     addAttempt({
       problemId: id,
@@ -70,13 +77,14 @@ export function LogPage() {
       ...(log.notes === "" ? {} : { notes: log.notes }),
     });
     clearTimer();
-    track("attempt_logged", {
+    trackAttemptLogged({
       help: log.help,
       isReview,
       daysOverdue,
       rating: log.rating,
       timeMinutes: log.timeMinutes,
       pattern,
+      isFirstAttempt,
     });
     setSaved({ log, completedAt, previous });
   }

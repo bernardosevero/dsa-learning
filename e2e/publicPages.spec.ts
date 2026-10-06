@@ -215,6 +215,20 @@ test("public → Start practicing → Solve → Log → Today keeps the saved en
   expect(saveAfter).toContain('"shareAnonymousUsage":false');
 });
 
+// The acquisition flag lives in the page's memory, so the funnel only holds without a reload.
+test("public → Start practicing → a logged attempt happens in one document", async ({ page }) => {
+  await page.goto("/how-it-works");
+  // A string, because e2e code is type-checked for Node, without the DOM's `window`.
+  await page.evaluate('window.sameDocumentMarker = "kept"');
+
+  await page.getByRole("link", { name: "Start practicing" }).click();
+  await expect(page).toHaveURL("/today");
+  await logFirstProblem(page, "Medium");
+  await expect(page.getByText(/Next re-solve/)).toBeVisible();
+
+  expect(await page.evaluate("window.sameDocumentMarker")).toBe("kept");
+});
+
 test("a public visit leaves the practice save as it was and mounts no practice app", async ({
   page,
 }) => {

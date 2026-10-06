@@ -5,13 +5,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EMPTY_SAVE_FILE, type SaveFile } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
-import { anAttempt, aSaveFile } from "@/test/builders";
-import { track } from "@/ui/shared/analytics";
+import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
+import { trackAttemptLogged } from "@/ui/shared/analytics";
 import { AppDataProvider } from "@/ui/app/AppData";
 
 import { LogPage } from "../LogPage";
 
-vi.mock("@/ui/shared/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: vi.fn() }));
+vi.mock("@/ui/shared/analytics", () => ({
+  track: vi.fn(),
+  trackPageView: vi.fn(),
+  trackAppOpened: vi.fn(),
+  trackStartPracticing: vi.fn(),
+  trackAttemptLogged: vi.fn(),
+  toPublicAcquisitionPath: vi.fn(),
+  setAnalyticsEnabled: vi.fn(),
+}));
 
 // The earlier attempt took 25 minutes, so the time comparison has something to report.
 const PREVIOUS_TIME_MINUTES = 25;
@@ -153,14 +161,52 @@ describe("LogPage saving", () => {
 
     await user.click(screen.getByRole("button", { name: /Save/ }));
 
-    expect(track).toHaveBeenCalledWith("attempt_logged", {
+    expect(trackAttemptLogged).toHaveBeenCalledExactlyOnceWith({
       rating: "hard",
       help: "hint",
       isReview: true,
       daysOverdue: 2,
       timeMinutes: 20,
       pattern: "Arrays & Hashing",
+      isFirstAttempt: false,
     });
+  });
+
+  it.each([
+    ["an empty log", [], true],
+    [
+      "a log with only an Already mastered mark",
+      [aMasteredMark({ problemId: "valid-anagram" })],
+      true,
+    ],
+    ["a log with a live attempt", [anAttempt({ problemId: "valid-anagram" })], false],
+    [
+      "a log whose only attempt was deleted",
+      [anAttempt({ problemId: "valid-anagram", deletedAt: "2026-09-30T12:00:00.000Z" })],
+      false,
+    ],
+  ])("calls the attempt first only for %s", async (_label, entries, isFirstAttempt) => {
+    const user = userEvent.setup();
+    renderLog("/log/two-sum", aSaveFile({ entries }));
+    await user.click(ratingRadio("Medium"));
+    await user.type(screen.getByRole("spinbutton", { name: "Time" }), "15");
+
+    await user.click(screen.getByRole("button", { name: /Save/ }));
+
+    expect(trackAttemptLogged).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ isFirstAttempt }),
+    );
+  });
+
+  it("sends no attempt event when the form doesn't save", async () => {
+    const user = userEvent.setup();
+    renderLog("/log/two-sum");
+    await user.type(screen.getByRole("spinbutton", { name: "Time" }), "15");
+
+    await user.click(screen.getByRole("button", { name: /Save/ }));
+
+    expect(screen.getByText("Choose how it felt.")).toBeDefined();
+    expect(trackAttemptLogged).not.toHaveBeenCalled();
   });
 
   it("saves exactly one attempt with the right fields and clears the timer", async () => {

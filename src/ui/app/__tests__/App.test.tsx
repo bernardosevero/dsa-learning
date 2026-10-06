@@ -4,11 +4,15 @@ import { RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createAppRouter } from "@/test/appRouter";
-import { track, trackPageView } from "@/ui/shared/analytics";
+import { track, trackAppOpened, trackPageView } from "@/ui/shared/analytics";
 
 vi.mock("@/ui/shared/analytics", () => ({
   track: vi.fn(),
   trackPageView: vi.fn(),
+  trackAppOpened: vi.fn(),
+  trackStartPracticing: vi.fn(),
+  trackAttemptLogged: vi.fn(),
+  toPublicAcquisitionPath: vi.fn(),
   setAnalyticsEnabled: vi.fn(),
 }));
 
@@ -72,12 +76,22 @@ describe("the app's routes", () => {
     ["/", "Spaced repetition for the NeetCode 150"],
     ["/how-it-works", "How spaced-repetition practice works"],
     ["/privacy", "Privacy & credits"],
-  ])("renders %s as a public page, without the practice app or its pageviews", (path, heading) => {
-    renderAt(path);
+  ])(
+    "renders %s as a public page: a pageview, but no practice app or app_opened",
+    (path, heading) => {
+      renderAt(path);
 
-    expect(pageHeading()).toBe(heading);
-    expect(screen.queryByRole("navigation", { name: "Main" })).toBeNull();
-    expect(trackPageView).not.toHaveBeenCalled();
+      expect(pageHeading()).toBe(heading);
+      expect(screen.queryByRole("navigation", { name: "Main" })).toBeNull();
+      expect(trackPageView).toHaveBeenCalledExactlyOnceWith(path);
+      expect(trackAppOpened).not.toHaveBeenCalled();
+    },
+  );
+
+  it("counts entering a practice page as opening the app", () => {
+    renderAt("/today");
+
+    expect(trackAppOpened).toHaveBeenCalledOnce();
   });
 
   it("gives public pages their own header: the name home, How it works and Open app", () => {
@@ -101,12 +115,12 @@ describe("the app's routes", () => {
     expect(header.getByRole("link", { name: "Today" }).getAttribute("href")).toBe("/today");
   });
 
-  it("renders an unknown address as the not-found page", () => {
+  it("renders an unknown address as the not-found page, which doesn't open the app", () => {
     renderAt("/does-not-exist");
 
     expect(pageHeading()).toBe("Page not found");
     expect(document.title).toBe("Page not found · dsa-learning");
-    expect(trackPageView).not.toHaveBeenCalled();
+    expect(trackAppOpened).not.toHaveBeenCalled();
   });
 
   it.each([

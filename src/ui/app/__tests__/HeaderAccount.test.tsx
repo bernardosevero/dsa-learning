@@ -12,6 +12,10 @@ import { aFakeSupabase } from "@/test/fakeSupabase";
 vi.mock("@/ui/shared/analytics", () => ({
   track: vi.fn(),
   trackPageView: vi.fn(),
+  trackAppOpened: vi.fn(),
+  trackStartPracticing: vi.fn(),
+  trackAttemptLogged: vi.fn(),
+  toPublicAcquisitionPath: vi.fn(),
   setAnalyticsEnabled: vi.fn(),
 }));
 

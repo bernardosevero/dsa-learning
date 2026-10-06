@@ -1,8 +1,9 @@
 import type { RouteConfigEntry } from "@react-router/dev/routes";
-import { createElement, type ComponentType } from "react";
-import { createMemoryRouter, type RouteObject } from "react-router";
+import { createElement, Fragment, type ComponentType } from "react";
+import { createMemoryRouter, Outlet, type RouteObject } from "react-router";
 
 import routes from "@/routes";
+import { AnalyticsRouteTracker } from "@/ui/app/AnalyticsRouteTracker";
 import { PracticeApp, type PracticeAppProps } from "@/ui/app/PracticeApp";
 
 interface RouteModule {
@@ -22,7 +23,7 @@ function findRouteModule(file: string): RouteModule {
 }
 
 /**
- * Returns a memory router over the app's real route config (src/routes.ts) at `initialPath`. The
+ * Returns a memory router over the app's real root and route config (src/routes.ts) at `initialPath`. The
  * practice app gets `practiceAppProps` (a fake account, say) in place of the build's backend.
  */
 export function createAppRouter(initialPath: string, practiceAppProps: PracticeAppProps = {}) {
@@ -39,5 +40,17 @@ export function createAppRouter(initialPath: string, practiceAppProps: PracticeA
     return { path: entry.path, Component, children: entry.children?.map(toRouteObject) };
   }
 
-  return createMemoryRouter(routes.map(toRouteObject), { initialEntries: [initialPath] });
+  // What src/root.tsx renders around every route, without the HTML document.
+  function TestRoot() {
+    return createElement(
+      Fragment,
+      null,
+      createElement(AnalyticsRouteTracker),
+      createElement(Outlet),
+    );
+  }
+
+  return createMemoryRouter([{ Component: TestRoot, children: routes.map(toRouteObject) }], {
+    initialEntries: [initialPath],
+  });
 }

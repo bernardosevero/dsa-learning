@@ -20,7 +20,15 @@ import { SettingsPage } from "../SettingsPage";
 
 // The real export builds a download link with browser APIs jsdom lacks; the call is what matters.
 vi.mock("@/storage/download", () => ({ downloadExport: vi.fn() }));
-vi.mock("@/ui/shared/analytics", () => ({ track: vi.fn(), setAnalyticsEnabled: vi.fn() }));
+vi.mock("@/ui/shared/analytics", () => ({
+  track: vi.fn(),
+  trackPageView: vi.fn(),
+  trackAppOpened: vi.fn(),
+  trackStartPracticing: vi.fn(),
+  trackAttemptLogged: vi.fn(),
+  toPublicAcquisitionPath: vi.fn(),
+  setAnalyticsEnabled: vi.fn(),
+}));
 
 const STORED_ATTEMPT = anAttempt({ id: "stored" });
 
