@@ -144,6 +144,15 @@ describe("buildSitemap", () => {
 });
 
 describe("removeScripts", () => {
+  it("keeps what a page shows without JavaScript, such as the fonts' stylesheet", () => {
+    const html =
+      '<head><script>loadFonts()</script><noscript><link rel="stylesheet" href="/fonts.css"/></noscript></head>';
+
+    const page = removeScripts(html);
+
+    expect(page).toBe('<head><link rel="stylesheet" href="/fonts.css"/></head>');
+  });
+
   it("drops inline and module scripts and their preloads, keeping content and styles", () => {
     const html = [
       '<head><link rel="stylesheet" href="/assets/index.css"/>',

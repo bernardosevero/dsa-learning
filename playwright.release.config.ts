@@ -1,17 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 4173;
+const PORT = 4175;
+const BUILD_DIRECTORY = "build-release";
 const isCi = Boolean(process.env.CI);
 
 // For machines with a preinstalled Chromium that doesn't match this Playwright version.
 const chromiumExecutable = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE;
 
+/**
+ * Release checks on the production-shaped build (`pnpm build:release`: canonical address, public
+ * indexing on, no analytics key). `pnpm test:e2e` covers the same pages with indexing off.
+ */
 export default defineConfig({
-  testDir: "e2e",
-  // The sync tests need the local Supabase stack (playwright.sync.config.ts); the release tests
-  // need the production-shaped build (playwright.release.config.ts).
-  testIgnore: ["sync/**", "release/**"],
-  fullyParallel: true,
+  testDir: "e2e/release",
   forbidOnly: isCi,
   reporter: isCi ? [["html", { open: "never" }], ["list"]] : "list",
   use: {
@@ -28,14 +29,12 @@ export default defineConfig({
       },
     },
   ],
-  // The production build served the way Cloudflare serves it (Wrangler's local static assets), so
-  // the tests catch what only the bundle, the 404 page or the _redirects rules get wrong.
+  // Its own build and port, so it never mixes with the unindexed build of `pnpm test:e2e`.
   webServer: {
-    command: `pnpm build && pnpm preview --port ${PORT}`,
+    command: `pnpm build:release && pnpm exec wrangler dev --local --assets ${BUILD_DIRECTORY}/client --port ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCi,
-    timeout: 120_000,
-    // Explicitly the unindexed build, so a local .env can't turn indexing on for these tests.
-    env: { WRANGLER_SEND_METRICS: "false", VITE_PUBLIC_INDEXING_ENABLED: "false" },
+    timeout: 180_000,
+    env: { WRANGLER_SEND_METRICS: "false" },
   },
 });

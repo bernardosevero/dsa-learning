@@ -83,6 +83,9 @@ Login (GitHub) and the `saves` table live in Supabase. You only need this to wor
 | `pnpm test` | Runs the tests once (`pnpm test:watch` re-runs them on every change) |
 | `pnpm test:e2e` | Builds the app, serves it with `pnpm preview` and runs the Playwright tests in `e2e/` against it in Chromium |
 | `pnpm test:e2e:sync` | Runs the sync tests in `e2e/sync/` against the local Supabase stack (start it first) |
+| `pnpm build:release` | Builds the production-shaped site the release checks audit into `build-release/`: the canonical address, public indexing on and no analytics key. A local test artifact, never deployed |
+| `pnpm test:e2e:release` | Builds `build-release/`, serves it with Wrangler and runs the release tests in `e2e/release/`: indexable public pages, the full sitemap, practice pages still `noindex`, no analytics or account requests |
+| `pnpm test:lighthouse` | Builds `build-release/` and runs Lighthouse CI (mobile, three runs per page) on `/`, `/how-it-works` and `/privacy`. Fails unless each page's median Performance, Accessibility and SEO scores are at least 90. Reports go to `.lighthouseci/` |
 | `pnpm lint` | Runs ESLint, including the rule that keeps `src/domain` pure |
 | `pnpm typecheck` | Generates React Router's route types (into `.react-router/`), then type-checks the project with TypeScript |
 | `pnpm format` | Formats the code with Prettier |
@@ -91,9 +94,9 @@ Login (GitHub) and the `saves` table live in Supabase. You only need this to wor
 | `pnpm supabase start` / `stop` | Starts or stops the local Supabase stack (needs Docker) |
 | `pnpm supabase test db` | Runs the pgTAP tests against the local stack |
 
-CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` on every pull request, so run the same four before opening one. A separate CI job runs `pnpm test:e2e`.
+CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` on every pull request, so run the same four before opening one. A separate CI job runs `pnpm test:e2e`, and the Public pages workflow runs `pnpm test:e2e:release` and `pnpm test:lighthouse`, keeping the Lighthouse reports as a workflow artifact even when they fail.
 
-The end-to-end tests need a Chromium that matches the installed Playwright version. Install it once with `pnpm exec playwright install chromium`. If your machine already has a different Chromium build (some sandboxes preinstall one), point the tests at it instead with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome pnpm test:e2e`.
+The end-to-end tests need a Chromium that matches the installed Playwright version. Install it once with `pnpm exec playwright install chromium`. If your machine already has a different Chromium build (some sandboxes preinstall one), point the tests at it instead with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome pnpm test:e2e`. Lighthouse CI uses the same browser through `CHROME_PATH`: `CHROME_PATH="$(node -e 'console.log(require("@playwright/test").chromium.executablePath())')" pnpm test:lighthouse`, as CI does.
 
 ## 🛠️ Scripts
 
@@ -106,7 +109,7 @@ One-off Node scripts in `scripts/`. The ones marked 🌐 need network access.
 | `pnpm tsx scripts/snapshot-nc-links.ts` 🌐 | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
 | `pnpm tsx scripts/smoke-production.ts` 🌐 | Checks that production is wired to Supabase without signing in: the build's variables, GitHub sign-in, and the `saves` table and `delete_my_account()` closed to anyone signed out. CI runs it daily |
 | `pnpm tsx scripts/render-link-previews.ts` 🌐 | Redraws the favicon, the Apple touch icon and the link-preview image in `public/`. Run it after changing their design in the script. It needs a Chromium, like the end-to-end tests |
-| `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/today` 🌐 | Redraws `public/today-preview.png`, the landing page's picture of Today, from synthetic practice data on a fixed date. Serve a local build first (`pnpm build && pnpm preview --port 4173`); it refuses any non-local address and uses a fresh browser context, so it never touches anyone's progress. It needs a Chromium, like the end-to-end tests |
+| `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/today` 🌐 | Redraws `public/today-preview.webp`, the landing page's picture of Today, from synthetic practice data on a fixed date. Serve a local build first (`pnpm build && pnpm preview --port 4173`); it refuses any non-local address and uses a fresh browser context, so it never touches anyone's progress. It needs a Chromium, like the end-to-end tests |
 
 ## 🚀 Deploy
 

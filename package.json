@@ -16,6 +16,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:sync": "playwright test -c playwright.sync.config.ts",
+    "test:e2e:release": "playwright test -c playwright.release.config.ts",
+    "build:release": "tsx scripts/buildRelease.ts",
+    "test:lighthouse": "pnpm build:release && lhci autorun",
     "lint": "eslint .",
     "typecheck": "react-router typegen && tsc -b",
     "format": "prettier --write ."
@@ -36,6 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.63.0",
     "@react-router/dev": "7.18.4",
     "@tailwindcss/vite": "^4.3.3",

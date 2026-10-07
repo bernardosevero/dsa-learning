@@ -390,7 +390,7 @@ test("assets, robots.txt and the sitemap keep their own responses", async ({ pag
     [scriptUrl ?? "", "javascript"],
     [stylesheetUrl ?? "", "text/css"],
     ["/favicon.svg", "image/svg+xml"],
-    ["/today-preview.png", "image/png"],
+    ["/today-preview.webp", "image/webp"],
     ["/og-image.png", "image/png"],
     ["/robots.txt", "text/plain"],
     ["/sitemap.xml", "xml"],

@@ -1,0 +1,39 @@
+name: Public pages
+
+# The release checks for the public pages, on the production-shaped build (`pnpm build:release`):
+# indexing-on e2e and the Lighthouse CI gate. The indexing-off build runs in CI's e2e job.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  release-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # The pnpm version pinned in package.json's packageManager.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      # Lighthouse runs in the Chromium Playwright just installed, not whatever Chrome the runner has.
+      - name: Point Lighthouse CI at Playwright's Chromium
+        run: echo "CHROME_PATH=$(node -e 'console.log(require("@playwright/test").chromium.executablePath())')" >> "$GITHUB_ENV"
+      - run: pnpm test:e2e:release
+      - run: pnpm test:lighthouse
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-playwright-report
+          path: playwright-report/
+          retention-days: 14

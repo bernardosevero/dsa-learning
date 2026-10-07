@@ -33,7 +33,8 @@ export function LandingPage() {
       </section>
       <figure className="flex flex-col items-center gap-2">
         <img
-          src="/today-preview.png"
+          src="/today-preview.webp"
+          fetchPriority="high"
           alt={t.landing.previewAlt}
           width={TODAY_PREVIEW_SIZE.width}
           height={TODAY_PREVIEW_SIZE.height}

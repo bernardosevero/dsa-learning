@@ -1,4 +1,4 @@
-import posthog from "posthog-js";
+import type { PostHog, Properties } from "posthog-js";
 
 import type { Help, Rating } from "@/domain/types";
 
@@ -37,7 +37,12 @@ const posthogHost =
     ? configuredHost
     : "https://us.i.posthog.com";
 const isConfigured = import.meta.env.PROD && Boolean(projectKey);
-let isInitialized = false;
+// posthog-js is loaded on first use, so a build without a key, a visitor who opted out and every
+// page's first paint never download it. Events sent while it loads wait in the queue.
+let hasStartedLoading = false;
+let hasLoadFailed = false;
+let client: PostHog | undefined;
+let pendingCaptures: Array<[event: string, properties: Properties | undefined]> = [];
 let hasTrackedOpening = false;
 let shouldShareUsage = false;
 // Set by a captured Start practicing click; lives only as long as this document.
@@ -53,23 +58,18 @@ export function toPublicAcquisitionPath(pathname: string): PublicAcquisitionPath
 }
 
 function canCapture(): boolean {
-  return isConfigured && isInitialized && shouldShareUsage;
+  return isConfigured && hasStartedLoading && !hasLoadFailed && shouldShareUsage;
 }
 
-/**
- * Applies the saved opt-out choice before any event can be sent. Turning it off stops capture at
- * once and forgets a Start practicing click, so re-enabling never brings an earlier one back.
- */
-export function setAnalyticsEnabled(isEnabled: boolean): void {
-  if (!isConfigured) return;
-
-  shouldShareUsage = isEnabled;
-  if (!isEnabled) {
-    isStartedFromPublicPage = false;
+function capture(event: string, properties?: Properties): void {
+  if (client === undefined) {
+    pendingCaptures.push([event, properties]);
     return;
   }
-  if (isInitialized) return;
+  client.capture(event, properties);
+}
 
+function initialize(posthog: PostHog): void {
   posthog.init(projectKey, {
     api_host: posthogHost,
     persistence: "memory",
@@ -88,7 +88,43 @@ export function setAnalyticsEnabled(isEnabled: boolean): void {
     save_referrer: false,
     get_current_url: () => window.location.origin + window.location.pathname,
   });
-  isInitialized = true;
+  client = posthog;
+  const queued = pendingCaptures;
+  pendingCaptures = [];
+  for (const [event, properties] of queued) {
+    posthog.capture(event, properties);
+  }
+}
+
+async function loadPostHog(): Promise<void> {
+  try {
+    const { default: posthog } = await import("posthog-js");
+    initialize(posthog);
+  } catch {
+    // Offline or blocked: analytics is optional, so the app carries on without it.
+    hasLoadFailed = true;
+    pendingCaptures = [];
+  }
+}
+
+/**
+ * Applies the saved opt-out choice before any event can be sent. Turning it off stops capture at
+ * once and forgets a Start practicing click, so re-enabling never brings an earlier one back.
+ */
+export function setAnalyticsEnabled(isEnabled: boolean): void {
+  if (!isConfigured) return;
+
+  shouldShareUsage = isEnabled;
+  if (!isEnabled) {
+    isStartedFromPublicPage = false;
+    // Events still waiting for posthog-js were sent while sharing was on, but never leave now.
+    pendingCaptures = [];
+    return;
+  }
+  if (hasStartedLoading) return;
+
+  hasStartedLoading = true;
+  void loadPostHog();
 }
 
 /** Sends app_opened once per document, on the first practice route while sharing is on. */
@@ -119,7 +155,7 @@ export function trackAttemptLogged(properties: Readonly<AttemptLoggedProperties>
 /** Captures the current SPA route without query strings or fragments. */
 export function trackPageView(pathname: string): void {
   if (!canCapture()) return;
-  posthog.capture("$pageview", { $current_url: window.location.origin + pathname });
+  capture("$pageview", { $current_url: window.location.origin + pathname });
 }
 
 /** Sends only the listed anonymous product events when analytics is enabled. */
@@ -128,5 +164,5 @@ export function track<EventName extends keyof AnalyticsEvents>(
   ...args: AnalyticsEvents[EventName] extends undefined ? [] : [AnalyticsEvents[EventName]]
 ): void {
   if (!canCapture()) return;
-  posthog.capture(event, args[0]);
+  capture(event, args[0]);
 }
