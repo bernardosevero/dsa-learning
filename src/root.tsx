@@ -1,6 +1,7 @@
 import { StrictMode, type ReactNode } from "react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
+import { AnalyticsRouteTracker } from "@/ui/app/AnalyticsRouteTracker";
 import { AppLoading } from "@/ui/app/AppLoading";
 import { DocumentHead } from "@/ui/app/DocumentHead";
 import { buildPrivatePageMeta } from "@/ui/shared/publicPageMetadata";
@@ -34,6 +35,8 @@ export function Layout({ children }: { children: ReactNode }) {
 export default function Root() {
   return (
     <StrictMode>
+      {/* Above public and practice routes alike, so one tracker follows a visit between them. */}
+      <AnalyticsRouteTracker />
       <Outlet />
     </StrictMode>
   );
