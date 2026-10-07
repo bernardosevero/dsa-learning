@@ -51,6 +51,8 @@ describe("anonymous analytics", () => {
     const { setAnalyticsEnabled, trackPageView } = await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
+
+    await vi.dynamicImportSettled();
     trackPageView("/problems/two-sum");
 
     expect(posthog.init).toHaveBeenCalledWith(
@@ -77,6 +79,8 @@ describe("anonymous analytics", () => {
     const { setAnalyticsEnabled } = await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
+
+    await vi.dynamicImportSettled();
     const [, config] = posthog.init.mock.calls[0] as [string, { get_current_url: () => string }]; // safe: init was just called with its config
 
     expect(config.get_current_url()).toBe(`${ORIGIN}/today`);
@@ -99,7 +103,10 @@ describe("anonymous analytics", () => {
     const { setAnalyticsEnabled } = await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
+
+    await vi.dynamicImportSettled();
     setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
 
     expect(posthog.init).toHaveBeenCalledOnce();
     expect(posthog.capture).not.toHaveBeenCalled();
@@ -109,6 +116,8 @@ describe("anonymous analytics", () => {
     const { setAnalyticsEnabled, trackAppOpened } = await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
+
+    await vi.dynamicImportSettled();
     trackAppOpened();
     trackAppOpened();
 
@@ -119,6 +128,8 @@ describe("anonymous analytics", () => {
     const { setAnalyticsEnabled, trackStartPracticing } = await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
+
+    await vi.dynamicImportSettled();
     trackStartPracticing("/how-it-works", "footer");
 
     expect(posthog.capture).toHaveBeenCalledExactlyOnceWith("start_practicing_clicked", {
@@ -132,6 +143,8 @@ describe("anonymous analytics", () => {
       await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
+
+    await vi.dynamicImportSettled();
     trackAttemptLogged(AN_ATTEMPT);
     trackStartPracticing("/", "hero");
     trackAttemptLogged(AN_ATTEMPT);
@@ -147,11 +160,13 @@ describe("anonymous analytics", () => {
     const { setAnalyticsEnabled, trackAttemptLogged, trackStartPracticing } =
       await importConfiguredAnalytics();
     setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
     trackStartPracticing("/", "hero");
 
     setAnalyticsEnabled(false);
     trackAttemptLogged(AN_ATTEMPT);
     setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
     trackAttemptLogged(AN_ATTEMPT);
 
     expect(posthog.capture).toHaveBeenLastCalledWith("attempt_logged", {
@@ -168,6 +183,7 @@ describe("anonymous analytics", () => {
     setAnalyticsEnabled(false);
     trackStartPracticing("/", "hero");
     setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
     trackAttemptLogged(AN_ATTEMPT);
 
     expect(posthog.capture).toHaveBeenCalledExactlyOnceWith("attempt_logged", {
@@ -180,6 +196,8 @@ describe("anonymous analytics", () => {
     const { setAnalyticsEnabled, track, trackPageView } = await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
+
+    await vi.dynamicImportSettled();
     trackPageView("/");
     track("imported", { added: 2 });
     setAnalyticsEnabled(false);
@@ -198,11 +216,49 @@ describe("anonymous analytics", () => {
       await import("../analytics");
 
     setAnalyticsEnabled(true);
+
+    await vi.dynamicImportSettled();
     track("exported");
     trackAppOpened();
     trackStartPracticing("/", "hero");
 
     expect(posthog.init).not.toHaveBeenCalled();
+    expect(posthog.capture).not.toHaveBeenCalled();
+  });
+});
+
+describe("loading posthog-js", () => {
+  it("doesn't download posthog-js until sharing is on in a configured build", async () => {
+    const { setAnalyticsEnabled, trackPageView } = await importConfiguredAnalytics();
+
+    setAnalyticsEnabled(false);
+    trackPageView("/");
+    await vi.dynamicImportSettled();
+
+    expect(posthog.init).not.toHaveBeenCalled();
+  });
+
+  it("sends events made while it loads once it has, in order", async () => {
+    const { setAnalyticsEnabled, trackAppOpened, trackPageView } =
+      await importConfiguredAnalytics();
+
+    setAnalyticsEnabled(true);
+    trackPageView("/today");
+    trackAppOpened();
+    await vi.dynamicImportSettled();
+
+    expect(capturedEvents()).toEqual(["$pageview", "app_opened"]);
+  });
+
+  it("drops events still waiting when sharing is turned off before it loads", async () => {
+    const { setAnalyticsEnabled, trackPageView } = await importConfiguredAnalytics();
+
+    setAnalyticsEnabled(true);
+    trackPageView("/today");
+    setAnalyticsEnabled(false);
+    await vi.dynamicImportSettled();
+
+    expect(posthog.init).toHaveBeenCalledOnce();
     expect(posthog.capture).not.toHaveBeenCalled();
   });
 });

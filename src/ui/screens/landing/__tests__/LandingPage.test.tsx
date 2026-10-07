@@ -60,7 +60,7 @@ describe("LandingPage", () => {
 
     const preview = screen.getByRole("img", { name: /The Today screen with example data/ });
 
-    expect(preview.getAttribute("src")).toBe("/today-preview.png");
+    expect(preview.getAttribute("src")).toBe("/today-preview.webp");
     expect(preview.getAttribute("width")).toBe("960");
     expect(preview.getAttribute("height")).toBe("1488");
     expect(within(screen.getByRole("figure")).getByText("Example practice data")).toBeDefined();

@@ -1,0 +1,29 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "pnpm exec wrangler dev --local --assets build-release/client --port 4175",
+      "startServerReadyPattern": "Ready on",
+      "startServerReadyTimeout": 120000,
+      "url": [
+        "http://localhost:4175/",
+        "http://localhost:4175/how-it-works",
+        "http://localhost:4175/privacy"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "chromeFlags": "--headless=new --no-sandbox"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.9, "aggregationMethod": "median" }],
+        "categories:accessibility": ["error", { "minScore": 0.9, "aggregationMethod": "median" }],
+        "categories:seo": ["error", { "minScore": 0.9, "aggregationMethod": "median" }]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci/reports"
+    }
+  }
+}

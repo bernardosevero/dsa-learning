@@ -1,5 +1,8 @@
 const FONTS_URL =
   "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap";
+// A stylesheet a script adds doesn't hold back the first paint, as a <link> in the HTML would; the
+// text shows in the fallback fonts until the web fonts swap in (display=swap).
+const FONTS_LOADER = `document.head.appendChild(Object.assign(document.createElement("link"), { rel: "stylesheet", href: ${JSON.stringify(FONTS_URL)} }));`;
 
 /**
  * The tags every page's <head> starts with. Robots, description, canonical and link-preview tags
@@ -17,7 +20,10 @@ export function DocumentHead() {
       <meta name="theme-color" content="#141513" media="(prefers-color-scheme: dark)" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link rel="stylesheet" href={FONTS_URL} />
+      <script dangerouslySetInnerHTML={{ __html: FONTS_LOADER }} />
+      <noscript>
+        <link rel="stylesheet" href={FONTS_URL} />
+      </noscript>
     </>
   );
 }

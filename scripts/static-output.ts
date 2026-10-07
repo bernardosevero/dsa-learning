@@ -41,10 +41,17 @@ const NOT_FOUND_REDIRECT = `/404 /not-found ${PERMANENT_REDIRECT_STATUS}`;
 
 const SCRIPT_PATTERN = /<script\b[^>]*>[\s\S]*?<\/script>/g;
 const MODULE_PRELOAD_PATTERN = /<link rel="modulepreload"[^>]*>/g;
+const NOSCRIPT_PATTERN = /<noscript>([\s\S]*?)<\/noscript>/g;
 
-/** Returns the page's HTML without its scripts and script preloads; styles and links stay. */
+/**
+ * Returns the page's HTML without its scripts and script preloads; styles and links stay, and what
+ * stood in for a script in <noscript> (the web fonts' stylesheet) becomes part of the page.
+ */
 export function removeScripts(html: string): string {
-  return html.replaceAll(SCRIPT_PATTERN, "").replaceAll(MODULE_PRELOAD_PATTERN, "");
+  return html
+    .replaceAll(SCRIPT_PATTERN, "")
+    .replaceAll(MODULE_PRELOAD_PATTERN, "")
+    .replaceAll(NOSCRIPT_PATTERN, "$1");
 }
 
 /** Practice addresses that don't depend on a problem. */

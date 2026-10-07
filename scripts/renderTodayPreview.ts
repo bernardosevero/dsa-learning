@@ -1,20 +1,23 @@
-// Draws public/today-preview.png, the landing page's picture of the Today screen, from synthetic
+// Draws public/today-preview.webp, the landing page's picture of the Today screen, from synthetic
 // practice data. Run it against a local build, e.g. `pnpm build && pnpm preview --port 4173`, then
 // `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/today`. It refuses any other host,
 // so it never seeds data into a real site, and its browser context is fresh, so no user's save is
 // read or written. The web fonts come from Google Fonts, so it needs network access.
 
+import { Buffer } from "node:buffer";
 import { writeFile } from "node:fs/promises";
 import process from "node:process";
 import { parseArgs } from "node:util";
 
-import { chromium } from "@playwright/test";
+import { chromium, type Page } from "@playwright/test";
 
 import { DEFAULT_SETTINGS, type SaveFile } from "@/domain/types";
 import { anAttempt, aSaveFile } from "@/test/builders";
 import { TODAY_PREVIEW_SIZE } from "@/ui/screens/landing/todayPreviewSize";
 
-const OUTPUT_URL = new URL("../public/today-preview.png", import.meta.url);
+const OUTPUT_URL = new URL("../public/today-preview.webp", import.meta.url);
+// WebP is a fraction of the PNG's size at this quality, and the picture is the landing's LCP.
+const WEBP_QUALITY = 0.9;
 const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "[::1]"]);
 // A fixed day and zone, so the due dates and the "days overdue" below never drift.
 const FIXED_NOW = new Date("2026-10-10T10:00:00Z");
@@ -69,6 +72,22 @@ function readLocalUrl(): Result<URL> {
   return { ok: true, value: url };
 }
 
+/** Re-encodes a PNG as WebP with Chromium's own encoder, so the script needs no image library. */
+async function encodeWebp(page: Page, png: Buffer): Promise<Buffer> {
+  // A string, because it runs in the page.
+  const webpBase64 = await page.evaluate<string>(`(async () => {
+    const image = new Image();
+    image.src = "data:image/png;base64,${png.toString("base64")}";
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    canvas.getContext("2d").drawImage(image, 0, 0);
+    return canvas.toDataURL("image/webp", ${WEBP_QUALITY}).split(",")[1];
+  })()`);
+  return Buffer.from(webpBase64, "base64");
+}
+
 function hasEveryFontFamily(loadedFamilies: readonly string[]): boolean {
   const unquotedFamilies = new Set(loadedFamilies.map((family) => family.replaceAll('"', "")));
   return REQUIRED_FONT_FAMILIES.every((family) => unquotedFamilies.has(family));
@@ -102,7 +121,8 @@ async function renderTodayPreview(todayUrl: URL): Promise<Result<number>> {
       return { ok: false, error: `Chromium loaded only these fonts: ${loadedFamilies.join(", ")}` };
     }
 
-    const preview = await page.screenshot({ type: "png" });
+    const screenshot = await page.screenshot({ type: "png" });
+    const preview = await encodeWebp(page, screenshot);
     await writeFile(OUTPUT_URL, preview);
     return { ok: true, value: preview.byteLength };
   } finally {
@@ -113,7 +133,7 @@ async function renderTodayPreview(todayUrl: URL): Promise<Result<number>> {
 const todayUrl = readLocalUrl();
 const render = todayUrl.ok ? await renderTodayPreview(todayUrl.value) : todayUrl;
 if (render.ok) {
-  process.stdout.write(`Wrote public/today-preview.png (${render.value} bytes)\n`);
+  process.stdout.write(`Wrote public/today-preview.webp (${render.value} bytes)\n`);
 } else {
   console.error(`renderTodayPreview failed: ${render.error}`);
   process.exitCode = 1;
