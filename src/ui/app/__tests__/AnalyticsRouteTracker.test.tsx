@@ -44,6 +44,13 @@ function renderTrackerAt(path: string) {
   return router;
 }
 
+// useUsageSharing reads storage once its module has loaded; this waits for that read.
+async function loadStoredChoice() {
+  await act(async () => {
+    await import("@/storage/usageSharing");
+  });
+}
+
 async function navigate(router: ReturnType<typeof renderTrackerAt>, to: string) {
   await act(async () => {
     await router.navigate(to);
@@ -56,20 +63,22 @@ afterEach(() => {
 });
 
 describe("AnalyticsRouteTracker", () => {
-  it("never enables analytics or sends anything on a public visit when sharing is off", () => {
+  it("never enables analytics or sends anything on a public visit when sharing is off", async () => {
     storeSharing(false);
 
     renderTrackerAt("/");
+    await loadStoredChoice();
 
     expect(setAnalyticsEnabled).not.toHaveBeenCalledWith(true);
     expect(trackPageView).not.toHaveBeenCalled();
     expect(trackAppOpened).not.toHaveBeenCalled();
   });
 
-  it("sends one pageview for a public page, even under StrictMode, and no app_opened", () => {
+  it("sends one pageview for a public page, even under StrictMode, and no app_opened", async () => {
     storeSharing(true);
 
     renderTrackerAt("/how-it-works");
+    await loadStoredChoice();
 
     expect(setAnalyticsEnabled).toHaveBeenCalledWith(true);
     expect(trackPageView).toHaveBeenCalledExactlyOnceWith("/how-it-works");
@@ -79,6 +88,7 @@ describe("AnalyticsRouteTracker", () => {
   it("follows a visit from a public page into practice pages", async () => {
     storeSharing(true);
     const router = renderTrackerAt("/");
+    await loadStoredChoice();
 
     await navigate(router, "/today");
     await navigate(router, "/problems");
@@ -91,6 +101,7 @@ describe("AnalyticsRouteTracker", () => {
   it("ignores query and fragment changes on the same page", async () => {
     storeSharing(true);
     const router = renderTrackerAt("/today");
+    await loadStoredChoice();
 
     await navigate(router, "/today?code=oauth-secret");
     await navigate(router, "/today#top");
@@ -98,9 +109,10 @@ describe("AnalyticsRouteTracker", () => {
     expect(trackPageView).toHaveBeenCalledExactlyOnceWith("/today");
   });
 
-  it("doesn't replay the pageview when the choice is turned off and on again", () => {
+  it("doesn't replay the pageview when the choice is turned off and on again", async () => {
     storeSharing(true);
     renderTrackerAt("/settings");
+    await loadStoredChoice();
 
     act(() => {
       setUsageSharing(false);
@@ -114,9 +126,10 @@ describe("AnalyticsRouteTracker", () => {
     expect(trackPageView).toHaveBeenCalledExactlyOnceWith("/settings");
   });
 
-  it("applies a choice turned off on the page right away", () => {
+  it("applies a choice turned off on the page right away", async () => {
     storeSharing(true);
     renderTrackerAt("/privacy");
+    await loadStoredChoice();
 
     act(() => {
       setUsageSharing(false);
