@@ -56,7 +56,7 @@ describe("UsageSharingControl", () => {
 });
 
 describe("useUsageSharing", () => {
-  it("prerenders and hydrates without touching storage, then shows the saved choice", () => {
+  it("prerenders and hydrates without touching storage, then shows the saved choice", async () => {
     storeFile(OPTED_OUT_SAVE);
     const getItem = vi.spyOn(Storage.prototype, "getItem");
     const setItem = vi.spyOn(Storage.prototype, "setItem");
@@ -70,10 +70,11 @@ describe("useUsageSharing", () => {
     container.innerHTML = html;
     document.body.append(container);
     const handleRecoverableError = vi.fn();
-    act(() => {
+    await act(async () => {
       hydrateRoot(container, <PublicUsageSharing />, {
         onRecoverableError: handleRecoverableError,
       });
+      await import("@/storage/usageSharing");
     });
 
     expect(handleRecoverableError).not.toHaveBeenCalled();

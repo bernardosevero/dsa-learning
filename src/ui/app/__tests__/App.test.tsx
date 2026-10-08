@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -18,6 +18,13 @@ vi.mock("@/ui/shared/analytics", () => ({
 
 function renderAt(path: string) {
   render(<RouterProvider router={createAppRouter(path)} />);
+}
+
+// useUsageSharing reads storage once its module has loaded; this waits for that read.
+async function loadStoredChoice() {
+  await act(async () => {
+    await import("@/storage/usageSharing");
+  });
 }
 
 // PageSheet's readable column, which Problem detail and Settings sit in.
@@ -63,8 +70,9 @@ describe("the app's routes", () => {
     ["/today", "Today"],
     ["/problems", "Problems"],
     ["/settings", "Settings & data"],
-  ])("renders %s as the %s screen with its own page title", (path, heading) => {
+  ])("renders %s as the %s screen with its own page title", async (path, heading) => {
     renderAt(path);
+    await loadStoredChoice();
 
     expect(pageHeading()).toBe(heading);
     expect(document.title).toBe(`${heading} · dsa-learning`);
@@ -78,8 +86,9 @@ describe("the app's routes", () => {
     ["/privacy", "Privacy & credits"],
   ])(
     "renders %s as a public page: a pageview, but no practice app or app_opened",
-    (path, heading) => {
+    async (path, heading) => {
       renderAt(path);
+      await loadStoredChoice();
 
       expect(pageHeading()).toBe(heading);
       expect(screen.queryByRole("navigation", { name: "Main" })).toBeNull();
@@ -88,8 +97,9 @@ describe("the app's routes", () => {
     },
   );
 
-  it("counts entering a practice page as opening the app", () => {
+  it("counts entering a practice page as opening the app", async () => {
     renderAt("/today");
+    await loadStoredChoice();
 
     expect(trackAppOpened).toHaveBeenCalledOnce();
   });

@@ -85,7 +85,7 @@ Login (GitHub) and the `saves` table live in Supabase. You only need this to wor
 | `pnpm test:e2e:sync` | Runs the sync tests in `e2e/sync/` against the local Supabase stack (start it first) |
 | `pnpm build:release` | Builds the production-shaped site the release checks audit into `build-release/`: the canonical address, public indexing on and no analytics key. A local test artifact, never deployed |
 | `pnpm test:e2e:release` | Builds `build-release/`, serves it with Wrangler and runs the release tests in `e2e/release/`: indexable public pages, the full sitemap, practice pages still `noindex`, no analytics or account requests |
-| `pnpm test:lighthouse` | Builds `build-release/` and runs Lighthouse CI (mobile, three runs per page) on `/`, `/how-it-works` and `/privacy`. Fails unless each page's median Performance, Accessibility and SEO scores are at least 90. Reports go to `.lighthouseci/` |
+| `pnpm test:lighthouse` | Builds `build-release/` and runs Lighthouse CI (mobile, five runs per page) on `/`, `/how-it-works` and `/privacy`. Fails unless each page's median Performance, Accessibility and SEO scores are at least 90, each page loads at most 12 scripts totalling 185 KB, and no image is larger than its layout needs. The score varies from machine to machine; the budgets don't, so they catch a regression the score alone can miss. Reports go to `.lighthouseci/` |
 | `pnpm lint` | Runs ESLint, including the rule that keeps `src/domain` pure |
 | `pnpm typecheck` | Generates React Router's route types (into `.react-router/`), then type-checks the project with TypeScript |
 | `pnpm format` | Formats the code with Prettier |
@@ -109,7 +109,7 @@ One-off Node scripts in `scripts/`. The ones marked 🌐 need network access.
 | `pnpm tsx scripts/snapshot-nc-links.ts` 🌐 | Re-snapshots NeetCode's practice slugs from neetcode.io into `scripts/data/nc-links.json`. Run it only when a slug is missing |
 | `pnpm tsx scripts/smoke-production.ts` 🌐 | Checks that production is wired to Supabase without signing in: the build's variables, GitHub sign-in, and the `saves` table and `delete_my_account()` closed to anyone signed out. CI runs it daily |
 | `pnpm tsx scripts/render-link-previews.ts` 🌐 | Redraws the favicon, the Apple touch icon and the link-preview image in `public/`. Run it after changing their design in the script. It needs a Chromium, like the end-to-end tests |
-| `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/today` 🌐 | Redraws `public/today-preview.webp`, the landing page's picture of Today, from synthetic practice data on a fixed date. Serve a local build first (`pnpm build && pnpm preview --port 4173`); it refuses any non-local address and uses a fresh browser context, so it never touches anyone's progress. It needs a Chromium, like the end-to-end tests |
+| `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/today` 🌐 | Redraws `public/today-preview.webp`, the landing page's picture of Today, and its 480- and 720-pixel-wide copies, from synthetic practice data on a fixed date. Serve a local build first (`pnpm build && pnpm preview --port 4173`); it refuses any non-local address and uses a fresh browser context, so it never touches anyone's progress. It needs a Chromium, like the end-to-end tests |
 
 ## 🚀 Deploy
 

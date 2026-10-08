@@ -49,14 +49,16 @@ describe("PrivacyPage", () => {
     expect(container.querySelector("[role=switch]")?.hasAttribute("disabled")).toBe(true);
   });
 
-  it("enables the switch with the saved choice once hydrated", () => {
+  it("enables the switch with the saved choice once hydrated", async () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(OPTED_OUT_SAVE));
     const container = document.createElement("div");
     container.innerHTML = renderToString(privacyElement());
     document.body.append(container);
 
-    act(() => {
+    // The switch waits for the storage module, which useUsageSharing loads on demand.
+    await act(async () => {
       hydrateRoot(container, privacyElement());
+      await import("@/storage/usageSharing");
     });
 
     expect(usageSwitch()).toHaveProperty("disabled", false);

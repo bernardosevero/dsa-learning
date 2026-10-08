@@ -9,7 +9,11 @@ import { t } from "@/ui/shared/strings";
 
 import { LandingFaq } from "./LandingFaq";
 import { PracticeSteps } from "./PracticeSteps";
-import { TODAY_PREVIEW_SIZE } from "./todayPreviewSize";
+import { TODAY_PREVIEW_FILES, TODAY_PREVIEW_SIZE } from "./todayPreviewSize";
+
+const PREVIEW_SRCSET = TODAY_PREVIEW_FILES.map((file) => `${file.path} ${file.width}w`).join(", ");
+// The picture fills the column up to 400px; below the sheet breakpoint the layout pads each side 20px.
+const PREVIEW_SIZES = "(min-width: 440px) 400px, calc(100vw - 40px)";
 
 /**
  * The public landing page: what the app does, a picture of Today with example data, the fixed
@@ -34,6 +38,8 @@ export function LandingPage() {
       <figure className="flex flex-col items-center gap-2">
         <img
           src="/today-preview.webp"
+          srcSet={PREVIEW_SRCSET}
+          sizes={PREVIEW_SIZES}
           fetchPriority="high"
           alt={t.landing.previewAlt}
           width={TODAY_PREVIEW_SIZE.width}
