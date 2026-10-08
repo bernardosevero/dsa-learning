@@ -24,7 +24,8 @@ jobs:
         github.event.comment.author_association == 'OWNER'
       )
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Large diffs (a whole public page plus tests) took longer than 15 minutes to review.
+    timeout-minutes: 30
     permissions:
       contents: read
       pull-requests: write
