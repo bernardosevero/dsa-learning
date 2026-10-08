@@ -10,7 +10,8 @@
 const DEFAULT_SITE_URL = "https://dsa-learning.bernardosevero.dev";
 const SUPABASE_URL_PATTERN = /https:\/\/[a-z0-9]+\.supabase\.co/;
 const PUBLISHABLE_KEY_PATTERN = /sb_publishable_[\w-]+/;
-const BUNDLE_PATH_PATTERN = /\/assets\/index-[\w-]+\.js/;
+// The framework build splits the app into chunks; the page links each one it loads.
+const SCRIPT_PATH_PATTERN = /\/assets\/[\w.-]+\.js/g;
 // Postgres' insufficient_privilege, what RLS and the revoked grants answer to the anon role.
 const PERMISSION_DENIED = "42501";
 const HTTP_REDIRECT_MIN = 300;
@@ -31,16 +32,22 @@ async function fetchText(url: string): Promise<string> {
   return response.text();
 }
 
+function readSupabaseConfig(script: string): SupabaseConfig | undefined {
+  const url = SUPABASE_URL_PATTERN.exec(script)?.[0];
+  const publishableKey = PUBLISHABLE_KEY_PATTERN.exec(script)?.[0];
+  return url === undefined || publishableKey === undefined ? undefined : { url, publishableKey };
+}
+
 async function readBundleConfig(siteUrl: string): Promise<SupabaseConfig | undefined> {
   const html = await fetchText(siteUrl);
-  const bundlePath = BUNDLE_PATH_PATTERN.exec(html)?.[0];
-  if (bundlePath === undefined) {
-    return undefined;
+  const scriptPaths = new Set(html.match(SCRIPT_PATH_PATTERN));
+  for (const scriptPath of scriptPaths) {
+    const config = readSupabaseConfig(await fetchText(new URL(scriptPath, siteUrl).href));
+    if (config !== undefined) {
+      return config;
+    }
   }
-  const bundle = await fetchText(new URL(bundlePath, siteUrl).href);
-  const url = SUPABASE_URL_PATTERN.exec(bundle)?.[0];
-  const publishableKey = PUBLISHABLE_KEY_PATTERN.exec(bundle)?.[0];
-  return url === undefined || publishableKey === undefined ? undefined : { url, publishableKey };
+  return undefined;
 }
 
 async function checkGitHubEnabled(config: SupabaseConfig): Promise<CheckResult> {
