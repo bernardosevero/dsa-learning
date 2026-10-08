@@ -12,6 +12,7 @@ Work comes from GitHub issues, ordered on the [project board](https://github.com
 4. Run `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build`. All four pass.
 5. Open a PR titled like the commit convention below, with `Closes #<number>`, and tick each acceptance criterion in the description. `main` only changes through PRs.
 6. Leave the merge to the owner; don't merge your own PR. Whoever merges deletes the branch in the same step: `gh pr merge <number> --merge --delete-branch`. The remote holds only `main` and branches with an open PR.
+7. A PR is ready to merge only when every check on its latest commit has passed. GitHub doesn't block merging a PR with a red check here, so nobody merges one with a failing or pending check, and that includes the Lighthouse gate in Public pages / `release-checks`. On your own PR, fix a red check, or say in the PR why it isn't the PR's failure; never hand over a red PR as ready.
 
 The issue is the spec: it carries the exact types, signatures and tests. When the issue and this file disagree, or the issue leaves a product decision open, stop and ask in the PR rather than choosing. The decisions are the owner's. Issues labelled `needs-grilling` get a design session with the owner before any code.
 
