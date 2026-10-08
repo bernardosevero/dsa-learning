@@ -1,5 +1,6 @@
-// Draws public/today-preview.webp, the landing page's picture of the Today screen, from synthetic
-// practice data. Run it against a local build, e.g. `pnpm build && pnpm preview --port 4173`, then
+// Draws public/today-preview.webp, the landing page's picture of the Today screen, and its narrower
+// copies (TODAY_PREVIEW_FILES), from synthetic practice data. Run it against a local build, e.g.
+// `pnpm build && pnpm preview --port 4173`, then
 // `pnpm tsx scripts/renderTodayPreview.ts --url http://localhost:4173/today`. It refuses any other host,
 // so it never seeds data into a real site, and its browser context is fresh, so no user's save is
 // read or written. The web fonts come from Google Fonts, so it needs network access.
@@ -13,9 +14,9 @@ import { chromium, type Page } from "@playwright/test";
 
 import { DEFAULT_SETTINGS, type SaveFile } from "@/domain/types";
 import { anAttempt, aSaveFile } from "@/test/builders";
-import { TODAY_PREVIEW_SIZE } from "@/ui/screens/landing/todayPreviewSize";
+import { TODAY_PREVIEW_FILES, TODAY_PREVIEW_SIZE } from "@/ui/screens/landing/todayPreviewSize";
 
-const OUTPUT_URL = new URL("../public/today-preview.webp", import.meta.url);
+const PUBLIC_DIRECTORY_URL = new URL("../public/", import.meta.url);
 // WebP is a fraction of the PNG's size at this quality, and the picture is the landing's LCP.
 const WEBP_QUALITY = 0.9;
 const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "[::1]"]);
@@ -72,17 +73,22 @@ function readLocalUrl(): Result<URL> {
   return { ok: true, value: url };
 }
 
-/** Re-encodes a PNG as WebP with Chromium's own encoder, so the script needs no image library. */
-async function encodeWebp(page: Page, png: Buffer): Promise<Buffer> {
+/**
+ * Re-encodes a PNG as WebP at `width` (keeping its proportions) with Chromium's own encoder and
+ * resampling, so the script needs no image library.
+ */
+async function encodeWebp(page: Page, png: Buffer, width: number): Promise<Buffer> {
   // A string, because it runs in the page.
   const webpBase64 = await page.evaluate<string>(`(async () => {
     const image = new Image();
     image.src = "data:image/png;base64,${png.toString("base64")}";
     await image.decode();
     const canvas = document.createElement("canvas");
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-    canvas.getContext("2d").drawImage(image, 0, 0);
+    canvas.width = ${width};
+    canvas.height = Math.round((image.naturalHeight * ${width}) / image.naturalWidth);
+    const context = canvas.getContext("2d");
+    context.imageSmoothingQuality = "high";
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL("image/webp", ${WEBP_QUALITY}).split(",")[1];
   })()`);
   return Buffer.from(webpBase64, "base64");
@@ -122,9 +128,11 @@ async function renderTodayPreview(todayUrl: URL): Promise<Result<number>> {
     }
 
     const screenshot = await page.screenshot({ type: "png" });
-    const preview = await encodeWebp(page, screenshot);
-    await writeFile(OUTPUT_URL, preview);
-    return { ok: true, value: preview.byteLength };
+    for (const file of TODAY_PREVIEW_FILES) {
+      const preview = await encodeWebp(page, screenshot, file.width);
+      await writeFile(new URL(`.${file.path}`, PUBLIC_DIRECTORY_URL), preview);
+    }
+    return { ok: true, value: TODAY_PREVIEW_FILES.length };
   } finally {
     await browser.close();
   }
@@ -133,7 +141,7 @@ async function renderTodayPreview(todayUrl: URL): Promise<Result<number>> {
 const todayUrl = readLocalUrl();
 const render = todayUrl.ok ? await renderTodayPreview(todayUrl.value) : todayUrl;
 if (render.ok) {
-  process.stdout.write(`Wrote public/today-preview.webp (${render.value} bytes)\n`);
+  process.stdout.write(`Wrote ${render.value} copies of public/today-preview.webp\n`);
 } else {
   console.error(`renderTodayPreview failed: ${render.error}`);
   process.exitCode = 1;

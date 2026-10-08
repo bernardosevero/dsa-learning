@@ -9,7 +9,7 @@
         "http://localhost:4175/how-it-works",
         "http://localhost:4175/privacy"
       ],
-      "numberOfRuns": 3,
+      "numberOfRuns": 5,
       "settings": {
         "chromeFlags": "--headless=new --no-sandbox"
       }
@@ -18,7 +18,10 @@
       "assertions": {
         "categories:performance": ["error", { "minScore": 0.9, "aggregationMethod": "median" }],
         "categories:accessibility": ["error", { "minScore": 0.9, "aggregationMethod": "median" }],
-        "categories:seo": ["error", { "minScore": 0.9, "aggregationMethod": "median" }]
+        "categories:seo": ["error", { "minScore": 0.9, "aggregationMethod": "median" }],
+        "resource-summary:script:count": ["error", { "maxNumericValue": 12 }],
+        "resource-summary:script:size": ["error", { "maxNumericValue": 185000 }],
+        "uses-responsive-images": ["error", { "maxLength": 0 }]
       }
     },
     "upload": {
