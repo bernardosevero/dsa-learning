@@ -7,6 +7,9 @@
  * Prints one line per check and exits with 1 if any fails.
  */
 
+import process from "node:process";
+import { pathToFileURL } from "node:url";
+
 const DEFAULT_SITE_URL = "https://dsa-learning.bernardosevero.dev";
 const SUPABASE_URL_PATTERN = /https:\/\/[a-z0-9]+\.supabase\.co/;
 const PUBLISHABLE_KEY_PATTERN = /sb_publishable_[\w-]+/;
@@ -32,13 +35,15 @@ async function fetchText(url: string): Promise<string> {
   return response.text();
 }
 
-function readSupabaseConfig(script: string): SupabaseConfig | undefined {
+/** Returns the Supabase URL and publishable key in a script, or undefined if either is missing. */
+export function readSupabaseConfig(script: string): SupabaseConfig | undefined {
   const url = SUPABASE_URL_PATTERN.exec(script)?.[0];
   const publishableKey = PUBLISHABLE_KEY_PATTERN.exec(script)?.[0];
   return url === undefined || publishableKey === undefined ? undefined : { url, publishableKey };
 }
 
-async function readBundleConfig(siteUrl: string): Promise<SupabaseConfig | undefined> {
+/** Returns the Supabase config from the first script the page links that carries all of it. */
+export async function readBundleConfig(siteUrl: string): Promise<SupabaseConfig | undefined> {
   const html = await fetchText(siteUrl);
   const scriptPaths = new Set(html.match(SCRIPT_PATH_PATTERN));
   for (const scriptPath of scriptPaths) {
@@ -119,9 +124,15 @@ async function runChecks(siteUrl: string): Promise<CheckResult[]> {
   ];
 }
 
-const siteUrl = process.argv[2] ?? DEFAULT_SITE_URL;
-const results = await runChecks(siteUrl);
-for (const result of results) {
-  console.error(`${result.ok ? "✅" : "❌"} ${result.detail}`);
+async function main(siteUrl: string): Promise<void> {
+  const results = await runChecks(siteUrl);
+  for (const result of results) {
+    console.error(`${result.ok ? "✅" : "❌"} ${result.detail}`);
+  }
+  process.exitCode = results.every((result) => result.ok) ? 0 : 1;
 }
-process.exitCode = results.every((result) => result.ok) ? 0 : 1;
+
+const isRunDirectly = import.meta.url === pathToFileURL(process.argv[1] ?? "").href;
+if (isRunDirectly) {
+  await main(process.argv[2] ?? DEFAULT_SITE_URL);
+}
