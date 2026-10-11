@@ -269,17 +269,14 @@ export const en = {
       "Sharing is on by default. With it on, the app sends pageviews and these events to PostHog US cloud.",
     neverSentTitle: "Never sent",
     neverSent: ["Your notes", "Key insights", "Problem solutions", "Exported file contents"],
-    yourData: "Your data",
     browserStorage:
       "Your attempts, notes, insights and settings stay in this browser. Without an account there is no server copy of your practice log.",
     exportAndReset:
       "You can export a backup, import it elsewhere, or reset your progress from Settings.",
-    account: "Account",
     accountStorage:
       "Signing in with GitHub is optional. If you sign in, your account stores your email address, your GitHub name and avatar, and a copy of your practice log and settings, in Supabase, hosted in East US (North Virginia), so your devices can sync.",
     accountDelete:
       "Delete account in Settings removes your account and that copy. Your progress in this browser stays.",
-    analytics: "Usage analytics",
     events: [
       { name: "Page viewed", detail: "Pages in the app, including the problem page address." },
       { name: "App opened", detail: "That the app was opened." },
