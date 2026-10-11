@@ -356,6 +356,56 @@ export const en = {
     title: "How spaced-repetition practice works",
     intro:
       "Solve, rate, and re-solve problems from the NeetCode 150. Your rating sets the next review date.",
+    eyebrow: "How it works",
+    introMore: "Seven questions, answered directly.",
+    contents: {
+      label: "On this page",
+      today: "What to practice today",
+      solving: "Where you solve",
+      intervals: "When a problem returns",
+      mastery: "When it's mastered",
+      spoilers: "Why answers are hidden",
+      research: "The research",
+      account: "Accounts and backups",
+    },
+    riskExample: {
+      caption: "Risk, with example numbers",
+      columns: { review: "Review", interval: "Interval", overdue: "Overdue", risk: "Risk" },
+      days: (days: number) => `${days} days`,
+      percent: (percent: number) => `${percent}%`,
+      focus: "Focus",
+      problems: {
+        containsDuplicate: "Contains Duplicate",
+        validParentheses: "Valid Parentheses",
+        climbingStairs: "Climbing Stairs",
+      },
+      footnote:
+        "Climbing Stairs is the oldest, but two days late on a two-day interval is the bigger slip.",
+    },
+    masteryStates: {
+      label: "How a problem moves between new, active and mastered",
+      new: { name: "New", body: "Never attempted" },
+      active: { name: "Active", body: "Comes back on its schedule" },
+      mastered: { name: "Mastered", body: "Out of the rotation" },
+      anyAttempt: "any attempt",
+      easyOnTime: "Easy, on time, after Easy",
+      caption:
+        "A later Medium or Hard sends a mastered problem back to Active. Already mastered, from Problems, skips straight to the end.",
+    },
+    spoilerExample: {
+      whileReviewing: "While you review",
+      afterLogging: "After you log it",
+      pattern: "Pattern",
+      insight: "Your key insight",
+      solution: "Solution and video",
+      hidden: "Hidden",
+      exampleProblem: "Contains Duplicate",
+      examplePattern: "Arrays & Hashing",
+      exampleInsight: "Your one-sentence takeaway",
+      open: "Open",
+    },
+    limitsTitle: "What this doesn't prove",
+    closing: "Ready for the first problem?",
     today: {
       question: "What should I practice today?",
       reviews:

@@ -16,5 +16,7 @@ describe("HowItWorksPage on the server", () => {
     expect(html).toContain("An Easy before the due date doesn&#x27;t count");
     expect(html).toContain("https://pubmed.ncbi.nlm.nih.gov/19076480/");
     expect(html).toContain("your progress is saved in this browser");
+    expect(html).toContain("Risk, with example numbers");
+    expect(html).toContain("Out of the rotation");
   });
 });
