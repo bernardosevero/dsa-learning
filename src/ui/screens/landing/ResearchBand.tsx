@@ -2,6 +2,8 @@ import { Link } from "react-router";
 
 import { t } from "@/ui/shared/strings";
 
+import { SECTION_TITLE_CLASS } from "./landingStyles";
+
 const { research } = t.landing;
 
 /** A dark band with the two research ideas behind re-solving, and the honest limits. */
@@ -13,10 +15,7 @@ export function ResearchBand() {
           <p className="font-mono text-[13px] tracking-[0.08em] uppercase opacity-75">
             {research.eyebrow}
           </p>
-          <h2
-            id="landing-research"
-            className="font-serif text-[clamp(30px,4vw,44px)] leading-[1.1] font-medium tracking-[-0.01em]"
-          >
+          <h2 id="landing-research" className={SECTION_TITLE_CLASS}>
             {research.title}
           </h2>
           <p className="opacity-85">{research.body}</p>

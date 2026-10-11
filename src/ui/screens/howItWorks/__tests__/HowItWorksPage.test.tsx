@@ -31,7 +31,11 @@ describe("HowItWorksPage", () => {
     expect(screen.getAllByRole("heading", { level: 1 }).map((h1) => h1.textContent)).toEqual([
       "How spaced-repetition practice works",
     ]);
-    expect(screen.getByText(/Your rating sets the next review date\.$/)).toBeDefined();
+    expect(
+      screen.getByText(
+        /Your rating sets the next review date\. Seven questions, answered directly\.$/,
+      ),
+    ).toBeDefined();
     expect(screen.getAllByRole("heading", { level: 2 }).map((h2) => h2.textContent)).toEqual([
       "What should I practice today?",
       "Where do I solve the problem?",
@@ -41,6 +45,68 @@ describe("HowItWorksPage", () => {
       "What is the research behind it?",
       "Can I use it without an account, and keep a backup?",
     ]);
+  });
+
+  it("links each question from the page contents, in page order", () => {
+    renderHowItWorks();
+
+    const contents = within(screen.getByRole("navigation", { name: "On this page" }));
+    const questionIds = screen.getAllByRole("heading", { level: 2 }).map((h2) => `#${h2.id}`);
+
+    expect(contents.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(
+      questionIds,
+    );
+    expect(contents.getAllByRole("link").map((link) => link.textContent)).toEqual([
+      "01What to practice today",
+      "02Where you solve",
+      "03When a problem returns",
+      "04When it's mastered",
+      "05Why answers are hidden",
+      "06The research",
+      "07Accounts and backups",
+    ]);
+  });
+
+  it("orders the risk example by days overdue against the interval, not by the oldest", () => {
+    renderHowItWorks();
+
+    const table = within(section("What should I practice today?").getByRole("table"));
+    const rows = table.getAllByRole("row").slice(1);
+
+    expect(rows.map((row) => row.textContent)).toEqual([
+      "★Contains Duplicate2 days2 days100%",
+      "Valid Parentheses7 days3 days43%",
+      "Climbing Stairs30 days6 days20%",
+    ]);
+    expect(table.getByRole("img", { name: "Focus" })).toBeDefined();
+  });
+
+  it("shows how a problem moves from new to active to mastered, in words", () => {
+    renderHowItWorks();
+
+    const states = within(screen.getByRole("list", { name: /between new, active and mastered/ }));
+
+    expect(states.getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "NewNever attempted",
+      "any attempt",
+      "ActiveComes back on its schedule",
+      "Easy, on time, after Easy",
+      "MasteredOut of the rotation",
+    ]);
+    expect(screen.getByText(/A later Medium or Hard sends a mastered problem back/)).toBeDefined();
+  });
+
+  it("compares what a review hides with what logging the attempt reveals", () => {
+    renderHowItWorks();
+
+    const spoilers = section("Why are earlier answers hidden?");
+
+    expect(spoilers.getAllByText("Hidden")).toHaveLength(3);
+    expect(spoilers.getByText("While you review")).toBeDefined();
+    expect(spoilers.getByText("After you log it")).toBeDefined();
+    expect(spoilers.getByText("Arrays & Hashing")).toBeDefined();
+    expect(spoilers.getByText("Open")).toBeDefined();
+    expect(spoilers.queryByRole("link", { name: /Open/ })).toBeNull();
   });
 
   it("explains that due reviews come first by risk, then the next new problem, with no cap", () => {
@@ -108,6 +174,7 @@ describe("HowItWorksPage", () => {
     expect(linkHref(/Dunlosky et al\. \(2013\)/)).toBe(
       "https://journals.sagepub.com/doi/abs/10.1177/1529100612453266",
     );
+    expect(research.getByRole("complementary", { name: "What this doesn't prove" })).toBeDefined();
     expect(research.getByText(/not a scientifically established optimum/)).toBeDefined();
     expect(research.getByText(/has not been tested in a study of its own/)).toBeDefined();
   });

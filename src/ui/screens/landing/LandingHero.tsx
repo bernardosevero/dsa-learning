@@ -6,6 +6,7 @@ import { Button } from "@/ui/primitives/button";
 import { StartPracticingLink } from "@/ui/shared/StartPracticingLink";
 import { t } from "@/ui/shared/strings";
 
+import { EYEBROW_CLASS } from "./landingStyles";
 import { TODAY_PREVIEW_FILES, TODAY_PREVIEW_SIZE } from "./todayPreviewSize";
 
 const PREVIEW_SRCSET = TODAY_PREVIEW_FILES.map((file) => `${file.path} ${file.width}w`).join(", ");
@@ -20,9 +21,7 @@ export function LandingHero() {
       className="mx-auto flex max-w-[1120px] flex-wrap items-center gap-[clamp(40px,6vw,72px)] px-[clamp(16px,4vw,40px)] pt-[clamp(40px,7vw,96px)] pb-[clamp(48px,7vw,88px)]"
     >
       <div className="flex min-w-0 flex-[1_1_440px] flex-col gap-5.5">
-        <p className="font-mono text-[13px] tracking-[0.08em] text-muted-foreground uppercase">
-          {t.landing.eyebrow}
-        </p>
+        <p className={EYEBROW_CLASS}>{t.landing.eyebrow}</p>
         <h1
           id="landing-title"
           className="font-serif text-[clamp(40px,6vw,68px)] leading-[1.02] font-medium tracking-[-0.02em] text-balance"
