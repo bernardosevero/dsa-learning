@@ -246,27 +246,52 @@ export const en = {
     privacyAndCredits: "Privacy & credits",
   },
   privacy: {
-    yourData: "Your data",
+    eyebrow: "Privacy & credits",
+    title: "Your practice log lives in your browser.",
+    intro:
+      "Here is everything dsa-learning stores, where it goes, and the one switch that controls usage analytics.",
+    whereTitle: "Where your data lives",
+    locations: {
+      browser: { title: "This browser", badge: "Always" },
+      account: { title: "Your account", badge: "If you sign in" },
+      analytics: {
+        title: "Usage analytics",
+        badge: "Your choice",
+        body: "Pageviews and a few events, sent to PostHog US cloud, so we learn which parts of the app are used and can improve them. No analytics cookies, no persistent visitor ID.",
+        turnOff: "Turn it off",
+      },
+    },
+    switchTitle: "Share anonymous usage",
+    switchKeepsSent: "It doesn't delete events already sent.",
+    switchState: { on: "On", off: "Off" },
+    sentTitle: "What sharing sends",
+    sentIntro:
+      "Sharing is on by default. With it on, the app sends pageviews and these events to PostHog US cloud.",
+    neverSentTitle: "Never sent",
+    neverSent: ["Your notes", "Key insights", "Problem solutions", "Exported file contents"],
     browserStorage:
       "Your attempts, notes, insights and settings stay in this browser. Without an account there is no server copy of your practice log.",
     exportAndReset:
       "You can export a backup, import it elsewhere, or reset your progress from Settings.",
-    account: "Account",
     accountStorage:
       "Signing in with GitHub is optional. If you sign in, your account stores your email address, your GitHub name and avatar, and a copy of your practice log and settings, in Supabase, hosted in East US (North Virginia), so your devices can sync.",
     accountDelete:
       "Delete account in Settings removes your account and that copy. Your progress in this browser stays.",
-    analytics: "Usage analytics",
-    analyticsPurpose: "We use usage data to learn which parts of the app are used and improve it.",
-    analyticsIntro:
-      "When usage sharing is on, the app sends pageviews and these events to PostHog US cloud:",
     events: [
-      "Pages viewed in the app, including the problem page address.",
-      "App opened.",
-      "Attempt logged: rating, help used, whether it was a review, days overdue, time in minutes, and topic.",
-      "Problem marked already mastered: topic.",
-      "Data exported.",
-      "Data imported: number of entries added.",
+      { name: "Page viewed", detail: "Pages in the app, including the problem page address." },
+      { name: "App opened", detail: "That the app was opened." },
+      {
+        name: "Attempt logged",
+        detail:
+          "Rating, help used, whether it was a review, days overdue, time in minutes, and topic.",
+      },
+      { name: "Marked already mastered", detail: "The problem's topic." },
+      { name: "Data exported", detail: "That an export happened." },
+      { name: "Data imported", detail: "The number of entries added." },
+      {
+        name: "Start practicing clicked",
+        detail: "On the public pages: which page, and where on it the button sits.",
+      },
     ],
     analyticsDetails:
       "PostHog receives page addresses without query strings or fragments, browser and device details, and the IP address of each network request. Its cookieless mode uses the IP address, browser details and site hostname to make a visitor hash that changes daily.",
@@ -399,6 +424,56 @@ export const en = {
     title: "How spaced-repetition practice works",
     intro:
       "Solve, rate, and re-solve problems from the NeetCode 150. Your rating sets the next review date.",
+    eyebrow: "How it works",
+    introMore: "Seven questions, answered directly.",
+    contents: {
+      label: "On this page",
+      today: "What to practice today",
+      solving: "Where you solve",
+      intervals: "When a problem returns",
+      mastery: "When it's mastered",
+      spoilers: "Why answers are hidden",
+      research: "The research",
+      account: "Accounts and backups",
+    },
+    riskExample: {
+      caption: "Risk, with example numbers",
+      columns: { review: "Review", interval: "Interval", overdue: "Overdue", risk: "Risk" },
+      days: (days: number) => `${days} days`,
+      percent: (percent: number) => `${percent}%`,
+      focus: "Focus",
+      problems: {
+        containsDuplicate: "Contains Duplicate",
+        validParentheses: "Valid Parentheses",
+        climbingStairs: "Climbing Stairs",
+      },
+      footnote:
+        "Climbing Stairs is the oldest, but two days late on a two-day interval is the bigger slip.",
+    },
+    masteryStates: {
+      label: "How a problem moves between new, active and mastered",
+      new: { name: "New", body: "Never attempted" },
+      active: { name: "Active", body: "Comes back on its schedule" },
+      mastered: { name: "Mastered", body: "Out of the rotation" },
+      anyAttempt: "any attempt",
+      easyOnTime: "Easy, on time, after Easy",
+      caption:
+        "A later Medium or Hard sends a mastered problem back to Active. Already mastered, from Problems, skips straight to the end.",
+    },
+    spoilerExample: {
+      whileReviewing: "While you review",
+      afterLogging: "After you log it",
+      pattern: "Pattern",
+      insight: "Your key insight",
+      solution: "Solution and video",
+      hidden: "Hidden",
+      exampleProblem: "Contains Duplicate",
+      examplePattern: "Arrays & Hashing",
+      exampleInsight: "Your one-sentence takeaway",
+      open: "Open",
+    },
+    limitsTitle: "What this doesn't prove",
+    closing: "Ready for the first problem?",
     today: {
       question: "What should I practice today?",
       reviews:
