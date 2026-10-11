@@ -1,73 +1,59 @@
-import { Link } from "react-router";
-
-import { Button } from "@/ui/primitives/button";
-import { IntervalTable } from "@/ui/shared/IntervalTable";
-import { SectionLabel } from "@/ui/shared/SectionLabel";
-import { StartPracticingLink } from "@/ui/shared/StartPracticingLink";
 import { t } from "@/ui/shared/strings";
 
+import { ClosingCallToAction } from "./ClosingCallToAction";
+import { IntervalTiles } from "./IntervalTiles";
 import { LandingFaq } from "./LandingFaq";
+import { LandingHero } from "./LandingHero";
+import { EYEBROW_CLASS, SECTION_TITLE_CLASS } from "./landingStyles";
+import { MasteryTimeline } from "./MasteryTimeline";
 import { PracticeSteps } from "./PracticeSteps";
-import { TODAY_PREVIEW_FILES, TODAY_PREVIEW_SIZE } from "./todayPreviewSize";
+import { ResearchBand } from "./ResearchBand";
 
-const PREVIEW_SRCSET = TODAY_PREVIEW_FILES.map((file) => `${file.path} ${file.width}w`).join(", ");
-// The picture fills the column up to 400px; below the sheet breakpoint the layout pads each side 20px.
-const PREVIEW_SIZES = "(min-width: 440px) 400px, calc(100vw - 40px)";
+const CONTAINER = "mx-auto max-w-[1120px] px-[clamp(16px,4vw,40px)] py-[clamp(56px,7vw,96px)]";
 
 /**
- * The public landing page: what the app does, a picture of Today with example data, the fixed
- * intervals and three direct answers. It renders outside the practice app and reads no save.
+ * The public landing page, as full-width sections: the hero with a picture of Today, when a
+ * problem comes back, the practice loop, the research, questions and a closing link into the app.
+ * It renders outside the practice app and reads no save.
  */
 export function LandingPage() {
   return (
-    <div className="mx-auto w-full max-w-[656px] px-5 pt-8 pb-12 flex flex-col gap-10">
-      <section aria-labelledby="landing-title" className="flex flex-col gap-4">
-        <h1 id="landing-title" className="font-serif text-4xl font-semibold text-balance">
-          {t.landing.title}
-        </h1>
-        <p className="text-lg">{t.landing.summary}</p>
-        <div className="flex flex-wrap gap-3">
-          <StartPracticingLink placement="hero" />
-          <Button asChild variant="outline" className="px-5">
-            <Link to="/how-it-works">{t.landing.howItWorks}</Link>
-          </Button>
+    <>
+      <LandingHero />
+      <section aria-labelledby="landing-intervals" className="border-y bg-card">
+        <div className={`${CONTAINER} flex flex-col gap-10`}>
+          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+            <div className="flex flex-[1_1_420px] flex-col gap-3">
+              <p className={EYEBROW_CLASS}>{t.landing.intervalsEyebrow}</p>
+              <h2 id="landing-intervals" className={SECTION_TITLE_CLASS}>
+                {t.landing.intervalsTitle}
+              </h2>
+            </div>
+            <p className="max-w-[30em] flex-[1_1_320px] text-muted-foreground">
+              {t.landing.intervalsFixed}
+            </p>
+          </div>
+          <IntervalTiles />
+          <MasteryTimeline />
         </div>
-        <p className="text-sm text-muted-foreground">{t.landing.noAccount}</p>
       </section>
-      <figure className="flex flex-col items-center gap-2">
-        <img
-          src="/today-preview.webp"
-          srcSet={PREVIEW_SRCSET}
-          sizes={PREVIEW_SIZES}
-          fetchPriority="high"
-          alt={t.landing.previewAlt}
-          width={TODAY_PREVIEW_SIZE.width}
-          height={TODAY_PREVIEW_SIZE.height}
-          className="h-auto w-full max-w-[400px] rounded-xl border"
-        />
-        <figcaption className="text-sm text-muted-foreground">
-          {t.landing.previewCaption}
-        </figcaption>
-      </figure>
-      <section aria-labelledby="landing-steps">
-        <SectionLabel id="landing-steps">{t.landing.stepsTitle}</SectionLabel>
+      <section aria-labelledby="landing-steps" className={`${CONTAINER} flex flex-col gap-9`}>
+        <div className="flex flex-col gap-3">
+          <p className={EYEBROW_CLASS}>{t.landing.stepsEyebrow}</p>
+          <h2 id="landing-steps" className={SECTION_TITLE_CLASS}>
+            {t.landing.stepsTitle}
+          </h2>
+        </div>
         <PracticeSteps />
       </section>
-      <section aria-labelledby="landing-intervals" className="flex flex-col gap-3">
-        <SectionLabel id="landing-intervals">{t.landing.intervalsTitle}</SectionLabel>
-        <IntervalTable />
-        <p className="text-sm text-muted-foreground">{t.landing.intervalsFixed}</p>
-        <Link to="/how-it-works" className="text-sm text-primary underline">
-          {t.landing.intervalsMore}
-        </Link>
-      </section>
-      <section aria-labelledby="landing-faq">
-        <SectionLabel id="landing-faq">{t.landing.faqTitle}</SectionLabel>
+      <ResearchBand />
+      <section aria-labelledby="landing-faq" className={CONTAINER}>
+        <h2 id="landing-faq" className={`${SECTION_TITLE_CLASS} mb-6`}>
+          {t.landing.faqTitle}
+        </h2>
         <LandingFaq />
       </section>
-      <div className="flex justify-center">
-        <StartPracticingLink placement="footer" />
-      </div>
-    </div>
+      <ClosingCallToAction />
+    </>
   );
 }

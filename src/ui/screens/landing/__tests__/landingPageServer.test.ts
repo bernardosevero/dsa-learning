@@ -10,8 +10,10 @@ describe("LandingPage on the server", () => {
   it("renders its whole content with no browser APIs and no practice app", () => {
     const html = renderToString(createElement(MemoryRouter, null, createElement(LandingPage)));
 
-    expect(html).toContain("Spaced repetition for the NeetCode 150");
+    expect(html).toContain("Solved problems come back.");
+    expect(html).toContain("Spaced repetition for the NeetCode 150.");
     expect(html).toContain("Where is my progress saved?");
-    expect(html).toContain("+30 calendar days");
+    expect(html).toContain("Back in 30 days");
+    expect(html).toContain("Easy after Easy");
   });
 });

@@ -1,5 +1,4 @@
 import { INTERVAL_DAYS } from "@/domain/schedule";
-import { Card } from "@/ui/primitives/card";
 import { t } from "@/ui/shared/strings";
 
 const STEPS = [
@@ -18,18 +17,14 @@ const STEPS = [
 /** The practice loop in three numbered steps: see what is due, solve and log, re-solve later. */
 export function PracticeSteps() {
   return (
-    <ol className="flex flex-col gap-3">
+    <ol className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-8">
       {STEPS.map((step, index) => (
-        <li key={step.title}>
-          <Card className="h-full gap-1 p-4">
-            <h3 className="flex gap-2 font-semibold">
-              <span aria-hidden className="font-mono text-muted-foreground">
-                {index + 1}
-              </span>
-              {step.title}
-            </h3>
-            <p className="text-sm text-muted-foreground">{step.body}</p>
-          </Card>
+        <li key={step.title} className="flex flex-col gap-2.5 border-t border-foreground/25 pt-5">
+          <span aria-hidden className="font-mono text-[15px] font-medium text-primary">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <h3 className="font-serif text-[26px] font-medium">{step.title}</h3>
+          <p className="text-muted-foreground">{step.body}</p>
         </li>
       ))}
     </ol>

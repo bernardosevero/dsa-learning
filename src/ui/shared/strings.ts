@@ -325,15 +325,18 @@ export const en = {
     days: (days: number) => `+${days} calendar days`,
   },
   landing: {
-    title: "Spaced repetition for the NeetCode 150",
-    summary:
-      "Keep previously solved coding problems in your practice routine. dsa-learning shows your due reviews and the next new problem, then schedules each re-solve from how hard it felt.",
+    eyebrow: "A practice log for coding interviews",
+    titleLead: "Solved problems come back.",
+    title: "Spaced repetition for the NeetCode 150.",
+    summary: (hard: number, medium: number, easy: number) =>
+      `See your due reviews and the next new problem. Solve it, say how it felt, and dsa-learning brings it back for a re-solve: Hard in ${hard} days, Medium in ${medium}, Easy in ${easy}.`,
     howItWorks: "How it works",
-    noAccount: "Free to use. No dsa-learning account required.",
-    previewCaption: "Example practice data",
+    promises: ["Free", "No account needed", "Progress stays in your browser"],
+    previewCaption: "The Today screen, with example practice data",
     previewAlt:
       "The Today screen with example data: three due reviews, the most at-risk one, Contains Duplicate, shown as the focus with a Start button, and Top K Frequent Elements as the next new problem.",
-    stepsTitle: "The practice loop",
+    stepsEyebrow: "The practice loop",
+    stepsTitle: "Three steps, every day you practice.",
     steps: {
       due: {
         title: "See what is due",
@@ -341,18 +344,58 @@ export const en = {
       },
       solve: {
         title: "Solve and log",
-        body: "Solve it on NeetCode or LeetCode, then rate how it felt and record the attempt here.",
+        body: "Solve it on NeetCode or LeetCode from a blank editor. On reviews, the pattern stays hidden. Then rate how it felt and write one key insight.",
       },
       resolve: {
         title: "Return for a re-solve",
         body: (hard: number, medium: number, easy: number) =>
-          `Hard comes back in ${hard} calendar days, Medium in ${medium} and Easy in ${easy}.`,
+          `Hard comes back in ${hard} calendar days, Medium in ${medium} and Easy in ${easy}. Easy twice, on time, and it's mastered.`,
       },
     },
-    intervalsTitle: "When a problem comes back",
+    intervalsEyebrow: "When a problem comes back",
+    intervalsTitle: "Your rating sets the next date. Nothing else does.",
+    felt: { hard: "Felt Hard", medium: "Felt Medium", easy: "Felt Easy" },
+    days: "days",
+    timeline: {
+      title: "Example: one problem, from first solve to mastered",
+      firstSolve: "First solve",
+      review: "Review",
+      reviewOnTime: "Review, on time",
+      backIn: (days: number) => `Back in ${days} days`,
+      easyAfterEasy: "Easy after Easy",
+      mastered: {
+        date: "From then on",
+        label: "Leaves the rotation",
+        note: "A later Medium or Hard brings it back",
+      },
+    },
     intervalsFixed:
       "The intervals are fixed: a Medium stays at 7 days however often you repeat it. Your time and any help you used are recorded for you to look back on, but they don't change the schedule.",
-    intervalsMore: "How mastery works, and more details",
+    intervalsMore: "How mastery works, in full",
+    research: {
+      eyebrow: "Why re-solve",
+      title: "Two well-studied ideas, applied to interview prep.",
+      body: "The studies are about learning in general. The exact rules here are our own choices, and the app hasn't been tested in a study of its own.",
+      more: "Read the research notes",
+      findings: [
+        {
+          name: "Spacing",
+          summary:
+            "A review spread out from the first study session improved recall later, and the best gap grew with how long the material had to last.",
+          source: "Cepeda et al., 2008",
+        },
+        {
+          name: "Retrieval",
+          summary:
+            "Recalling a passage beat rereading it a week later, even though rereading won on a test five minutes after.",
+          source: "Roediger & Karpicke, 2006",
+        },
+      ],
+    },
+    closing: {
+      title: "Start with problem one.",
+      body: "150 problems, in NeetCode order. Your first review is two to thirty days away.",
+    },
     faqTitle: "Questions",
     faqs: {
       platform: {
