@@ -15,5 +15,9 @@ describe("LandingPage on the server", () => {
     expect(html).toContain("Where is my progress saved?");
     expect(html).toContain("Back in 30 days");
     expect(html).toContain("Easy after Easy");
+    // Closed dropdowns still carry their answers, so crawlers read every one without JavaScript.
+    expect(html).toContain("rarely the only round");
+    expect(html).toContain("no streak to protect");
+    expect(html.match(/<details/g)).toHaveLength(7);
   });
 });
