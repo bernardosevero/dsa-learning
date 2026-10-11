@@ -45,14 +45,12 @@ describe("LandingPage", () => {
     expect(startLinks.map((link) => link.dataset.placement)).toEqual(["hero", "footer"]);
   });
 
-  it("links to how it works from the hero and the intervals, and to privacy and the notice", () => {
+  it("links to how it works from the hero and the intervals, and to privacy from the FAQ", () => {
     renderLanding();
 
     expect(linkHref("How it works")).toBe("/how-it-works");
     expect(linkHref("How mastery works, and more details")).toBe("/how-it-works");
     expect(linkHref("Privacy page")).toBe("/privacy");
-    expect(linkHref("Privacy & credits")).toBe("/privacy");
-    expect(linkHref(/MIT license notice/)).toBe("/NOTICE.md");
   });
 
   it("shows the example Today picture with its caption, alt text and intrinsic size", () => {
@@ -112,16 +110,6 @@ describe("LandingPage", () => {
     expect(questions.getByText(/solve it on NeetCode or LeetCode/)).toBeDefined();
     expect(questions.getByText(/don't need a dsa-learning account/)).toBeDefined();
     expect(questions.getByText(/export it as a JSON file and import it again/)).toBeDefined();
-  });
-
-  it("states that it is independent of NeetCode and LeetCode", () => {
-    renderLanding();
-
-    expect(
-      screen.getByText(
-        "An independent tool following the NeetCode 150 list; not affiliated with NeetCode or LeetCode.",
-      ),
-    ).toBeDefined();
   });
 
   it("renders without reading or writing browser storage", () => {

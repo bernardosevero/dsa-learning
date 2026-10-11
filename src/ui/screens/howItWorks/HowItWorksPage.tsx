@@ -24,7 +24,7 @@ const { today, solving, intervals, mastery, spoilers, research, account } = t.ho
  */
 export function HowItWorksPage() {
   return (
-    <div className="flex flex-col gap-10">
+    <div className="mx-auto w-full max-w-[656px] px-5 pt-8 pb-12 flex flex-col gap-10">
       <div className="flex flex-col gap-3">
         <h1 className="font-serif text-4xl font-semibold text-balance">{t.howItWorks.title}</h1>
         <p className="text-lg">{t.howItWorks.intro}</p>
