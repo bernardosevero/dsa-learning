@@ -29,7 +29,7 @@ const PRACTICE_PATHS = [
   "/solve/two-sum",
   "/log/two-sum",
 ] as const;
-const WINDOW_WIDTHS = [390, 700, 900, 1440] as const;
+const WINDOW_WIDTHS = [375, 390, 700, 900, 1440] as const;
 
 // Today is Oct 10: the seeded Hard attempt on Contains Duplicate (Oct 1) is due.
 const SEEDED_NOW = new Date("2026-10-10T10:00:00");
