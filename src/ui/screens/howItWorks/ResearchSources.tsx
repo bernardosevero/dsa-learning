@@ -17,7 +17,7 @@ export function ResearchSources() {
         <li key={source.title} className="flex flex-wrap gap-x-6 gap-y-2 border-t py-5">
           <div className="flex flex-[1_1_160px] flex-col items-start gap-0.5">
             <h3 className="font-serif text-2xl font-medium">{source.title}</h3>
-            <ExternalLink href={source.url} className="min-h-8 font-mono text-[13px]">
+            <ExternalLink href={source.url} className="-my-2.5 font-mono text-[13px]">
               {source.source}
             </ExternalLink>
           </div>

@@ -105,6 +105,8 @@ describe("HowItWorksPage", () => {
     expect(spoilers.getByText("While you review")).toBeDefined();
     expect(spoilers.getByText("After you log it")).toBeDefined();
     expect(spoilers.getByText("Arrays & Hashing")).toBeDefined();
+    expect(spoilers.getByText("Open")).toBeDefined();
+    expect(spoilers.queryByRole("link", { name: /Open/ })).toBeNull();
   });
 
   it("explains that due reviews come first by risk, then the next new problem, with no cap", () => {

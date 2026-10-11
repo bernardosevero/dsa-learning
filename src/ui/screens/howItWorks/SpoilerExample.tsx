@@ -1,4 +1,4 @@
-import { LockIcon } from "lucide-react";
+import { ArrowUpRightIcon, LockIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Card } from "@/ui/primitives/card";
@@ -75,7 +75,13 @@ export function SpoilerExample() {
         isRevealed
         pattern={<span className="font-medium">{spoilerExample.examplePattern}</span>}
         insight={<span className="italic">{spoilerExample.exampleInsight}</span>}
-        solution={<span className="font-medium">{spoilerExample.open}</span>}
+        solution={
+          // An illustration of the revealed row, so the "link" is styled text with nowhere to go.
+          <span className="inline-flex items-center gap-0.5 font-medium text-primary">
+            {spoilerExample.open}
+            <ArrowUpRightIcon aria-hidden className="size-3.5" />
+          </span>
+        }
       />
     </div>
   );

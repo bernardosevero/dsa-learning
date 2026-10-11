@@ -402,7 +402,7 @@ export const en = {
       exampleProblem: "Contains Duplicate",
       examplePattern: "Arrays & Hashing",
       exampleInsight: "Your one-sentence takeaway",
-      open: "Shown",
+      open: "Open",
     },
     limitsTitle: "What this doesn't prove",
     closing: "Ready for the first problem?",
