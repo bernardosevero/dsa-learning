@@ -1,4 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -140,21 +141,63 @@ describe("LandingPage", () => {
     expect(research.getByText(/hasn't been tested in a study of its own/)).toBeDefined();
   });
 
-  it("answers the three questions in visible text", () => {
+  it("asks seven questions as dropdowns, each heading inside its summary, the first open", () => {
     renderLanding();
 
-    const questions = section("Questions");
+    const questions = section("Before you start");
+    const headings = questions.getAllByRole("heading", { level: 3 });
 
-    expect(
-      questions.getAllByRole("heading", { level: 3 }).map((question) => question.textContent),
-    ).toEqual([
+    expect(headings.map((question) => question.textContent)).toEqual([
+      "Are data structures and algorithms still important for landing your next job?",
+      "Why re-solve problems I've already solved?",
+      "What is the NeetCode 150?",
+      "How many problems should I do a day?",
       "Is this a coding platform?",
       "Do I need an account?",
       "Where is my progress saved?",
     ]);
-    expect(questions.getByText(/solve it on NeetCode or LeetCode/)).toBeDefined();
-    expect(questions.getByText(/don't need a dsa-learning account/)).toBeDefined();
+    expect(headings.every((heading) => heading.parentElement?.tagName === "SUMMARY")).toBe(true);
+    expect(headings.map((heading) => heading.closest("details")?.hasAttribute("open"))).toEqual([
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
+  });
+
+  it("keeps closed answers in the page, with the intervals taken from the schedule", () => {
+    renderLanding();
+
+    const questions = section("Before you start");
+
+    expect(questions.getByText(/rarely the only round: system design, behavioral/)).toBeDefined();
+    expect(questions.getByText(/brings each problem back 2, 7 or 30 days later/)).toBeDefined();
+    expect(questions.getByText(/from Arrays & Hashing to Bit Manipulation/)).toBeDefined();
+    expect(questions.getByText(/no daily cap and no streak to protect/)).toBeDefined();
+    expect(questions.getByText(/only syncs your progress across devices/)).toBeDefined();
     expect(questions.getByText(/export it as a JSON file and import it again/)).toBeDefined();
+  });
+
+  // jsdom doesn't simulate Enter/Space on <summary>; browsers give that for free on the native element.
+  it("opens and closes a question from its summary", async () => {
+    const user = userEvent.setup();
+    renderLanding();
+
+    const question = screen.getByText("What is the NeetCode 150?").closest("summary");
+    const details = question?.closest("details");
+    if (question === null || details === null || details === undefined) {
+      throw new Error("Expected the question's summary inside its details");
+    }
+
+    await user.click(question);
+    const isOpenAfterFirstClick = details.open;
+    await user.click(question);
+
+    expect(isOpenAfterFirstClick).toBe(true);
+    expect(details.open).toBe(false);
   });
 
   it("closes with Start with problem one", () => {

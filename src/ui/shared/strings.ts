@@ -371,8 +371,31 @@ export const en = {
       title: "Start with problem one.",
       body: "150 problems, in NeetCode order. Your first review is two to thirty days away.",
     },
-    faqTitle: "Questions",
+    faqEyebrow: "Questions",
+    faqTitle: "Before you start",
     faqs: {
+      dsaForJobs: {
+        question: "Are data structures and algorithms still important for landing your next job?",
+        answers: [
+          "For many software engineering roles, yes. Coding interviews at a lot of tech companies still ask you to solve a data structures and algorithms problem live, often in 45 minutes or less, and explain your approach as you go.",
+          "They're rarely the only round: system design, behavioral and project discussions usually matter too. But a coding round is often the first filter, so recognizing patterns quickly is worth keeping sharp.",
+        ],
+      },
+      whyResolve: {
+        question: "Why re-solve problems I've already solved?",
+        answer: (hard: number, medium: number, easy: number) =>
+          `Because solving a problem once doesn't mean you can solve it again weeks later. Recalling an approach from a blank editor, spaced out over days, holds up better than rereading a solution. dsa-learning brings each problem back ${hard}, ${medium} or ${easy} days later, depending on how hard it felt.`,
+      },
+      neetCode150: {
+        question: "What is the NeetCode 150?",
+        answer:
+          "A list of 150 LeetCode problems grouped by topic, from Arrays & Hashing to Bit Manipulation. dsa-learning follows that list and its topic order for new problems. It's an independent tool, not affiliated with NeetCode.",
+      },
+      perDay: {
+        question: "How many problems should I do a day?",
+        answer:
+          "As many as you have time for. Today shows your due reviews first, then one new problem, with a time estimate. There's no daily cap and no streak to protect: you decide how much to do.",
+      },
       platform: {
         question: "Is this a coding platform?",
         answer:
@@ -380,7 +403,8 @@ export const en = {
       },
       account: {
         question: "Do I need an account?",
-        answer: "No. You don't need a dsa-learning account to practice.",
+        answer:
+          "No. Signing in with GitHub is optional and only syncs your progress across devices.",
       },
       storage: {
         question: "Where is my progress saved?",

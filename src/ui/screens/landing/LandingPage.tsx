@@ -49,10 +49,16 @@ export function LandingPage() {
         <PracticeSteps />
       </section>
       <ResearchBand />
-      <section aria-labelledby="landing-faq" className={CONTAINER}>
-        <h2 id="landing-faq" className={`${SECTION_TITLE} mb-6`}>
-          {t.landing.faqTitle}
-        </h2>
+      <section
+        aria-labelledby="landing-faq"
+        className={`${CONTAINER} flex flex-wrap gap-x-16 gap-y-8`}
+      >
+        <div className="flex flex-[1_1_280px] flex-col gap-3">
+          <p className={EYEBROW}>{t.landing.faqEyebrow}</p>
+          <h2 id="landing-faq" className={SECTION_TITLE}>
+            {t.landing.faqTitle}
+          </h2>
+        </div>
         <LandingFaq />
       </section>
       <ClosingCallToAction />
