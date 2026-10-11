@@ -1,81 +1,53 @@
-import { Link } from "react-router";
-
-import { Card } from "@/ui/primitives/card";
 import { ExternalLink } from "@/ui/shared/ExternalLink";
-import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { t } from "@/ui/shared/strings";
-import { UsageSharingControl } from "@/ui/shared/UsageSharingControl";
-import { useUsageSharing } from "@/ui/shared/useUsageSharing";
+
+import { DataLocations } from "./DataLocations";
+import { SentEvents } from "./SentEvents";
+import { UsageSharingBand } from "./UsageSharingBand";
 
 const METADATA_REPO_URL = "https://github.com/neetcode-gh/leetcode";
 
 /**
- * Privacy and credits for the local-first app, what an optional account stores, and the
- * anonymous-usage switch. Public: it renders outside the practice app, and its text is in the HTML.
+ * Privacy and credits for the local-first app: where data lives, what an optional account stores,
+ * the anonymous-usage switch and what it sends. Public: it renders outside the practice app, and
+ * its text is in the HTML.
  */
 export function PrivacyPage() {
-  const { isEnabled, setEnabled } = useUsageSharing();
-
   return (
-    <div className="mx-auto w-full max-w-[656px] px-5 pt-8 pb-12">
-      <h1 className="mb-6 font-serif text-3xl">{t.pages.privacy}</h1>
-      <div className="flex flex-col gap-7">
-        <section aria-labelledby="privacy-data-heading">
-          <SectionLabel id="privacy-data-heading">{t.privacy.yourData}</SectionLabel>
-          <Card className="space-y-3 p-4 text-sm">
-            <p>{t.privacy.browserStorage}</p>
-            <p>{t.privacy.exportAndReset}</p>
-          </Card>
-        </section>
-        <section aria-labelledby="privacy-account-heading">
-          <SectionLabel id="privacy-account-heading">{t.privacy.account}</SectionLabel>
-          <Card className="space-y-3 p-4 text-sm">
-            <p>{t.privacy.accountStorage}</p>
-            <p>{t.privacy.accountDelete}</p>
-          </Card>
-        </section>
-        <section aria-labelledby="privacy-analytics-heading">
-          <SectionLabel id="privacy-analytics-heading">{t.privacy.analytics}</SectionLabel>
-          <Card className="space-y-3 p-4 text-sm">
-            <p>{t.privacy.analyticsPurpose}</p>
-            <p>{t.privacy.analyticsIntro}</p>
-            <ul className="list-disc space-y-1 pl-5">
-              {t.privacy.events.map((event) => (
-                <li key={event}>{event}</li>
-              ))}
-            </ul>
-            <p>{t.privacy.publicPages}</p>
-            <p>{t.privacy.funnel}</p>
-            <p>{t.privacy.analyticsDetails}</p>
-            <p>{t.privacy.analyticsStorage}</p>
-            <p>{t.privacy.neverCollected}</p>
-            <p>
-              {t.privacy.optOutBefore}{" "}
-              <Link to="/settings" className="text-primary underline">
-                {t.privacy.settingsLink}
-              </Link>
-              {t.privacy.optOutAfter}
-            </p>
-          </Card>
-          <p className="mt-3 text-sm text-muted-foreground">{t.privacy.switchApplies}</p>
-          <Card className="mt-3">
-            <UsageSharingControl isEnabled={isEnabled} onEnabledChange={setEnabled} />
-          </Card>
-        </section>
-        <section aria-labelledby="privacy-credits-heading">
-          <SectionLabel id="privacy-credits-heading">{t.privacy.credits}</SectionLabel>
-          <Card className="space-y-3 p-4 text-sm">
-            <p>
-              {t.privacy.metadataBefore}{" "}
-              <ExternalLink href={METADATA_REPO_URL}>{t.privacy.metadataSource}</ExternalLink>
-              {t.privacy.metadataAfter}
-            </p>
-            <p>{t.privacy.ownSummaries}</p>
-            <p>{t.privacy.notAffiliated}</p>
-            <ExternalLink href="/NOTICE.md">{t.privacy.mitTitle}</ExternalLink>
-          </Card>
-        </section>
+    <div className="mx-auto flex max-w-[1120px] flex-col gap-[clamp(48px,6vw,72px)] px-[clamp(16px,4vw,40px)] pb-[clamp(56px,7vw,96px)]">
+      <div className="flex max-w-[760px] flex-col gap-4.5 pt-[clamp(40px,6vw,80px)]">
+        <p className="font-mono text-[13px] tracking-[0.08em] text-muted-foreground uppercase">
+          {t.privacy.eyebrow}
+        </p>
+        <h1 className="font-serif text-[clamp(38px,5.4vw,60px)] leading-[1.05] font-medium tracking-[-0.02em] text-balance">
+          {t.privacy.title}
+        </h1>
+        <p className="text-lg">{t.privacy.intro}</p>
       </div>
+      <DataLocations />
+      <UsageSharingBand />
+      <SentEvents />
+      <section
+        aria-labelledby="privacy-credits"
+        className="flex flex-wrap gap-x-16 gap-y-6 border-t pt-10"
+      >
+        <h2
+          id="privacy-credits"
+          className="flex-[1_1_280px] font-serif text-[32px] leading-tight font-medium"
+        >
+          {t.privacy.credits}
+        </h2>
+        <div className="flex flex-[2_1_480px] flex-col items-start gap-3">
+          <p>
+            {t.privacy.metadataBefore}{" "}
+            <ExternalLink href={METADATA_REPO_URL}>{t.privacy.metadataSource}</ExternalLink>
+            {t.privacy.metadataAfter}
+          </p>
+          <p>{t.privacy.ownSummaries}</p>
+          <p>{t.privacy.notAffiliated}</p>
+          <ExternalLink href="/NOTICE.md">{t.privacy.mitTitle}</ExternalLink>
+        </div>
+      </section>
     </div>
   );
 }

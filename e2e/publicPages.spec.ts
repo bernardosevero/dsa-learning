@@ -17,7 +17,7 @@ const PUBLIC_PAGES = [
   },
   {
     path: "/privacy",
-    heading: "Privacy & credits",
+    heading: "Your practice log lives in your browser.",
     title: "Privacy and credits | dsa-learning",
   },
 ] as const;
