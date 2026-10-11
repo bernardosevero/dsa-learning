@@ -23,7 +23,7 @@ export function Wordmark({ to, hasIcon = false }: WordmarkProps) {
         hasIcon && "inline-flex min-h-11 items-center gap-2",
       )}
     >
-      {hasIcon && <RefreshCwIcon aria-hidden className="size-5 text-primary" />}
+      {hasIcon && <RefreshCwIcon aria-hidden className="size-[22px] text-primary" />}
       {t.appName}
     </Link>
   );
