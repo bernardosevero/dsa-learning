@@ -246,6 +246,29 @@ export const en = {
     privacyAndCredits: "Privacy & credits",
   },
   privacy: {
+    eyebrow: "Privacy & credits",
+    title: "Your practice log lives in your browser.",
+    intro:
+      "Here is everything dsa-learning stores, where it goes, and the one switch that controls usage analytics.",
+    whereTitle: "Where your data lives",
+    locations: {
+      browser: { title: "This browser", badge: "Always" },
+      account: { title: "Your account", badge: "If you sign in" },
+      analytics: {
+        title: "Usage analytics",
+        badge: "Your choice",
+        body: "Pageviews and a few events, sent to PostHog US cloud, so we learn which parts of the app are used and can improve them. No analytics cookies, no persistent visitor ID.",
+        turnOff: "Turn it off",
+      },
+    },
+    switchTitle: "Share anonymous usage",
+    switchKeepsSent: "It doesn't delete events already sent.",
+    switchState: { on: "On", off: "Off" },
+    sentTitle: "What sharing sends",
+    sentIntro:
+      "Sharing is on by default. With it on, the app sends pageviews and these events to PostHog US cloud.",
+    neverSentTitle: "Never sent",
+    neverSent: ["Your notes", "Key insights", "Problem solutions", "Exported file contents"],
     yourData: "Your data",
     browserStorage:
       "Your attempts, notes, insights and settings stay in this browser. Without an account there is no server copy of your practice log.",
@@ -257,16 +280,21 @@ export const en = {
     accountDelete:
       "Delete account in Settings removes your account and that copy. Your progress in this browser stays.",
     analytics: "Usage analytics",
-    analyticsPurpose: "We use usage data to learn which parts of the app are used and improve it.",
-    analyticsIntro:
-      "When usage sharing is on, the app sends pageviews and these events to PostHog US cloud:",
     events: [
-      "Pages viewed in the app, including the problem page address.",
-      "App opened.",
-      "Attempt logged: rating, help used, whether it was a review, days overdue, time in minutes, and topic.",
-      "Problem marked already mastered: topic.",
-      "Data exported.",
-      "Data imported: number of entries added.",
+      { name: "Page viewed", detail: "Pages in the app, including the problem page address." },
+      { name: "App opened", detail: "That the app was opened." },
+      {
+        name: "Attempt logged",
+        detail:
+          "Rating, help used, whether it was a review, days overdue, time in minutes, and topic.",
+      },
+      { name: "Marked already mastered", detail: "The problem's topic." },
+      { name: "Data exported", detail: "That an export happened." },
+      { name: "Data imported", detail: "The number of entries added." },
+      {
+        name: "Start practicing clicked",
+        detail: "On the public pages: which page, and where on it the button sits.",
+      },
     ],
     analyticsDetails:
       "PostHog receives page addresses without query strings or fragments, browser and device details, and the IP address of each network request. Its cookieless mode uses the IP address, browser details and site hostname to make a visitor hash that changes daily.",

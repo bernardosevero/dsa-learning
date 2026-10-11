@@ -83,7 +83,7 @@ describe("the app's routes", () => {
   it.each([
     ["/", "Spaced repetition for the NeetCode 150"],
     ["/how-it-works", "How spaced-repetition practice works"],
-    ["/privacy", "Privacy & credits"],
+    ["/privacy", "Your practice log lives in your browser."],
   ])(
     "renders %s as a public page: a pageview, but no practice app or app_opened",
     async (path, heading) => {
@@ -236,7 +236,7 @@ describe("the app's routes", () => {
       }),
     );
 
-    expect(pageHeading()).toBe("Privacy & credits");
+    expect(pageHeading()).toBe("Your practice log lives in your browser.");
     expect(screen.getByText(/Your notes, key insights/)).toBeDefined();
     expect(
       within(screen.getByRole("main"))
