@@ -81,7 +81,7 @@ describe("the app's routes", () => {
 
   // Public titles come from each route's meta, which the static build writes into the HTML.
   it.each([
-    ["/", "Spaced repetition for the NeetCode 150"],
+    ["/", "Solved problems come back. Spaced repetition for the NeetCode 150."],
     ["/how-it-works", "How spaced-repetition practice works"],
     ["/privacy", "Privacy & credits"],
   ])(
