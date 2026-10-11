@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 
 import { Button } from "@/ui/primitives/button";
-import { ExternalLink } from "@/ui/shared/ExternalLink";
 import { IntervalTable } from "@/ui/shared/IntervalTable";
 import { SectionLabel } from "@/ui/shared/SectionLabel";
 import { StartPracticingLink } from "@/ui/shared/StartPracticingLink";
@@ -21,7 +20,7 @@ const PREVIEW_SIZES = "(min-width: 440px) 400px, calc(100vw - 40px)";
  */
 export function LandingPage() {
   return (
-    <div className="flex flex-col gap-10">
+    <div className="mx-auto w-full max-w-[656px] px-5 pt-8 pb-12 flex flex-col gap-10">
       <section aria-labelledby="landing-title" className="flex flex-col gap-4">
         <h1 id="landing-title" className="font-serif text-4xl font-semibold text-balance">
           {t.landing.title}
@@ -68,15 +67,6 @@ export function LandingPage() {
       </section>
       <div className="flex justify-center">
         <StartPracticingLink placement="footer" />
-      </div>
-      <div className="flex flex-col items-center gap-1 text-center text-sm text-muted-foreground">
-        <p>{t.landing.notAffiliated}</p>
-        <div className="flex flex-wrap justify-center gap-x-4">
-          <Button asChild variant="link" className="px-0">
-            <Link to="/privacy">{t.landing.privacyAndCredits}</Link>
-          </Button>
-          <ExternalLink href="/NOTICE.md">{t.landing.mitNotice}</ExternalLink>
-        </div>
       </div>
     </div>
   );

@@ -57,6 +57,9 @@ export const en = {
     howItWorks: "How it works",
     publicNav: "Site",
   },
+  publicLinks: {
+    label: "Pages",
+  },
   notFound: {
     title: "Page not found",
     body: "There's nothing at this address. It may have moved, or the link may be mistyped.",
