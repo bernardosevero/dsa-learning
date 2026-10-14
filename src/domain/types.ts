@@ -67,13 +67,14 @@ export type ProblemState =
 export interface Settings {
   timeBoxMinutes: Record<Difficulty, number>;
   showPatternOnReviews: boolean;
-  shareAnonymousUsage: boolean;
+  /** Analytics identify a signed-in user by their account id; it needs sharing on too. */
+  linkUsageToAccount: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   timeBoxMinutes: { Easy: 15, Medium: 30, Hard: 45 },
   showPatternOnReviews: false,
-  shareAnonymousUsage: true,
+  linkUsageToAccount: false,
 };
 
 /** What goes in localStorage and in the export file. */

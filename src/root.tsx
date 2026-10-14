@@ -1,6 +1,7 @@
 import { StrictMode, type ReactNode } from "react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
+import { AnalyticsConsent } from "@/ui/app/AnalyticsConsent";
 import { AnalyticsRouteTracker } from "@/ui/app/AnalyticsRouteTracker";
 import { AppLoading } from "@/ui/app/AppLoading";
 import { DocumentHead } from "@/ui/app/DocumentHead";
@@ -38,6 +39,8 @@ export default function Root() {
       {/* Above public and practice routes alike, so one tracker follows a visit between them. */}
       <AnalyticsRouteTracker />
       <Outlet />
+      {/* After the page in reading order, as it sits at the bottom of the screen. */}
+      <AnalyticsConsent />
     </StrictMode>
   );
 }

@@ -13,7 +13,7 @@ These rules apply on top of AGENTS.md. Before opening the PR, go through every s
 - **`useEffect` is only for real side effects:** saving to storage, window events (`focus`, `visibilitychange`), the timer tick.
 - **Naming:** props that take callbacks are `onSomething`; the component's own handlers are `handleSomething`. Each component has a named `SomethingProps` type next to it.
 - **Size:** when a component passes about 100 lines, stop and raise it in the PR before splitting. Whether and how to split is a design decision.
-- **Practice state changes** go through the `AppData` actions, whose reducers live in `src/ui/app/appDataReducers.ts`. Components never edit the save file directly. Public pages stay outside `AppData`; their privacy control uses a lightweight bridge over the existing analytics preference without replaying entries, starting auth/sync, or writing an empty practice save.
+- **Practice state changes** go through the `AppData` actions, whose reducers live in `src/ui/app/appDataReducers.ts`. Components never edit the save file directly. Public pages stay outside `AppData`; their privacy switch and the consent banner read the browser's consent answer (`useUsageConsent`), which lives outside the save, without replaying entries, starting auth/sync, or writing an empty practice save.
 
 ## Where files go
 

@@ -24,8 +24,10 @@ Proposed: Easy twice in a row (the second time after the 30-day gap) marks a pro
 - **Log attempt** (`/log/:id`): how it felt (Hard, Medium or Easy), the time, the help used and a key insight. After saving, it shows the next re-solve date, reveals what was hidden and compares this attempt with the last one. You can undo the log.
 - **Problems** (`/problems`): all 150 problems by topic, filtered by All, Due, New or Mastered. From here you can start any problem or mark it as already mastered.
 - **Problem** (`/problems/:id`): one problem's links, pattern, solution, video and full history. During a due review the spoilers stay hidden until you log it. Deleting an entry recalculates the schedule.
-- **Settings** (`/settings`): time boxes, a switch to show the pattern on reviews, JSON export and import, the usage-sharing switch and reset progress.
-- **Privacy & credits** (`/privacy`): what stays in your browser, what the analytics sends and where the problem data comes from.
+- **Settings** (`/settings`): time boxes, a switch to show the pattern on reviews, JSON export and import, the usage-sharing switch, linking usage to your account when signed in, and reset progress.
+- **Privacy & credits** (`/privacy`): what stays in your browser, what the analytics sends if you accept and where the problem data comes from.
+
+Every page asks once per browser, in a small banner, whether usage data may be shared. Nothing is sent until you accept.
 
 ## 🧰 Tech stack
 
@@ -36,7 +38,7 @@ Proposed: Easy twice in a row (the second time after the 30-day gap) marks a pro
 - **localStorage** → storage: data stays in the browser, with JSON export/import, and there is no backend
 - **Vitest + Testing Library, Playwright** → tests
 - **Cloudflare Workers** → hosting
-- **PostHog** → analytics
+- **PostHog** → analytics, only after the visitor accepts
 - **NeetCode's [MIT-licensed problem list](https://github.com/neetcode-gh/leetcode/blob/main/.problemSiteData.json)** → problem data
 
 ## 💻 Running locally
@@ -57,7 +59,7 @@ pnpm preview
 
 `pnpm preview` serves `build/client/` with Wrangler's local copy of Cloudflare's static hosting at http://localhost:8787, the way production serves it: the public pages (`/`, `/how-it-works`, `/privacy`) get their prerendered HTML, practice addresses (`/today`, `/problems`, …) get the app shell, and anything else gets `404.html` with a 404 status. It runs offline and needs no Cloudflare account.
 
-No environment variables are needed locally. Without the Supabase variables below the app runs local-only, with login hidden. Two build variables shape the public pages' head tags, `robots.txt` and `sitemap.xml` (see `.env.example`):
+No environment variables are needed locally. Without the Supabase variables below the app runs local-only, with login hidden. Analytics runs only in a production build (`pnpm build`) with `VITE_POSTHOG_KEY` set (and optionally `VITE_POSTHOG_HOST`); without the key nothing is sent and the consent banner never shows. Two build variables shape the public pages' head tags, `robots.txt` and `sitemap.xml` (see `.env.example`):
 
 - `VITE_SITE_URL`: the canonical origin for canonical, Open Graph and sitemap URLs. Defaults to `https://dsa-learning.bernardosevero.dev`.
 - `VITE_PUBLIC_INDEXING_ENABLED`: only the exact value `true` lets search engines index the public pages and fills the sitemap. Anything else, including unset, keeps every page `noindex` with an empty sitemap. Production stays unset until the launch checklist is done. Practice pages are always `noindex`.

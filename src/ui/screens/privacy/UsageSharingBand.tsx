@@ -1,18 +1,19 @@
+import type { UsageConsent } from "@/storage/usageConsent";
 import { Card } from "@/ui/primitives/card";
 import { t } from "@/ui/shared/strings";
 import { UsageSharingControl } from "@/ui/shared/UsageSharingControl";
-import { useUsageSharing } from "@/ui/shared/useUsageSharing";
+import { useUsageConsent } from "@/ui/shared/useUsageConsent";
 
-function toStateLabel(isEnabled: boolean | undefined): string {
-  if (isEnabled === undefined) {
+function toStateLabel(consent: UsageConsent | undefined): string {
+  if (consent === undefined) {
     return "";
   }
-  return isEnabled ? t.privacy.switchState.on : t.privacy.switchState.off;
+  return consent === "accepted" ? t.privacy.switchState.on : t.privacy.switchState.off;
 }
 
-/** The anonymous-usage switch in a band of its own, the same browser setting Settings changes. */
+/** The usage-sharing switch in a band of its own: this browser's answer, as in the banner and Settings. */
 export function UsageSharingBand() {
-  const { isEnabled, setEnabled } = useUsageSharing();
+  const { consent, setConsent } = useUsageConsent();
 
   return (
     <section
@@ -31,10 +32,10 @@ export function UsageSharingBand() {
       <div className="flex flex-[0_1_380px] items-center gap-3">
         {/* The state in words for sighted readers; the switch already announces it. */}
         <p className="min-w-[2.5em] text-right font-mono text-sm" aria-hidden>
-          {toStateLabel(isEnabled)}
+          {toStateLabel(consent)}
         </p>
         <Card className="flex-1">
-          <UsageSharingControl isEnabled={isEnabled} onEnabledChange={setEnabled} />
+          <UsageSharingControl consent={consent} onConsentChange={setConsent} />
         </Card>
       </div>
     </section>

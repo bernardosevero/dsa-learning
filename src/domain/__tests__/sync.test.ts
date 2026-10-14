@@ -81,7 +81,7 @@ describe("reconcile", () => {
       type,
     };
     const reorderedSettings: Settings = {
-      shareAnonymousUsage: true,
+      linkUsageToAccount: false,
       showPatternOnReviews: false,
       timeBoxMinutes: { Hard: 45, Medium: 30, Easy: 15 },
     };

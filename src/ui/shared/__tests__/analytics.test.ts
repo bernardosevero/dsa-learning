@@ -1,11 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const posthog = vi.hoisted(() => ({
-  init: vi.fn(),
-  capture: vi.fn(),
-  opt_in_capturing: vi.fn(),
-  opt_out_capturing: vi.fn(),
-}));
+const ANONYMOUS_ID = "anonymous-visitor";
+
+// Follows the distinct ID the way posthog-js does: identify takes the account's, reset a new one.
+const posthog = vi.hoisted(() => {
+  const state = { distinctId: "anonymous-visitor" };
+  return {
+    state,
+    init: vi.fn(),
+    capture: vi.fn(),
+    set_config: vi.fn(),
+    get_distinct_id: vi.fn(() => state.distinctId),
+    identify: vi.fn((distinctId: string) => {
+      state.distinctId = distinctId;
+    }),
+    reset: vi.fn(() => {
+      state.distinctId = "new-anonymous-visitor";
+    }),
+    opt_in_capturing: vi.fn(),
+    opt_out_capturing: vi.fn(),
+  };
+});
 
 vi.mock("posthog-js", () => ({ default: posthog }));
 
@@ -37,6 +52,7 @@ beforeEach(() => {
   vi.stubGlobal("window", {
     location: { origin: ORIGIN, pathname: "/today", search: SENSITIVE_QUERY, hash: "#top" },
   });
+  posthog.state.distinctId = ANONYMOUS_ID;
 });
 
 afterEach(() => {
@@ -46,8 +62,8 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("anonymous analytics", () => {
-  it("uses memory-only persistence and captures an explicit SPA pageview", async () => {
+describe("analytics after consent", () => {
+  it("keeps a random visitor ID in localStorage, sets no cookies and sends an SPA pageview", async () => {
     const { setAnalyticsEnabled, trackPageView } = await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
@@ -58,18 +74,19 @@ describe("anonymous analytics", () => {
     expect(posthog.init).toHaveBeenCalledWith(
       "phc_test",
       expect.objectContaining({
-        persistence: "memory",
-        cookieless_mode: "always",
+        persistence: "localStorage",
+        disable_persistence: false,
         ip: false,
         autocapture: false,
         capture_pageview: false,
         capture_pageleave: false,
         disable_session_recording: true,
-        person_profiles: "never",
+        person_profiles: "identified_only",
         save_campaign_params: false,
         save_referrer: false,
       }),
     );
+    expect(posthog.init.mock.calls[0]?.[1]).not.toHaveProperty("cookieless_mode");
     expect(posthog.capture).toHaveBeenCalledExactlyOnceWith("$pageview", {
       $current_url: `${ORIGIN}/problems/two-sum`,
     });
@@ -86,7 +103,7 @@ describe("anonymous analytics", () => {
     expect(config.get_current_url()).toBe(`${ORIGIN}/today`);
   });
 
-  it("never initializes or sends anything while the saved choice is off", async () => {
+  it("never initializes or sends anything until the visitor accepts", async () => {
     const { setAnalyticsEnabled, trackAppOpened, trackPageView, trackStartPracticing } =
       await importConfiguredAnalytics();
 
@@ -209,6 +226,43 @@ describe("anonymous analytics", () => {
     expect(posthog.opt_out_capturing).not.toHaveBeenCalled();
   });
 
+  it("forgets the visitor ID and stops storing one when consent is withdrawn", async () => {
+    const { setAnalyticsEnabled } = await importConfiguredAnalytics();
+    setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
+
+    setAnalyticsEnabled(false);
+
+    expect(posthog.reset).toHaveBeenCalledOnce();
+    expect(posthog.set_config).toHaveBeenCalledExactlyOnceWith({ disable_persistence: true });
+  });
+
+  it("does nothing more when the same answer is applied again", async () => {
+    const { setAnalyticsEnabled } = await importConfiguredAnalytics();
+    setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
+    setAnalyticsEnabled(false);
+
+    setAnalyticsEnabled(false);
+
+    expect(posthog.reset).toHaveBeenCalledOnce();
+    expect(posthog.set_config).toHaveBeenCalledOnce();
+  });
+
+  it("stores a visitor ID again when the visitor accepts again in the same visit", async () => {
+    const { setAnalyticsEnabled, track } = await importConfiguredAnalytics();
+    setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
+    setAnalyticsEnabled(false);
+
+    setAnalyticsEnabled(true);
+    track("exported");
+
+    expect(posthog.set_config).toHaveBeenLastCalledWith({ disable_persistence: false });
+    expect(posthog.init).toHaveBeenCalledOnce();
+    expect(capturedEvents()).toEqual(["exported"]);
+  });
+
   it("does nothing without a production project key", async () => {
     vi.stubEnv("PROD", false);
     vi.stubEnv("VITE_POSTHOG_KEY", "");
@@ -250,7 +304,7 @@ describe("loading posthog-js", () => {
     expect(capturedEvents()).toEqual(["$pageview", "app_opened"]);
   });
 
-  it("drops events still waiting when sharing is turned off before it loads", async () => {
+  it("drops waiting events and any stored visitor ID when sharing is turned off before it loads", async () => {
     const { setAnalyticsEnabled, trackPageView } = await importConfiguredAnalytics();
 
     setAnalyticsEnabled(true);
@@ -259,7 +313,93 @@ describe("loading posthog-js", () => {
     await vi.dynamicImportSettled();
 
     expect(posthog.init).toHaveBeenCalledOnce();
+    expect(posthog.init).toHaveBeenCalledWith(
+      "phc_test",
+      expect.objectContaining({ disable_persistence: true }),
+    );
+    expect(posthog.reset).toHaveBeenCalledOnce();
+    expect(posthog.set_config).toHaveBeenCalledExactlyOnceWith({ disable_persistence: true });
     expect(posthog.capture).not.toHaveBeenCalled();
+  });
+});
+
+describe("linking usage to the account", () => {
+  const USER_ID = "user-uuid";
+
+  async function importSharingAnalytics() {
+    const analytics = await importConfiguredAnalytics();
+    analytics.setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
+    return analytics;
+  }
+
+  it("identifies a linked account by its id alone", async () => {
+    const { setAnalyticsAccount } = await importSharingAnalytics();
+
+    setAnalyticsAccount({ status: "signedIn", userId: USER_ID, link: "on" });
+
+    expect(posthog.identify).toHaveBeenCalledExactlyOnceWith(USER_ID);
+  });
+
+  it("waits for the account's own settings before linking or resetting", async () => {
+    const { setAnalyticsAccount } = await importSharingAnalytics();
+
+    setAnalyticsAccount({ status: "signedIn", userId: USER_ID, link: "pending" });
+
+    expect(posthog.identify).not.toHaveBeenCalled();
+    expect(posthog.reset).not.toHaveBeenCalled();
+  });
+
+  it("doesn't link while sharing is off, then links once the visitor accepts", async () => {
+    const { setAnalyticsAccount, setAnalyticsEnabled } = await importConfiguredAnalytics();
+
+    setAnalyticsAccount({ status: "signedIn", userId: USER_ID, link: "on" });
+    setAnalyticsEnabled(true);
+    await vi.dynamicImportSettled();
+
+    expect(posthog.identify).toHaveBeenCalledExactlyOnceWith(USER_ID);
+  });
+
+  it("doesn't identify again a visitor already identified as that account", async () => {
+    posthog.state.distinctId = USER_ID;
+    const { setAnalyticsAccount } = await importSharingAnalytics();
+
+    setAnalyticsAccount({ status: "signedIn", userId: USER_ID, link: "on" });
+
+    expect(posthog.identify).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["linking is turned off", { status: "signedIn", userId: USER_ID, link: "off" }],
+    ["the user signs out", { status: "signedOut" }],
+  ] as const)("resets to a new random ID when %s", async (_change, nextAccount) => {
+    const { setAnalyticsAccount } = await importSharingAnalytics();
+    setAnalyticsAccount({ status: "signedIn", userId: USER_ID, link: "on" });
+
+    setAnalyticsAccount(nextAccount);
+
+    expect(posthog.reset).toHaveBeenCalledOnce();
+    expect(posthog.state.distinctId).not.toBe(USER_ID);
+  });
+
+  it("resets a link kept from an earlier visit once the account's settings say it's off", async () => {
+    posthog.state.distinctId = USER_ID;
+    const { setAnalyticsAccount } = await importSharingAnalytics();
+
+    setAnalyticsAccount({ status: "signedIn", userId: USER_ID, link: "off" });
+
+    expect(posthog.reset).toHaveBeenCalledOnce();
+  });
+
+  it("never resets an anonymous visitor on sign-out or with linking off", async () => {
+    const { setAnalyticsAccount } = await importSharingAnalytics();
+
+    setAnalyticsAccount({ status: "signedOut" });
+    setAnalyticsAccount({ status: "signedIn", userId: USER_ID, link: "off" });
+    setAnalyticsAccount({ status: "signedOut" });
+
+    expect(posthog.reset).not.toHaveBeenCalled();
+    expect(posthog.identify).not.toHaveBeenCalled();
   });
 });
 

@@ -19,6 +19,8 @@ vi.mock("@/ui/shared/analytics", () => ({
   trackAttemptLogged: vi.fn(),
   toPublicAcquisitionPath: vi.fn(),
   setAnalyticsEnabled: vi.fn(),
+  setAnalyticsAccount: vi.fn(),
+  isAnalyticsConfigured: vi.fn(() => false),
 }));
 
 // The earlier attempt took 25 minutes, so the time comparison has something to report.

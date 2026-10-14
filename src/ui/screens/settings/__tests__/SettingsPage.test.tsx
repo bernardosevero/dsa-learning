@@ -8,13 +8,14 @@ import { downloadExport } from "@/storage/download";
 import { STORAGE_KEY } from "@/storage/localStore";
 import type { AccountService } from "@/storage/accountService";
 import type { RemoteStore } from "@/storage/remoteStore";
+import { readUsageConsent, USAGE_CONSENT_KEY } from "@/storage/usageConsent";
 import { aMasteredMark, anAttempt, aSaveFile } from "@/test/builders";
 import { aFakeRemote } from "@/test/fakeRemoteStore";
 import { aFakeSupabase } from "@/test/fakeSupabase";
 import { AppDataProvider } from "@/ui/app/AppData";
 import { track } from "@/ui/shared/analytics";
 import { UsageSharingControl } from "@/ui/shared/UsageSharingControl";
-import { useUsageSharing } from "@/ui/shared/useUsageSharing";
+import { useUsageConsent } from "@/ui/shared/useUsageConsent";
 
 import { SettingsPage } from "../SettingsPage";
 
@@ -28,6 +29,7 @@ vi.mock("@/ui/shared/analytics", () => ({
   trackAttemptLogged: vi.fn(),
   toPublicAcquisitionPath: vi.fn(),
   setAnalyticsEnabled: vi.fn(),
+  setAnalyticsAccount: vi.fn(),
 }));
 
 const STORED_ATTEMPT = anAttempt({ id: "stored" });
@@ -49,8 +51,17 @@ function renderSettings(
 
 // What the public Privacy page renders, outside AppData.
 function PublicUsageSharing() {
-  const { isEnabled, setEnabled } = useUsageSharing();
-  return <UsageSharingControl isEnabled={isEnabled} onEnabledChange={setEnabled} />;
+  const { consent, setConsent } = useUsageConsent();
+  return <UsageSharingControl consent={consent} onConsentChange={setConsent} />;
+}
+
+// The switch waits for the saved answer, which useUsageConsent reads once its module has loaded.
+async function enabledUsageSwitch(): Promise<HTMLElement> {
+  const usageSwitch = screen.getByRole("switch", { name: "Share usage data" });
+  await vi.waitFor(() => {
+    expect(usageSwitch).toHaveProperty("disabled", false);
+  });
+  return usageSwitch;
 }
 
 function readStoredFile(): SaveFile {
@@ -112,12 +123,19 @@ describe("SettingsPage", () => {
     expect(readStoredFile().settings.showPatternOnReviews).toBe(true);
   });
 
-  it("saves the anonymous usage opt-out", async () => {
+  it("saves turning usage sharing on as this browser's answer, outside the save file", async () => {
     renderSettings();
 
-    await userEvent.click(screen.getByRole("switch", { name: "Share usage data" }));
+    await userEvent.click(await enabledUsageSwitch());
 
-    expect(readStoredFile().settings.shareAnonymousUsage).toBe(false);
+    expect(readUsageConsent()).toBe("accepted");
+    expect(readStoredFile()).toEqual(aSaveFile({ entries: [STORED_ATTEMPT] }));
+  });
+
+  it("shows usage sharing off until the visitor accepts", async () => {
+    renderSettings();
+
+    expect((await enabledUsageSwitch()).getAttribute("aria-checked")).toBe("false");
   });
 
   it("agrees with the public privacy switch both ways", async () => {
@@ -126,12 +144,15 @@ describe("SettingsPage", () => {
     const [publicSwitch, settingsSwitch] = screen.getAllByRole("switch", {
       name: "Share usage data",
     });
+    await vi.waitFor(() => {
+      expect(settingsSwitch).toHaveProperty("disabled", false);
+    });
 
     await userEvent.click(publicSwitch ?? document.body);
-    expect(settingsSwitch?.getAttribute("aria-checked")).toBe("false");
+    expect(settingsSwitch?.getAttribute("aria-checked")).toBe("true");
     await userEvent.click(settingsSwitch ?? document.body);
 
-    expect(publicSwitch?.getAttribute("aria-checked")).toBe("true");
+    expect(publicSwitch?.getAttribute("aria-checked")).toBe("false");
     expect(readStoredFile().entries).toEqual([STORED_ATTEMPT]);
   });
 
@@ -302,5 +323,43 @@ describe("SettingsPage account", () => {
     const entries = readStoredFile().entries;
     expect(entries).toHaveLength(1);
     expect(entries[0]?.deletedAt).toBeDefined();
+  });
+});
+
+describe("SettingsPage linking usage to the account", () => {
+  function linkSwitch(): HTMLElement {
+    return screen.getByRole("switch", { name: "Link my usage to my account" });
+  }
+
+  it("isn't offered when signed out", async () => {
+    renderSettings(undefined, aFakeSupabase().accountService);
+
+    await screen.findByRole("button", { name: "Sign in with GitHub" });
+
+    expect(screen.queryByRole("switch", { name: "Link my usage to my account" })).toBeNull();
+  });
+
+  it("is offered off when signed in, and waits for usage sharing", async () => {
+    renderSettings(undefined, aFakeSupabase({ email: "ada@example.com" }).accountService);
+
+    await screen.findByText("ada@example.com");
+
+    expect(linkSwitch().getAttribute("aria-checked")).toBe("false");
+    expect(linkSwitch()).toHaveProperty("disabled", true);
+    expect(screen.getByText(/^Needs Share usage data on/)).toBeDefined();
+  });
+
+  it("saves linking once usage sharing is on", async () => {
+    localStorage.setItem(USAGE_CONSENT_KEY, "accepted");
+    renderSettings(undefined, aFakeSupabase({ email: "ada@example.com" }).accountService);
+    await screen.findByText("ada@example.com");
+    await vi.waitFor(() => {
+      expect(linkSwitch()).toHaveProperty("disabled", false);
+    });
+
+    await userEvent.click(linkSwitch());
+
+    expect(readStoredFile().settings.linkUsageToAccount).toBe(true);
+    expect(screen.getByText(/Your email is never sent/)).toBeDefined();
   });
 });

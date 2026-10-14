@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { FIRST_PROBLEM, logFirstProblem } from "./flows";
 
 const STORAGE_KEY = "dsa-learning:v1";
+const USAGE_CONSENT_KEY = "dsa-learning:usage-consent";
 const CANONICAL_ORIGIN = "https://dsa-learning.bernardosevero.dev";
 const PUBLIC_PAGES = [
   {
@@ -50,7 +51,7 @@ const SEEDED_SAVE = {
   settings: {
     timeBoxMinutes: { Easy: 20, Medium: 30, Hard: 45 },
     showPatternOnReviews: false,
-    shareAnonymousUsage: false,
+    linkUsageToAccount: false,
   },
   activeTimer: { problemId: "contains-duplicate", startedAt: "2026-10-10T09:50:00.000Z" },
 };
@@ -61,6 +62,10 @@ function usageSwitch(page: Page) {
 
 async function readSave(page: Page): Promise<string | null> {
   return page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
+}
+
+async function readUsageConsent(page: Page): Promise<string | null> {
+  return page.evaluate((key) => localStorage.getItem(key), USAGE_CONSENT_KEY);
 }
 
 // Collects uncaught errors and console errors, such as a hydration mismatch. A resource that
@@ -191,10 +196,13 @@ test("public → Start practicing → Solve → Log → Today keeps the saved en
 }) => {
   await page.clock.install({ time: SEEDED_NOW });
   await page.goto("/");
-  await page.evaluate(([key, save]) => localStorage.setItem(key, save), [
-    STORAGE_KEY,
-    JSON.stringify(SEEDED_SAVE),
-  ] as const);
+  await page.evaluate(
+    ([saveKey, save, consentKey]) => {
+      localStorage.setItem(saveKey, save);
+      localStorage.setItem(consentKey, "declined");
+    },
+    [STORAGE_KEY, JSON.stringify(SEEDED_SAVE), USAGE_CONSENT_KEY] as const,
+  );
 
   await page.getByRole("link", { name: "Start practicing" }).first().click();
   await expect(page).toHaveURL("/today");
@@ -203,7 +211,7 @@ test("public → Start practicing → Solve → Log → Today keeps the saved en
   const saveOnToday = await readSave(page);
   expect(saveOnToday).toContain("seeded-attempt");
   expect(saveOnToday).toContain('"activeTimer"');
-  expect(saveOnToday).toContain('"shareAnonymousUsage":false');
+  expect(saveOnToday).toContain('"Easy":20');
 
   await logFirstProblem(page, "Medium");
   await page.getByRole("link", { name: "Back to Today" }).click();
@@ -212,7 +220,8 @@ test("public → Start practicing → Solve → Log → Today keeps the saved en
   await expect(page.getByRole("heading", { level: 1, name: "Today" })).toBeVisible();
   const saveAfter = await readSave(page);
   expect(saveAfter).toContain("seeded-attempt");
-  expect(saveAfter).toContain('"shareAnonymousUsage":false');
+  expect(saveAfter).toContain('"Easy":20');
+  expect(await readUsageConsent(page)).toBe("declined");
 });
 
 // The acquisition flag lives in the page's memory, so the funnel only holds without a reload.
@@ -292,17 +301,19 @@ test("client navigation swaps the head tags without duplicates or stale ones", a
   expect(await readHeadAttribute(page, "meta[name=robots]", "content")).toBe("noindex");
 });
 
-test("the public privacy switch and Settings agree, both ways", async ({ page }) => {
+test("the public privacy switch and Settings agree, both ways, starting off", async ({ page }) => {
   await page.goto("/privacy");
-  await usageSwitch(page).click();
   await expect(usageSwitch(page)).not.toBeChecked();
+  await usageSwitch(page).click();
+  await expect(usageSwitch(page)).toBeChecked();
 
   await page.goto("/settings");
-  await expect(usageSwitch(page)).not.toBeChecked();
+  await expect(usageSwitch(page)).toBeChecked();
   await usageSwitch(page).click();
   await page.goto("/privacy");
 
-  await expect(usageSwitch(page)).toBeChecked();
+  await expect(usageSwitch(page)).not.toBeChecked();
+  expect(await readUsageConsent(page)).toBe("declined");
 });
 
 test("every route class loads directly, and progress survives a reload", async ({ page }) => {
