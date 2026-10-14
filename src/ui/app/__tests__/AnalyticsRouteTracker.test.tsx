@@ -3,10 +3,7 @@ import { StrictMode } from "react";
 import { createMemoryRouter, Outlet, RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { DEFAULT_SETTINGS } from "@/domain/types";
-import { STORAGE_KEY } from "@/storage/localStore";
-import { setUsageSharing } from "@/storage/usageSharing";
-import { aSaveFile } from "@/test/builders";
+import { setUsageConsent, USAGE_CONSENT_KEY, type UsageAnswer } from "@/storage/usageConsent";
 import { setAnalyticsEnabled, trackAppOpened, trackPageView } from "@/ui/shared/analytics";
 
 import { AnalyticsRouteTracker } from "../AnalyticsRouteTracker";
@@ -26,9 +23,8 @@ function Root() {
   );
 }
 
-function storeSharing(isEnabled: boolean): void {
-  const settings = { ...DEFAULT_SETTINGS, shareAnonymousUsage: isEnabled };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(aSaveFile({ settings })));
+function storeAnswer(answer: UsageAnswer): void {
+  localStorage.setItem(USAGE_CONSENT_KEY, answer);
 }
 
 function renderTrackerAt(path: string) {
@@ -44,10 +40,10 @@ function renderTrackerAt(path: string) {
   return router;
 }
 
-// useUsageSharing reads storage once its module has loaded; this waits for that read.
+// useUsageConsent reads storage once its module has loaded; this waits for that read.
 async function loadStoredChoice() {
   await act(async () => {
-    await import("@/storage/usageSharing");
+    await import("@/storage/usageConsent");
   });
 }
 
@@ -63,9 +59,7 @@ afterEach(() => {
 });
 
 describe("AnalyticsRouteTracker", () => {
-  it("never enables analytics or sends anything on a public visit when sharing is off", async () => {
-    storeSharing(false);
-
+  it("never enables analytics or sends anything before the visitor answers", async () => {
     renderTrackerAt("/");
     await loadStoredChoice();
 
@@ -74,8 +68,19 @@ describe("AnalyticsRouteTracker", () => {
     expect(trackAppOpened).not.toHaveBeenCalled();
   });
 
-  it("sends one pageview for a public page, even under StrictMode, and no app_opened", async () => {
-    storeSharing(true);
+  it("never enables analytics or sends anything after a Decline", async () => {
+    storeAnswer("declined");
+
+    renderTrackerAt("/today");
+    await loadStoredChoice();
+
+    expect(setAnalyticsEnabled).not.toHaveBeenCalledWith(true);
+    expect(trackPageView).not.toHaveBeenCalled();
+    expect(trackAppOpened).not.toHaveBeenCalled();
+  });
+
+  it("sends one pageview for a public page once accepted, even under StrictMode, and no app_opened", async () => {
+    storeAnswer("accepted");
 
     renderTrackerAt("/how-it-works");
     await loadStoredChoice();
@@ -86,7 +91,7 @@ describe("AnalyticsRouteTracker", () => {
   });
 
   it("follows a visit from a public page into practice pages", async () => {
-    storeSharing(true);
+    storeAnswer("accepted");
     const router = renderTrackerAt("/");
     await loadStoredChoice();
 
@@ -99,7 +104,7 @@ describe("AnalyticsRouteTracker", () => {
   });
 
   it("ignores query and fragment changes on the same page", async () => {
-    storeSharing(true);
+    storeAnswer("accepted");
     const router = renderTrackerAt("/today");
     await loadStoredChoice();
 
@@ -109,16 +114,16 @@ describe("AnalyticsRouteTracker", () => {
     expect(trackPageView).toHaveBeenCalledExactlyOnceWith("/today");
   });
 
-  it("doesn't replay the pageview when the choice is turned off and on again", async () => {
-    storeSharing(true);
+  it("doesn't replay the pageview when sharing is turned off and on again", async () => {
+    storeAnswer("accepted");
     renderTrackerAt("/settings");
     await loadStoredChoice();
 
     act(() => {
-      setUsageSharing(false);
+      setUsageConsent("declined");
     });
     act(() => {
-      setUsageSharing(true);
+      setUsageConsent("accepted");
     });
 
     expect(setAnalyticsEnabled).toHaveBeenLastCalledWith(true);
@@ -126,15 +131,28 @@ describe("AnalyticsRouteTracker", () => {
     expect(trackPageView).toHaveBeenCalledExactlyOnceWith("/settings");
   });
 
-  it("applies a choice turned off on the page right away", async () => {
-    storeSharing(true);
+  it("applies a Decline made on the page right away", async () => {
+    storeAnswer("accepted");
     renderTrackerAt("/privacy");
     await loadStoredChoice();
 
     act(() => {
-      setUsageSharing(false);
+      setUsageConsent("declined");
     });
 
     expect(setAnalyticsEnabled).toHaveBeenLastCalledWith(false);
+  });
+
+  it("sends the page's first pageview once the visitor accepts on it", async () => {
+    renderTrackerAt("/today");
+    await loadStoredChoice();
+
+    act(() => {
+      setUsageConsent("accepted");
+    });
+
+    expect(setAnalyticsEnabled).toHaveBeenLastCalledWith(true);
+    expect(trackPageView).toHaveBeenCalledExactlyOnceWith("/today");
+    expect(trackAppOpened).toHaveBeenCalledOnce();
   });
 });

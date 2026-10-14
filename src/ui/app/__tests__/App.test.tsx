@@ -3,6 +3,7 @@ import { userEvent } from "@testing-library/user-event";
 import { RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { USAGE_CONSENT_KEY } from "@/storage/usageConsent";
 import { createAppRouter } from "@/test/appRouter";
 import { track, trackAppOpened, trackPageView } from "@/ui/shared/analytics";
 
@@ -14,16 +15,22 @@ vi.mock("@/ui/shared/analytics", () => ({
   trackAttemptLogged: vi.fn(),
   toPublicAcquisitionPath: vi.fn(),
   setAnalyticsEnabled: vi.fn(),
+  setAnalyticsAccount: vi.fn(),
+  isAnalyticsConfigured: vi.fn(() => false),
 }));
 
 function renderAt(path: string) {
   render(<RouterProvider router={createAppRouter(path)} />);
 }
 
-// useUsageSharing reads storage once its module has loaded; this waits for that read.
+function acceptUsageSharing(): void {
+  localStorage.setItem(USAGE_CONSENT_KEY, "accepted");
+}
+
+// useUsageConsent reads storage once its module has loaded; this waits for that read.
 async function loadStoredChoice() {
   await act(async () => {
-    await import("@/storage/usageSharing");
+    await import("@/storage/usageConsent");
   });
 }
 
@@ -71,6 +78,7 @@ describe("the app's routes", () => {
     ["/problems", "Problems"],
     ["/settings", "Settings & data"],
   ])("renders %s as the %s screen with its own page title", async (path, heading) => {
+    acceptUsageSharing();
     renderAt(path);
     await loadStoredChoice();
 
@@ -87,6 +95,7 @@ describe("the app's routes", () => {
   ])(
     "renders %s as a public page: a pageview, but no practice app or app_opened",
     async (path, heading) => {
+      acceptUsageSharing();
       renderAt(path);
       await loadStoredChoice();
 
@@ -98,6 +107,7 @@ describe("the app's routes", () => {
   );
 
   it("counts entering a practice page as opening the app", async () => {
+    acceptUsageSharing();
     renderAt("/today");
     await loadStoredChoice();
 
@@ -169,6 +179,7 @@ describe("the app's routes", () => {
 
   it("moves between Today, Problems and Settings from the nav and marks the current one", async () => {
     const user = userEvent.setup();
+    acceptUsageSharing();
     renderAt("/today");
 
     await user.click(screen.getByRole("link", { name: "Problems" }));
@@ -185,7 +196,9 @@ describe("the app's routes", () => {
 
   it("sends no extra pageview when the usage switch changes on the same page", async () => {
     const user = userEvent.setup();
+    acceptUsageSharing();
     renderAt("/settings");
+    await loadStoredChoice();
     const usageSwitch = screen.getByRole("switch", { name: "Share usage data" });
 
     await user.click(usageSwitch);

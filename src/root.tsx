@@ -3,6 +3,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 import { AnalyticsRouteTracker } from "@/ui/app/AnalyticsRouteTracker";
 import { AppLoading } from "@/ui/app/AppLoading";
+import { ConsentBanner } from "@/ui/app/ConsentBanner";
 import { DocumentHead } from "@/ui/app/DocumentHead";
 import { buildPrivatePageMeta } from "@/ui/shared/publicPageMetadata";
 
@@ -38,6 +39,8 @@ export default function Root() {
       {/* Above public and practice routes alike, so one tracker follows a visit between them. */}
       <AnalyticsRouteTracker />
       <Outlet />
+      {/* After the page in reading order, as it sits at the bottom of the screen. */}
+      <ConsentBanner />
     </StrictMode>
   );
 }

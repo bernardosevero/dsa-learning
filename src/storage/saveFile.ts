@@ -39,7 +39,8 @@ const markedMasteredSchema = z.object({
 export const settingsSchema = z.object({
   timeBoxMinutes: z.record(difficultySchema, z.number().positive()),
   showPatternOnReviews: z.boolean(),
-  shareAnonymousUsage: z.boolean().default(true),
+  // Older saves also hold shareAnonymousUsage, replaced by the per-browser consent; it's dropped.
+  linkUsageToAccount: z.boolean().default(false),
 });
 
 /** The log as saved; shared by the save file and the account's saves row. */

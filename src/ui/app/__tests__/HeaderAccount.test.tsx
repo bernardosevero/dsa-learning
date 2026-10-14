@@ -17,6 +17,8 @@ vi.mock("@/ui/shared/analytics", () => ({
   trackAttemptLogged: vi.fn(),
   toPublicAcquisitionPath: vi.fn(),
   setAnalyticsEnabled: vi.fn(),
+  setAnalyticsAccount: vi.fn(),
+  isAnalyticsConfigured: vi.fn(() => false),
 }));
 
 function renderAt(path: string, accountService?: AccountService, remoteStore?: RemoteStore) {

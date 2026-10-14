@@ -65,6 +65,7 @@ These are settled decisions. Code that contradicts one is a bug.
 - **Today is a list:** due reviews sorted by risk, with the first one as the focus (★) and the rest dimmed, plus only the next new problem in NeetCode order. It shows due work and a time estimate; the user decides how much to do. It has no Skip, no daily cap and no upcoming reviews.
 - **Spoiler rule:** while a problem is being reviewed, its pattern, earlier key insights, solution and video stay hidden until the attempt is logged (the pattern shows if `showPatternOnReviews` is on).
 - **Content:** summaries are one line in our own words and never name the solution technique. Link out to NeetCode (primary) and LeetCode for the full statement. Keep the MIT notice for the neetcode-gh/leetcode metadata, and keep NeetCode's name to "the list we follow", with no logos. NeetCode slugs come from the committed snapshot in `scripts/data/`, never from a runtime fetch.
+- **Analytics consent:** PostHog (`posthog-js`, US cloud) is opt-in. Every page shows the consent banner until the visitor answers; nothing is sent before Accept or after Decline. The answer belongs to the browser: its own localStorage key (`src/storage/usageConsent.ts`), outside the save file, export and sync, shared by the banner, Settings and `/privacy`. After Accept, PostHog keeps a random visitor ID in localStorage and no cookies; withdrawing removes it. A signed-in user can turn on **Link my usage to my account** (`linkUsageToAccount`, off by default, synced): `identify` with the account id only, and `reset` on unlink or sign-out.
 
 ## Tech stack
 
@@ -83,7 +84,6 @@ These are settled decisions. Code that contradicts one is a bug.
 The scripts are in `package.json`.
 
 Later phases:
-- **Before MVP sharing (M5):** PostHog analytics (`posthog-js`, US cloud) for everyone, with an opt-out toggle in Settings and a `/privacy` page. EU consent comes before marketing in Europe.
 - **Login:** Supabase Auth (Google + GitHub) and a Supabase `entries` table. Every Supabase table has Row Level Security (`user_id = auth.uid()`), because the client key is public. Anything involving payment is decided server-side.
 - **Public pages:** ship independently of login/sync, following the approved contract below.
 
@@ -91,7 +91,7 @@ Later phases:
 
 - Prerender `/`, `/how-it-works`, and `/privacy` at build time with React Router framework mode; serve static Cloudflare Workers assets. Today moves to `/today` when public routes activate; other practice paths stay unchanged. Contextual FAQ content can live on these pages; this release has no standalone FAQ route or topic guides.
 - Public pages have their own consistent responsive layout and navigation, reusing theme tokens, shadcn primitives and English strings. The same-frame rule and existing width tests apply within practice screens; public pages have no practice bottom navigation.
-- Public rendering stays outside `AppData`: it never replays practice entries, starts auth/sync, or writes an empty practice save to render content. A lightweight bridge over the existing analytics preference supplies the shared privacy control.
+- Public rendering stays outside `AppData`: it never replays practice entries, starts auth/sync, or writes an empty practice save to render content. The privacy switch and the consent banner read the browser's consent answer, which lives outside the save.
 - Response HTML contains visible content, a unique title/description, canonical, OG/Twitter metadata and `lang="en"` without JavaScript. Production public pages can be indexed when the owner enables launch indexing; practice pages, previews, legacy Workers origins and 404s remain noindex.
 - The landing has truthful `SoftwareApplication` JSON-LD matching visible facts, without invented ratings/reviews or a Google software rich-result eligibility requirement. Useful FAQ answers are allowed; `FAQPage` markup and universal question-and-answer prose are optional.
 - `robots.txt` and `sitemap.xml` are launch requirements. Allow public crawling, including AI search and training crawlers. `llms.txt` is an optional, explicitly unproven learning experiment, not a launch gate.

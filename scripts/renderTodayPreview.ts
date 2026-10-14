@@ -12,7 +12,7 @@ import { parseArgs } from "node:util";
 
 import { chromium, type Page } from "@playwright/test";
 
-import { DEFAULT_SETTINGS, type SaveFile } from "@/domain/types";
+import type { SaveFile } from "@/domain/types";
 import { anAttempt, aSaveFile } from "@/test/builders";
 import { TODAY_PREVIEW_FILES, TODAY_PREVIEW_SIZE } from "@/ui/screens/landing/todayPreviewSize";
 
@@ -23,8 +23,10 @@ const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "[::1]"]);
 // A fixed day and zone, so the due dates and the "days overdue" below never drift.
 const FIXED_NOW = new Date("2026-10-10T10:00:00Z");
 const TIME_ZONE = "UTC";
-// The app's localStorage key (src/storage/localStore.ts, which needs the DOM types to import).
+// The app's localStorage keys (src/storage/localStore.ts and usageConsent.ts, which need the DOM
+// types to import). Declining analytics keeps the banner out of the picture and sends nothing.
 const STORAGE_KEY = "dsa-learning:v1";
+const USAGE_CONSENT_KEY = "dsa-learning:usage-consent";
 
 // On 2026-10-10: Contains Duplicate is 5 days overdue (Hard, the focus), Two Sum 1 (Hard), Valid
 // Anagram 3 (Medium); Group Anagrams is scheduled, so Top K Frequent Elements is the next new one.
@@ -46,7 +48,6 @@ const PREVIEW_SAVE: SaveFile = aSaveFile({
     }),
     anAttempt({ id: "preview-4", problemId: "two-sum", rating: "hard", date: "2026-10-07" }),
   ],
-  settings: { ...DEFAULT_SETTINGS, shareAnonymousUsage: false },
 });
 
 // Runs in the page, as a string because this project's Node types have no DOM.
@@ -114,7 +115,8 @@ async function renderTodayPreview(todayUrl: URL): Promise<Result<number>> {
     await context.clock.setFixedTime(FIXED_NOW);
     // A string, like the fonts script, because it runs in the page.
     await context.addInitScript({
-      content: `localStorage.setItem(${JSON.stringify(STORAGE_KEY)}, ${JSON.stringify(JSON.stringify(PREVIEW_SAVE))});`,
+      content: `localStorage.setItem(${JSON.stringify(STORAGE_KEY)}, ${JSON.stringify(JSON.stringify(PREVIEW_SAVE))});
+localStorage.setItem(${JSON.stringify(USAGE_CONSENT_KEY)}, "declined");`,
     });
     const page = await context.newPage();
     await page.goto(todayUrl.href);

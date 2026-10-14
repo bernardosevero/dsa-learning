@@ -153,7 +153,7 @@ describe("resetProgress", () => {
   const CUSTOM_SETTINGS = {
     timeBoxMinutes: { Easy: 10, Medium: 20, Hard: 40 },
     showPatternOnReviews: true,
-    shareAnonymousUsage: false,
+    linkUsageToAccount: true,
   };
 
   it("empties the log, clears the timer and keeps the settings", () => {

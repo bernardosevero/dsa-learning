@@ -21,7 +21,7 @@ export const en = {
       privacy: {
         title: "Privacy and credits | dsa-learning",
         description:
-          "What dsa-learning stores in your browser and in an optional account, which usage analytics it sends and how to turn them off, and the credits for its problem data.",
+          "What dsa-learning stores in your browser and in an optional account, which usage analytics it sends only if you accept and how to change that, and the credits for its problem data.",
       },
     },
     applicationDescription:
@@ -243,7 +243,19 @@ export const en = {
     shareAnonymousUsage: "Share usage data",
     shareAnonymousUsageHint:
       "Helps us learn which parts of the app are used. No notes or insights are sent.",
+    linkUsage: "Link my usage to my account",
+    linkUsageHint:
+      "Counts your usage on every device as one person, using your account ID. Your email is never sent.",
+    linkUsageNeedsSharing:
+      "Needs Share usage data on. Counts your usage on every device as one person, using your account ID, never your email.",
     privacyAndCredits: "Privacy & credits",
+  },
+  consentBanner: {
+    title: "Share usage data?",
+    body: "The app would send pageviews and a few events to PostHog and keep a random ID in this browser. Nothing is sent unless you accept, and your notes and insights never are.",
+    privacyLink: "See what's sent",
+    accept: "Accept",
+    decline: "Decline",
   },
   privacy: {
     eyebrow: "Privacy & credits",
@@ -257,8 +269,8 @@ export const en = {
       analytics: {
         title: "Usage analytics",
         badge: "Your choice",
-        body: "Pageviews and a few events, sent to PostHog US cloud, so we learn which parts of the app are used and can improve them. No analytics cookies, no persistent visitor ID.",
-        turnOff: "Turn it off",
+        body: "Only if you accept: pageviews and a few events, sent to PostHog US cloud, so we learn which parts of the app are used and can improve them. A random visitor ID stays in this browser; no cookies.",
+        turnOff: "Change your choice",
       },
     },
     switchTitle: "Share anonymous usage",
@@ -266,7 +278,7 @@ export const en = {
     switchState: { on: "On", off: "Off" },
     sentTitle: "What sharing sends",
     sentIntro:
-      "Sharing is on by default. With it on, the app sends pageviews and these events to PostHog US cloud.",
+      "Sharing is off until you accept, on the banner or with the switch above. With it on, the app sends pageviews and these events to PostHog US cloud.",
     neverSentTitle: "Never sent",
     neverSent: ["Your notes", "Key insights", "Problem solutions", "Exported file contents"],
     browserStorage:
@@ -294,18 +306,20 @@ export const en = {
       },
     ],
     analyticsDetails:
-      "PostHog receives page addresses without query strings or fragments, browser and device details, and the IP address of each network request. Its cookieless mode uses the IP address, browser details and site hostname to make a visitor hash that changes daily.",
+      "PostHog receives page addresses without query strings or fragments, browser and device details, and the IP address of each network request.",
     analyticsStorage:
-      "PostHog does not put analytics cookies or a persistent visitor ID in this browser. The app still stores your practice log and settings here.",
+      "With sharing on, PostHog keeps a random visitor ID in this browser's local storage, so visits on different days count as one visitor, and a session ID for the open tab. It sets no cookies. Turning sharing off deletes the visitor ID from the browser.",
+    accountLink:
+      "If you sign in, Settings has one more switch, Link my usage to my account, off by default. With it on and sharing on, events also carry your account's ID, never your email, so your devices count as one person, and this browser's earlier events join them. Turn it off or sign out, and this browser starts again with a new random ID.",
     publicPages:
       "The same choice covers the public pages: the home page, How it works and this page. With sharing on, they send pageviews, and a click on Start practicing sends which page it was on and where on that page the button sits.",
     funnel:
-      "Within the same visit, a logged attempt also says whether it is the first attempt in this browser's log and whether the visit came through a Start practicing click. Nothing links these events to an account, and nothing follows you across devices.",
+      "Within the same visit, a logged attempt also says whether it is the first attempt in this browser's log and whether the visit came through a Start practicing click.",
     neverCollected:
       "Your notes, key insights, problem solutions and exported file contents are never sent. Automatic click tracking and session recording are off.",
     switchApplies:
-      "The switch below is one setting in this browser, the same one as in Settings. Turning it off stops these optional analytics on every page, public and practice.",
-    optOutBefore: "Sharing is on by default. Turn it off at any time below or in",
+      "The switch below is this browser's answer, the same one as the banner and Settings; other browsers ask for their own. Turning it off stops these optional analytics on every page, public and practice.",
+    optOutBefore: "Sharing is off until you accept. Change your answer at any time above or in",
     settingsLink: "Settings",
     optOutAfter:
       ". Turning sharing off stops future analytics events; it does not delete events already sent.",

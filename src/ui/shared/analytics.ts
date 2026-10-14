@@ -17,6 +17,12 @@ export interface AttemptLoggedProperties {
   isFirstAttempt: boolean;
 }
 
+/** What the practice app knows about the account, for linking analytics to it. */
+export type AnalyticsAccount =
+  | { status: "signedOut" }
+  // "pending" until the account's own settings have synced, so another user's choice never links.
+  | { status: "signedIn"; userId: string; link: "pending" | "on" | "off" };
+
 interface AnalyticsEvents {
   app_opened: undefined;
   start_practicing_clicked: {
@@ -37,8 +43,8 @@ const posthogHost =
     ? configuredHost
     : "https://us.i.posthog.com";
 const isConfigured = import.meta.env.PROD && Boolean(projectKey);
-// posthog-js is loaded on first use, so a build without a key, a visitor who opted out and every
-// page's first paint never download it. Events sent while it loads wait in the queue.
+// posthog-js is loaded on first use, so a build without a key, a visitor who hasn't accepted and
+// every page's first paint never download it. Events sent while it loads wait in the queue.
 let hasStartedLoading = false;
 let hasLoadFailed = false;
 let client: PostHog | undefined;
@@ -47,6 +53,14 @@ let hasTrackedOpening = false;
 let shouldShareUsage = false;
 // Set by a captured Start practicing click; lives only as long as this document.
 let isStartedFromPublicPage = false;
+let account: AnalyticsAccount = { status: "signedOut" };
+// The last user signed in during this document: the only identity a sign-out or unlink resets.
+let lastSignedInUserId: string | undefined;
+
+/** Returns whether this build sends analytics at all, so the consent banner has something to ask. */
+export function isAnalyticsConfigured(): boolean {
+  return isConfigured;
+}
 
 const PUBLIC_ACQUISITION_PATHS: readonly string[] = ["/", "/how-it-works"];
 
@@ -69,11 +83,38 @@ function capture(event: string, properties?: Properties): void {
   client.capture(event, properties);
 }
 
+// Only an identity this app set is ever reset: the user who signed in here, now unlinked or gone.
+function applyAccountLink(posthog: PostHog): void {
+  const distinctId = posthog.get_distinct_id();
+  if (account.status === "signedIn" && account.link === "on") {
+    if (distinctId !== account.userId) {
+      posthog.identify(account.userId);
+    }
+    return;
+  }
+  const isWaitingForSettings = account.status === "signedIn" && account.link === "pending";
+  if (!isWaitingForSettings && distinctId === lastSignedInUserId) {
+    posthog.reset();
+  }
+}
+
+// Withdrawn consent: a new random ID replaces the old one, and none stays in the browser.
+function forgetVisitor(posthog: PostHog): void {
+  posthog.reset();
+  posthog.set_config({ disable_persistence: true });
+}
+
+function rememberVisitor(posthog: PostHog): void {
+  posthog.set_config({ disable_persistence: false });
+  applyAccountLink(posthog);
+}
+
 function initialize(posthog: PostHog): void {
   posthog.init(projectKey, {
     api_host: posthogHost,
-    persistence: "memory",
-    cookieless_mode: "always",
+    // A random visitor ID in localStorage, and no cookies. A Decline while loading stores nothing.
+    persistence: "localStorage",
+    disable_persistence: !shouldShareUsage,
     // Deprecated upstream: this cannot prevent the server from seeing the request IP.
     ip: false,
     autocapture: false,
@@ -81,7 +122,8 @@ function initialize(posthog: PostHog): void {
     capture_pageleave: false,
     capture_exceptions: false,
     disable_session_recording: true,
-    person_profiles: "never",
+    // Visitors stay anonymous; only a linked account gets a person profile, under its id.
+    person_profiles: "identified_only",
     advanced_disable_flags: true,
     disable_surveys: true,
     save_campaign_params: false,
@@ -89,6 +131,12 @@ function initialize(posthog: PostHog): void {
     get_current_url: () => window.location.origin + window.location.pathname,
   });
   client = posthog;
+  if (shouldShareUsage) {
+    applyAccountLink(posthog);
+  } else {
+    // Declined while loading: an ID an earlier visit stored goes too.
+    forgetVisitor(posthog);
+  }
   const queued = pendingCaptures;
   pendingCaptures = [];
   for (const [event, properties] of queued) {
@@ -108,23 +156,43 @@ async function loadPostHog(): Promise<void> {
 }
 
 /**
- * Applies the saved opt-out choice before any event can be sent. Turning it off stops capture at
- * once and forgets a Start practicing click, so re-enabling never brings an earlier one back.
+ * Applies this browser's consent before any event can be sent: only an accepted answer loads
+ * posthog-js. Turning it off stops capture at once, forgets a Start practicing click and removes
+ * the visitor ID from the browser, so re-enabling never brings either back.
  */
 export function setAnalyticsEnabled(isEnabled: boolean): void {
-  if (!isConfigured) return;
+  if (!isConfigured || isEnabled === shouldShareUsage) return;
 
   shouldShareUsage = isEnabled;
   if (!isEnabled) {
     isStartedFromPublicPage = false;
     // Events still waiting for posthog-js were sent while sharing was on, but never leave now.
     pendingCaptures = [];
+    if (client !== undefined) forgetVisitor(client);
+    return;
+  }
+  if (client !== undefined) {
+    rememberVisitor(client);
     return;
   }
   if (hasStartedLoading) return;
 
   hasStartedLoading = true;
   void loadPostHog();
+}
+
+/**
+ * Links analytics to the account by its id, never its email, while a signed-in user has linking
+ * on and sharing is on. Turning linking off or signing out resets to a new random visitor ID.
+ */
+export function setAnalyticsAccount(nextAccount: Readonly<AnalyticsAccount>): void {
+  account = nextAccount;
+  if (nextAccount.status === "signedIn") {
+    lastSignedInUserId = nextAccount.userId;
+  }
+  if (client !== undefined && shouldShareUsage) {
+    applyAccountLink(client);
+  }
 }
 
 /** Sends app_opened once per document, on the first practice route while sharing is on. */
@@ -158,7 +226,7 @@ export function trackPageView(pathname: string): void {
   capture("$pageview", { $current_url: window.location.origin + pathname });
 }
 
-/** Sends only the listed anonymous product events when analytics is enabled. */
+/** Sends only the listed product events when analytics is enabled. */
 export function track<EventName extends keyof AnalyticsEvents>(
   event: EventName,
   ...args: AnalyticsEvents[EventName] extends undefined ? [] : [AnalyticsEvents[EventName]]

@@ -23,18 +23,19 @@ function errorOf(result: ReturnType<typeof parseSaveFile>): string {
 }
 
 describe("parseSaveFile", () => {
-  it("defaults anonymous usage sharing on for an older save file", () => {
+  it("reads an older save file with linking off and without its old usage switch", () => {
     const oldSettings = {
       timeBoxMinutes: SAMPLE_FILE.settings.timeBoxMinutes,
       showPatternOnReviews: SAMPLE_FILE.settings.showPatternOnReviews,
+      shareAnonymousUsage: true,
     };
     const result = parseSaveFile({ ...SAMPLE_FILE, settings: oldSettings });
 
     expect(result).toEqual({ ok: true, file: SAMPLE_FILE });
   });
 
-  it("preserves an opt-out setting in an imported file", () => {
-    const file = aSaveFile({ settings: { ...DEFAULT_SETTINGS, shareAnonymousUsage: false } });
+  it("preserves linking usage to the account in an imported file", () => {
+    const file = aSaveFile({ settings: { ...DEFAULT_SETTINGS, linkUsageToAccount: true } });
     const result = parseSaveFile(file);
 
     expect(result).toEqual({ ok: true, file });

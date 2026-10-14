@@ -5,17 +5,11 @@ import { renderToString } from "react-dom/server";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { DEFAULT_SETTINGS } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
-import { readUsageSharing } from "@/storage/usageSharing";
+import { readUsageConsent, USAGE_CONSENT_KEY } from "@/storage/usageConsent";
 import { anAttempt, aSaveFile } from "@/test/builders";
 
 import { PrivacyPage } from "../PrivacyPage";
-
-const OPTED_OUT_SAVE = aSaveFile({
-  entries: [anAttempt()],
-  settings: { ...DEFAULT_SETTINGS, shareAnonymousUsage: false },
-});
 
 function privacyElement() {
   return (
@@ -43,7 +37,7 @@ describe("PrivacyPage", () => {
 
     expect(container.textContent).toContain("The same choice covers the public pages");
     expect(container.textContent).toContain("where on that page the button sits");
-    expect(container.textContent).toContain("Nothing links these events to an account");
+    expect(container.textContent).toContain("Sharing is off until you accept");
     expect(container.textContent).toContain("on every page, public and practice");
     expect(container.textContent).toContain("Your notes, key insights");
     expect(container.querySelector("[role=switch]")?.hasAttribute("disabled")).toBe(true);
@@ -66,9 +60,13 @@ describe("PrivacyPage", () => {
       "East US (North Virginia)",
       "Delete account in Settings removes your account and that copy",
       "the IP address of each network request",
-      "a visitor hash that changes daily",
-      "does not put analytics cookies or a persistent visitor ID",
-      "Nothing links these events to an account",
+      "keeps a random visitor ID in this browser's local storage",
+      "It sets no cookies",
+      "Turning sharing off deletes the visitor ID",
+      "Link my usage to my account, off by default",
+      "your account's ID, never your email",
+      "Turn it off or sign out",
+      "other browsers ask for their own",
       "it does not delete events already sent",
       "under its MIT license",
       "not affiliated with or endorsed by NeetCode or LeetCode",
@@ -108,10 +106,10 @@ describe("PrivacyPage", () => {
   });
 
   it("links the analytics card to the switch, which shows its state in words", async () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(OPTED_OUT_SAVE));
+    localStorage.setItem(USAGE_CONSENT_KEY, "accepted");
     render(privacyElement());
 
-    expect(screen.getByRole("link", { name: "Turn it off" }).getAttribute("href")).toBe(
+    expect(screen.getByRole("link", { name: "Change your choice" }).getAttribute("href")).toBe(
       "#usage-sharing",
     );
     expect(
@@ -119,34 +117,44 @@ describe("PrivacyPage", () => {
         name: "Share usage data",
       }),
     ).toBeDefined();
-    expect(await screen.findByText("Off")).toBeDefined();
+    expect(await screen.findByText("On")).toBeDefined();
   });
 
-  it("enables the switch with the saved choice once hydrated", async () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(OPTED_OUT_SAVE));
+  it("shows sharing off before the visitor answers", async () => {
+    render(privacyElement());
+
+    expect(await screen.findByText("Off")).toBeDefined();
+    expect(usageSwitch().getAttribute("aria-checked")).toBe("false");
+  });
+
+  it("enables the switch with the saved answer once hydrated", async () => {
+    localStorage.setItem(USAGE_CONSENT_KEY, "accepted");
     const container = document.createElement("div");
     container.innerHTML = renderToString(privacyElement());
     document.body.append(container);
 
-    // The switch waits for the storage module, which useUsageSharing loads on demand.
+    // The switch waits for the storage module, which useUsageConsent loads on demand.
     await act(async () => {
       hydrateRoot(container, privacyElement());
-      await import("@/storage/usageSharing");
+      await import("@/storage/usageConsent");
     });
 
     expect(usageSwitch()).toHaveProperty("disabled", false);
-    expect(usageSwitch().getAttribute("aria-checked")).toBe("false");
+    expect(usageSwitch().getAttribute("aria-checked")).toBe("true");
   });
 
-  // Settings reads this same saved setting; e2e/publicPages.spec.ts checks the two screens agree.
-  it("saves turning sharing off into the browser setting Settings reads, keeping the log", async () => {
-    const save = aSaveFile({ entries: [anAttempt()] });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(save));
+  // Settings reads this same answer; e2e/publicPages.spec.ts checks the two screens agree.
+  it("saves turning sharing on as this browser's answer, leaving the practice save alone", async () => {
+    const save = JSON.stringify(aSaveFile({ entries: [anAttempt()] }));
+    localStorage.setItem(STORAGE_KEY, save);
     render(privacyElement());
+    await vi.waitFor(() => {
+      expect(usageSwitch()).toHaveProperty("disabled", false);
+    });
 
     await userEvent.click(usageSwitch());
 
-    expect(readUsageSharing()).toBe(false);
-    expect(localStorage.getItem(STORAGE_KEY)).toContain(save.entries[0]?.id);
+    expect(readUsageConsent()).toBe("accepted");
+    expect(localStorage.getItem(STORAGE_KEY)).toBe(save);
   });
 });

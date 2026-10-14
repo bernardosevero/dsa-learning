@@ -29,7 +29,7 @@ const SAMPLE_FILE = aSaveFile({
   settings: {
     timeBoxMinutes: { Easy: 10, Medium: 25, Hard: 50 },
     showPatternOnReviews: true,
-    shareAnonymousUsage: true,
+    linkUsageToAccount: true,
   },
 });
 
@@ -244,7 +244,7 @@ describe("exportJson and importJson", () => {
       settings: {
         timeBoxMinutes: { Easy: 5, Medium: 5, Hard: 5 },
         showPatternOnReviews: false,
-        shareAnonymousUsage: false,
+        linkUsageToAccount: false,
       },
     });
 

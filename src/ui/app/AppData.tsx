@@ -16,16 +16,12 @@ import { getBrowserStore, importJson, type Store } from "@/storage/localStore";
 import type { AccountService } from "@/storage/accountService";
 import type { RemoteStore } from "@/storage/remoteStore";
 import { createSyncMetaStore, type SyncMetaStore } from "@/storage/syncMeta";
-import {
-  saveWithCurrentUsageSharing,
-  setUsageSharing,
-  subscribeUsageSharing,
-} from "@/storage/usageSharing";
+import { setAnalyticsAccount } from "@/ui/shared/analytics";
 
 import * as reducers from "./appDataReducers";
-import { createFileStore, type FileChangeSource, type FileStore } from "./fileStore";
+import { createFileStore } from "./fileStore";
 import type { NewAttempt } from "./appDataReducers";
-import { useAccount, type AccountValue } from "./useAccount";
+import { useAccount, type Account, type AccountValue } from "./useAccount";
 import { useSync, type SyncValue } from "./useSync";
 
 export interface AppDataValue extends AccountValue, SyncValue {
@@ -47,11 +43,10 @@ export interface AppDataValue extends AccountValue, SyncValue {
 
 const AppDataContext = createContext<AppDataValue | undefined>(undefined);
 
-// Loads through the document's one Store, created on first load, and never saves over a newer
-// usage-sharing choice made outside this provider (the public Privacy page, another tab).
+// The document's one Store, created on first use in the browser, not while the build renders.
 const appStore: Store = {
   load: () => getBrowserStore().load(),
-  save: saveWithCurrentUsageSharing,
+  save: (file) => getBrowserStore().save(file),
 };
 let syncMetaStore: SyncMetaStore | undefined;
 const PROBLEM_IDS = PROBLEMS.map((problem) => problem.id);
@@ -79,33 +74,41 @@ function useTodayDate(): LocalDate {
   return todayDate;
 }
 
-// A choice changed elsewhere is already saved; only this copy of the file catches up.
-function useUsageSharingFromStorage(fileStore: FileStore): void {
-  useEffect(() => {
-    function handleUsageSharingChange(isEnabled: boolean) {
-      fileStore.update(
-        (current) =>
-          current.settings.shareAnonymousUsage === isEnabled
-            ? current
-            : reducers.updateSettings(current, { shareAnonymousUsage: isEnabled }),
-        "storage",
-      );
-    }
-    return subscribeUsageSharing(handleUsageSharingChange);
-  }, [fileStore]);
+// Linking waits for the account's first sync, so a previous user's setting on this browser never
+// links the next one.
+function toAccountLink(
+  isFirstSyncPending: boolean,
+  isLinkingOn: boolean,
+): "pending" | "on" | "off" {
+  if (isFirstSyncPending) {
+    return "pending";
+  }
+  return isLinkingOn ? "on" : "off";
 }
 
-// A sync can bring the account's choice; it becomes this browser's saved choice too.
-function useUsageSharingFromSync(fileStore: FileStore): void {
+// Tells analytics who is signed in; whether anything is sent stays analytics' own consent check.
+function useAnalyticsAccount(
+  account: Account,
+  isFirstSyncPending: boolean,
+  isLinkingOn: boolean,
+): void {
+  const userId = account.status === "signedIn" ? account.userId : undefined;
+  const isAvailable = account.status !== "unavailable";
+
   useEffect(() => {
-    function handleFileChange(file: SaveFile, previous: SaveFile, source: FileChangeSource) {
-      const isEnabled = file.settings.shareAnonymousUsage;
-      if (source === "sync" && isEnabled !== previous.settings.shareAnonymousUsage) {
-        setUsageSharing(isEnabled);
-      }
+    if (!isAvailable) {
+      return;
     }
-    return fileStore.subscribe(handleFileChange);
-  }, [fileStore]);
+    if (userId === undefined) {
+      setAnalyticsAccount({ status: "signedOut" });
+      return;
+    }
+    setAnalyticsAccount({
+      status: "signedIn",
+      userId,
+      link: toAccountLink(isFirstSyncPending, isLinkingOn),
+    });
+  }, [isAvailable, userId, isFirstSyncPending, isLinkingOn]);
 }
 
 export interface AppDataProviderProps {
@@ -134,8 +137,7 @@ export function AppDataProvider({ accountService, remoteStore, children }: AppDa
     syncMetaStore: getSyncMetaStore(),
   });
   const isSignedIn = account.status === "signedIn";
-  useUsageSharingFromStorage(fileStore);
-  useUsageSharingFromSync(fileStore);
+  useAnalyticsAccount(account, syncValue.isFirstSyncPending, file.settings.linkUsageToAccount);
 
   const states = useMemo(() => deriveAllStates(PROBLEM_IDS, file.entries), [file.entries]);
 
@@ -152,12 +154,8 @@ export function AppDataProvider({ accountService, remoteStore, children }: AppDa
         fileStore.update((current) => reducers.markMastered(current, problemId)),
       deleteEntry: (entryId) =>
         fileStore.update((current) => reducers.deleteEntry(current, entryId)),
-      updateSettings: (partial) => {
-        if (partial.shareAnonymousUsage !== undefined) {
-          setUsageSharing(partial.shareAnonymousUsage);
-        }
-        fileStore.update((current) => reducers.updateSettings(current, partial));
-      },
+      updateSettings: (partial) =>
+        fileStore.update((current) => reducers.updateSettings(current, partial)),
       startTimer: (problemId) =>
         fileStore.update((current) => reducers.startTimer(current, problemId)),
       restartTimer: (problemId) =>
@@ -168,10 +166,6 @@ export function AppDataProvider({ accountService, remoteStore, children }: AppDa
         const result = importJson(text, current);
         if (!result.ok) {
           return result;
-        }
-        // The import takes the file's settings only into an empty log; then its choice is adopted.
-        if (result.file.settings !== current.settings) {
-          setUsageSharing(result.file.settings.shareAnonymousUsage);
         }
         fileStore.update(() => result.file);
         return result;

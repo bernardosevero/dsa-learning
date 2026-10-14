@@ -4,27 +4,20 @@ import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { DEFAULT_SETTINGS, type SaveFile } from "@/domain/types";
 import { STORAGE_KEY } from "@/storage/localStore";
-import { readUsageSharing } from "@/storage/usageSharing";
+import { readUsageConsent, USAGE_CONSENT_KEY } from "@/storage/usageConsent";
 import { anAttempt, aSaveFile } from "@/test/builders";
 
+import { setAnalyticsEnabled } from "../analytics";
 import { UsageSharingControl } from "../UsageSharingControl";
-import { useUsageSharing } from "../useUsageSharing";
+import { useUsageConsent } from "../useUsageConsent";
 
-const OPTED_OUT_SAVE = aSaveFile({
-  entries: [anAttempt()],
-  settings: { ...DEFAULT_SETTINGS, shareAnonymousUsage: false },
-});
+vi.mock("../analytics", () => ({ setAnalyticsEnabled: vi.fn() }));
 
 // What a public page renders: the hook feeding the shared control, with no AppData around it.
 function PublicUsageSharing() {
-  const { isEnabled, setEnabled } = useUsageSharing();
-  return <UsageSharingControl isEnabled={isEnabled} onEnabledChange={setEnabled} />;
-}
-
-function storeFile(file: SaveFile): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(file));
+  const { consent, setConsent } = useUsageConsent();
+  return <UsageSharingControl consent={consent} onConsentChange={setConsent} />;
 }
 
 function usageSwitch(): HTMLElement {
@@ -33,31 +26,42 @@ function usageSwitch(): HTMLElement {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.clearAllMocks();
   localStorage.clear();
   document.body.innerHTML = "";
 });
 
 describe("UsageSharingControl", () => {
-  it("waits, disabled, while the choice is unknown", () => {
-    render(<UsageSharingControl isEnabled={undefined} onEnabledChange={vi.fn()} />);
+  it("waits, disabled, while the answer is unknown", () => {
+    render(<UsageSharingControl consent={undefined} onConsentChange={vi.fn()} />);
 
     expect(usageSwitch()).toHaveProperty("disabled", true);
   });
 
-  it("shows the choice and reports a change", async () => {
-    const handleEnabledChange = vi.fn();
-    render(<UsageSharingControl isEnabled onEnabledChange={handleEnabledChange} />);
+  it("stays off before the visitor answers, and turning it on accepts", async () => {
+    const handleConsentChange = vi.fn();
+    render(<UsageSharingControl consent="unanswered" onConsentChange={handleConsentChange} />);
+
+    await userEvent.click(usageSwitch());
+
+    expect(usageSwitch().getAttribute("aria-checked")).toBe("false");
+    expect(handleConsentChange).toHaveBeenCalledWith("accepted");
+  });
+
+  it("shows an accepted answer as on, and turning it off declines", async () => {
+    const handleConsentChange = vi.fn();
+    render(<UsageSharingControl consent="accepted" onConsentChange={handleConsentChange} />);
 
     await userEvent.click(usageSwitch());
 
     expect(usageSwitch().getAttribute("aria-checked")).toBe("true");
-    expect(handleEnabledChange).toHaveBeenCalledWith(false);
+    expect(handleConsentChange).toHaveBeenCalledWith("declined");
   });
 });
 
-describe("useUsageSharing", () => {
-  it("prerenders and hydrates without touching storage, then shows the saved choice", async () => {
-    storeFile(OPTED_OUT_SAVE);
+describe("useUsageConsent", () => {
+  it("prerenders and hydrates without touching storage, then shows the saved answer", async () => {
+    localStorage.setItem(USAGE_CONSENT_KEY, "accepted");
     const getItem = vi.spyOn(Storage.prototype, "getItem");
     const setItem = vi.spyOn(Storage.prototype, "setItem");
 
@@ -74,34 +78,43 @@ describe("useUsageSharing", () => {
       hydrateRoot(container, <PublicUsageSharing />, {
         onRecoverableError: handleRecoverableError,
       });
-      await import("@/storage/usageSharing");
+      await import("@/storage/usageConsent");
     });
 
     expect(handleRecoverableError).not.toHaveBeenCalled();
     expect(setItem).not.toHaveBeenCalled();
     expect(usageSwitch()).toHaveProperty("disabled", false);
-    expect(usageSwitch().getAttribute("aria-checked")).toBe("false");
+    expect(usageSwitch().getAttribute("aria-checked")).toBe("true");
   });
 
-  it("saves a change into the existing save, keeping its entries", async () => {
-    storeFile(OPTED_OUT_SAVE);
+  it("saves an answer under its own key and stops analytics at once on a Decline", async () => {
+    const save = JSON.stringify(aSaveFile({ entries: [anAttempt()] }));
+    localStorage.setItem(STORAGE_KEY, save);
+    localStorage.setItem(USAGE_CONSENT_KEY, "accepted");
     render(<PublicUsageSharing />);
+    await vi.waitFor(() => {
+      expect(usageSwitch()).toHaveProperty("disabled", false);
+    });
 
     await userEvent.click(usageSwitch());
 
-    expect(readUsageSharing()).toBe(true);
-    expect(usageSwitch().getAttribute("aria-checked")).toBe("true");
-    expect(localStorage.getItem(STORAGE_KEY)).toContain(OPTED_OUT_SAVE.entries[0]?.id);
+    expect(setAnalyticsEnabled).toHaveBeenCalledExactlyOnceWith(false);
+    expect(readUsageConsent()).toBe("declined");
+    expect(usageSwitch().getAttribute("aria-checked")).toBe("false");
+    expect(localStorage.getItem(STORAGE_KEY)).toBe(save);
   });
 
-  it("follows a change made by another tab", () => {
+  it("follows an answer given in another tab", async () => {
     render(<PublicUsageSharing />);
-    storeFile(OPTED_OUT_SAVE);
+    await vi.waitFor(() => {
+      expect(usageSwitch()).toHaveProperty("disabled", false);
+    });
+    localStorage.setItem(USAGE_CONSENT_KEY, "accepted");
 
     act(() => {
-      window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY }));
+      window.dispatchEvent(new StorageEvent("storage", { key: USAGE_CONSENT_KEY }));
     });
 
-    expect(usageSwitch().getAttribute("aria-checked")).toBe("false");
+    expect(usageSwitch().getAttribute("aria-checked")).toBe("true");
   });
 });

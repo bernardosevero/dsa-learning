@@ -4,14 +4,18 @@ import { useEffect } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_SETTINGS, type SaveFile } from "@/domain/types";
-import { exportJson, STORAGE_KEY } from "@/storage/localStore";
-import { readUsageSharing, setUsageSharing } from "@/storage/usageSharing";
-import { anAttempt, aNewAttempt, aRemoteSave, aSaveFile } from "@/test/builders";
+import { STORAGE_KEY } from "@/storage/localStore";
+import { aRemoteSave } from "@/test/builders";
 import { aFakeRemote } from "@/test/fakeRemoteStore";
 import { aFakeSupabase } from "@/test/fakeSupabase";
+import { setAnalyticsAccount } from "@/ui/shared/analytics";
 
 import { AppDataProvider, useAppData, type AppDataValue } from "../AppData";
-import { LOCAL_CHANGE_DEBOUNCE_MS } from "../syncEngine";
+
+vi.mock("@/ui/shared/analytics", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/ui/shared/analytics")>()),
+  setAnalyticsAccount: vi.fn(),
+}));
 
 const UUID_PATTERN = /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/;
 
@@ -101,7 +105,7 @@ describe("AppDataProvider", () => {
       settings: {
         timeBoxMinutes: { Easy: 10, Medium: 20, Hard: 30 },
         showPatternOnReviews: true,
-        shareAnonymousUsage: true,
+        linkUsageToAccount: true,
       },
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
@@ -147,7 +151,7 @@ describe("AppDataProvider", () => {
       settings: {
         timeBoxMinutes: { Easy: 15, Medium: 30, Hard: 45 },
         showPatternOnReviews: false,
-        shareAnonymousUsage: true,
+        linkUsageToAccount: true,
       },
     });
 
@@ -201,143 +205,89 @@ describe("AppDataProvider with a timer", () => {
   });
 });
 
-const OPTED_OUT_SETTINGS = { ...DEFAULT_SETTINGS, shareAnonymousUsage: false };
+const LINKED_SETTINGS = { ...DEFAULT_SETTINGS, linkUsageToAccount: true };
 
-function storeFile(file: SaveFile): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(file));
+function renderSignedInProvider(remoteSave = aRemoteSave()) {
+  const supabase = aFakeSupabase({ id: "user-1" });
+  render(
+    <AppDataProvider
+      accountService={supabase.accountService}
+      remoteStore={aFakeRemote(remoteSave).remoteStore}
+    >
+      <AppDataProbe />
+    </AppDataProvider>,
+  );
+  return supabase;
 }
 
-describe("AppDataProvider and the usage-sharing choice", () => {
-  it("keeps an opt-out through ordinary saves", () => {
-    storeFile(aSaveFile({ settings: OPTED_OUT_SETTINGS }));
-    const appData = renderProvider();
+function reportedAccounts(): unknown[] {
+  return vi.mocked(setAnalyticsAccount).mock.calls.map(([account]) => account);
+}
 
-    act(() => {
-      appData().addAttempt(aNewAttempt());
-      appData().startTimer("two-sum");
-    });
-
-    expect(readStoredFile().settings.shareAnonymousUsage).toBe(false);
-    expect(readUsageSharing()).toBe(false);
+describe("AppDataProvider and analytics", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("never saves its older copy of the choice over a newer one", () => {
-    const appData = renderProvider();
-    // Another page changed the save without this document hearing about it.
-    storeFile(aSaveFile({ settings: OPTED_OUT_SETTINGS }));
+  it("tells analytics nothing when accounts aren't available", () => {
+    renderProvider();
 
-    act(() => {
-      appData().addAttempt(aNewAttempt());
-    });
-
-    expect(readStoredFile().settings.shareAnonymousUsage).toBe(false);
-    expect(readStoredFile().entries).toHaveLength(1);
+    expect(setAnalyticsAccount).not.toHaveBeenCalled();
   });
 
-  it("picks up a choice made outside it without saving its own copy", () => {
-    const appData = renderProvider();
-
-    act(() => {
-      setUsageSharing(false);
-    });
-
-    expect(appData().file.settings.shareAnonymousUsage).toBe(false);
-    expect(readStoredFile()).toEqual(aSaveFile({ settings: OPTED_OUT_SETTINGS }));
-  });
-
-  it("picks up another tab's choice from a storage event without saving over that tab", () => {
-    const appData = renderProvider();
-    const otherTabSave = aSaveFile({ entries: [anAttempt()], settings: OPTED_OUT_SETTINGS });
-    storeFile(otherTabSave);
-
-    act(() => {
-      window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY }));
-    });
-
-    expect(appData().file.settings.shareAnonymousUsage).toBe(false);
-    expect(readStoredFile()).toEqual(otherTabSave);
-  });
-
-  it("saves its own change of the choice where the bridge reads it", () => {
-    const appData = renderProvider();
-
-    act(() => {
-      appData().updateSettings({ shareAnonymousUsage: false });
-    });
-
-    expect(readUsageSharing()).toBe(false);
-    expect(appData().file.settings.shareAnonymousUsage).toBe(false);
-  });
-
-  it("adopts the imported choice when the log is empty", () => {
-    const appData = renderProvider();
-    const exported = exportJson(
-      aSaveFile({ entries: [anAttempt()], settings: OPTED_OUT_SETTINGS }),
-    );
-
-    act(() => {
-      appData().importText(exported);
-    });
-
-    expect(readUsageSharing()).toBe(false);
-    expect(appData().file.settings.shareAnonymousUsage).toBe(false);
-  });
-
-  it("keeps the current choice when importing into a log that has entries", () => {
-    storeFile(aSaveFile({ entries: [anAttempt()] }));
-    const appData = renderProvider();
-    const exported = exportJson(
-      aSaveFile({ entries: [anAttempt({ id: "imported" })], settings: OPTED_OUT_SETTINGS }),
-    );
-
-    act(() => {
-      appData().importText(exported);
-    });
-
-    expect(readUsageSharing()).toBe(true);
-    expect(readStoredFile().entries).toHaveLength(2);
-  });
-
-  it("adopts the account's choice when a first sync takes the account's settings", async () => {
-    const remote = aFakeRemote(aRemoteSave({ settings: OPTED_OUT_SETTINGS }));
+  it("reports a signed-out account", async () => {
     render(
-      <AppDataProvider
-        accountService={aFakeSupabase({ email: "ada@example.com" }).accountService}
-        remoteStore={remote.remoteStore}
-      >
+      <AppDataProvider accountService={aFakeSupabase().accountService}>
         <AppDataProbe />
       </AppDataProvider>,
     );
 
     await vi.waitFor(() => {
-      expect(readUsageSharing()).toBe(false);
+      expect(setAnalyticsAccount).toHaveBeenCalled();
     });
-    expect(latestAppData?.file.settings.shareAnonymousUsage).toBe(false);
+    expect(reportedAccounts()).toEqual([{ status: "signedOut" }]);
   });
 
-  it("syncs a choice made outside it up to the account", async () => {
-    const remote = aFakeRemote(aRemoteSave());
-    render(
-      <AppDataProvider
-        accountService={aFakeSupabase({ email: "ada@example.com" }).accountService}
-        remoteStore={remote.remoteStore}
-      >
-        <AppDataProbe />
-      </AppDataProvider>,
-    );
+  it("keeps linking pending until the account's first sync, then reports its setting", async () => {
+    renderSignedInProvider();
+
+    await vi.waitFor(() => {
+      expect(setAnalyticsAccount).toHaveBeenLastCalledWith({
+        status: "signedIn",
+        userId: "user-1",
+        link: "off",
+      });
+    });
+    expect(reportedAccounts()).toContainEqual({
+      status: "signedIn",
+      userId: "user-1",
+      link: "pending",
+    });
+  });
+
+  it("links once the account's settings turn linking on", async () => {
+    renderSignedInProvider(aRemoteSave({ settings: LINKED_SETTINGS }));
+
+    await vi.waitFor(() => {
+      expect(setAnalyticsAccount).toHaveBeenLastCalledWith({
+        status: "signedIn",
+        userId: "user-1",
+        link: "on",
+      });
+    });
+    expect(latestAppData?.file.settings.linkUsageToAccount).toBe(true);
+  });
+
+  it("reports the sign-out of a linked account", async () => {
+    renderSignedInProvider(aRemoteSave({ settings: LINKED_SETTINGS }));
     await vi.waitFor(() => {
       expect(latestAppData?.syncStatus.status).toBe("synced");
     });
 
-    act(() => {
-      setUsageSharing(false);
+    await act(async () => {
+      await latestAppData?.signOut();
     });
 
-    await vi.waitFor(
-      () => {
-        expect(remote.row).toMatchObject({ settings: { shareAnonymousUsage: false } });
-      },
-      { timeout: LOCAL_CHANGE_DEBOUNCE_MS * 2 },
-    );
+    expect(setAnalyticsAccount).toHaveBeenLastCalledWith({ status: "signedOut" });
   });
 });

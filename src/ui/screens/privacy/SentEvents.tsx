@@ -30,6 +30,7 @@ export function SentEvents() {
           <p>{t.privacy.funnel}</p>
           <p>{t.privacy.analyticsDetails}</p>
           <p>{t.privacy.analyticsStorage}</p>
+          <p>{t.privacy.accountLink}</p>
           <p>
             {t.privacy.optOutBefore}{" "}
             <Link to="/settings" className="text-primary underline">
