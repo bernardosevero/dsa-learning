@@ -1,31 +1,28 @@
 import { useId } from "react";
 import { Link } from "react-router";
 
+import type { UsageAnswer } from "@/storage/usageConsent";
 import { Button } from "@/ui/primitives/button";
 import { Card } from "@/ui/primitives/card";
-import { isAnalyticsConfigured } from "@/ui/shared/analytics";
 import { t } from "@/ui/shared/strings";
-import { useUsageConsent } from "@/ui/shared/useUsageConsent";
+
+export interface ConsentBannerProps {
+  onAnswer: (answer: UsageAnswer) => void;
+}
 
 /**
- * Asks once per browser whether usage data may be shared, on every page until it is answered.
- * It shows only after the saved answer is read and floats over the page, so it never moves
- * content; Accept and Decline carry the same weight. A build without analytics never asks.
+ * The question itself: whether usage data may be shared, with Accept and Decline carrying the same
+ * weight. It floats over the page, so it never moves content. AnalyticsConsent decides when it shows.
  */
-export function ConsentBanner() {
-  const { consent, setConsent } = useUsageConsent();
+export function ConsentBanner({ onAnswer }: ConsentBannerProps) {
   const titleId = useId();
 
-  if (consent !== "unanswered" || !isAnalyticsConfigured()) {
-    return null;
-  }
-
   function handleDecline() {
-    setConsent("declined");
+    onAnswer("declined");
   }
 
   function handleAccept() {
-    setConsent("accepted");
+    onAnswer("accepted");
   }
 
   return (

@@ -1,9 +1,9 @@
 import { StrictMode, type ReactNode } from "react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
+import { AnalyticsConsent } from "@/ui/app/AnalyticsConsent";
 import { AnalyticsRouteTracker } from "@/ui/app/AnalyticsRouteTracker";
 import { AppLoading } from "@/ui/app/AppLoading";
-import { ConsentBanner } from "@/ui/app/ConsentBanner";
 import { DocumentHead } from "@/ui/app/DocumentHead";
 import { buildPrivatePageMeta } from "@/ui/shared/publicPageMetadata";
 
@@ -40,7 +40,7 @@ export default function Root() {
       <AnalyticsRouteTracker />
       <Outlet />
       {/* After the page in reading order, as it sits at the bottom of the screen. */}
-      <ConsentBanner />
+      <AnalyticsConsent />
     </StrictMode>
   );
 }

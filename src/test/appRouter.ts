@@ -3,8 +3,8 @@ import { createElement, Fragment, type ComponentType } from "react";
 import { createMemoryRouter, Outlet, type RouteObject } from "react-router";
 
 import routes from "@/routes";
+import { AnalyticsConsent } from "@/ui/app/AnalyticsConsent";
 import { AnalyticsRouteTracker } from "@/ui/app/AnalyticsRouteTracker";
-import { ConsentBanner } from "@/ui/app/ConsentBanner";
 import { PracticeApp, type PracticeAppProps } from "@/ui/app/PracticeApp";
 
 interface RouteModule {
@@ -48,7 +48,7 @@ export function createAppRouter(initialPath: string, practiceAppProps: PracticeA
       null,
       createElement(AnalyticsRouteTracker),
       createElement(Outlet),
-      createElement(ConsentBanner),
+      createElement(AnalyticsConsent),
     );
   }
 
